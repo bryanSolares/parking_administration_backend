@@ -1,0 +1,16 @@
+{
+  "compilerOptions": {
+    "baseUrl": "./",
+    "module": "commonjs",
+    "target": "ES2022",
+    "esModuleInterop": true,
+    "strict": true,
+    "outDir": "build",
+    "skipLibCheck": true,
+    "resolveJsonModule": true,
+    "paths": {},
+    "forceConsistentCasingInFileNames": true,
+  },
+  "include": ["src/**/*.ts"],
+  "exclude": ["node_modules"]
+}
