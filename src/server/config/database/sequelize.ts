@@ -14,7 +14,7 @@ export const sequelize = new Sequelize({
     acquire: 30000,
     idle: 10000
   },
-  logging: true
+  logging: false
 });
 
 export const syncDatabase = () => {
@@ -40,5 +40,14 @@ export const sequelizeConnection = () => {
       .catch(err => {
         reject(err);
       });
+
+    //// TODO: Fix this
+    //if (isTestEnvironment) {
+    syncDatabase()
+      .then()
+      .catch(error => {
+        reject(error);
+      });
+    //}
   });
 };

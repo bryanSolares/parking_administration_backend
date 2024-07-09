@@ -9,8 +9,9 @@ import morgan from 'morgan';
 import { config } from '@config/logger/load-envs';
 import { logger } from '@config/logger/load-logger';
 import { sequelizeConnection } from '@config/database/sequelize';
+import './config/database/models/relations';
 
-import locationRoutes from '@infrastructure/http/location-routes';
+import parkingRoutes from '@infrastructure/http/location-routes';
 
 export class Server {
   private readonly app: express.Application;
@@ -36,7 +37,7 @@ export class Server {
       res.send('');
     });
 
-    this.app.use('/api/v1/locations', locationRoutes);
+    this.app.use('/api/v1/parking', parkingRoutes);
   }
 
   public startServer(): Promise<void> {

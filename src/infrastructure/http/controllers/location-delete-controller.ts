@@ -2,7 +2,7 @@ import { Request, Response } from 'express';
 
 import { logger } from '@config/logger/load-logger';
 
-import { LocationNotFound } from '@core/exceptions/location-not-found';
+import { LocationNotFoundError } from '@core/exceptions/location-not-found';
 
 import { DeleteLocation } from '@application/location/delete-location';
 
@@ -16,7 +16,7 @@ export class LocationDeleteController {
       await this.deleteLocation.run(locationId);
       res.status(200).send({ message: 'Location deleted' });
     } catch (error) {
-      if (error instanceof LocationNotFound) {
+      if (error instanceof LocationNotFoundError) {
         logger().error(error.message);
         res.status(404).send({ message: error.message });
         return;

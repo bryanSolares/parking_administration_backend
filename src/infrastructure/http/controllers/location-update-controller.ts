@@ -2,7 +2,7 @@ import { Request, Response } from 'express';
 
 import { logger } from '@config/logger/load-logger';
 
-import { LocationNotFound } from '@core/exceptions/location-not-found';
+import { LocationNotFoundError } from '@core/exceptions/location-not-found';
 
 import { UpdateLocation } from '@application/location/update-location';
 
@@ -20,7 +20,7 @@ export class LocationUpdateController {
       await this.updateLocation.run(locationData);
       res.status(200).send({ message: 'Location updated' });
     } catch (error) {
-      if (error instanceof LocationNotFound) {
+      if (error instanceof LocationNotFoundError) {
         logger().error(error.message);
         res.status(404).send({ message: error.message });
         return;

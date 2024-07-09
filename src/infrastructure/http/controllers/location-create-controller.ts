@@ -10,6 +10,8 @@ export class LocationCreateController {
   async run(req: Request, res: Response) {
     //TODO: Validate request with Zod
     const locationData = req.body;
+
+    console.log(locationData);
     try {
       await this.createLocation.run(locationData as Location);
       res.status(201).send({ message: 'Location created' });

@@ -1,6 +1,6 @@
 import { LocationRepository } from '@core/repositories/location-repository';
 import { Location } from '@core/entities/location-entity';
-import { LocationNotFound } from '@src/core/exceptions/location-not-found';
+import { LocationNotFoundError } from '@src/core/exceptions/location-not-found';
 
 export class UpdateLocation {
   constructor(private readonly locationRepository: LocationRepository) {}
@@ -10,8 +10,8 @@ export class UpdateLocation {
       location.id
     );
 
-    if (!locationExists.id) {
-      throw new LocationNotFound('Location not found');
+    if (!locationExists?.id) {
+      throw new LocationNotFoundError('Location not found');
     }
 
     await this.locationRepository.updateLocation(location);

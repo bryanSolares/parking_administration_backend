@@ -22,6 +22,10 @@ routes.put(
   locationController.updateLocation.run.bind(locationController.updateLocation)
 );
 routes.delete(
+  '/slots',
+  locationController.deleteSlots.run.bind(locationController.deleteSlots)
+);
+routes.delete(
   '/:id',
   locationController.deleteLocation.run.bind(locationController.deleteLocation)
 );
