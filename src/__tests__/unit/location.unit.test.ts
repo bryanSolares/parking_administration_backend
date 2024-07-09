@@ -30,11 +30,11 @@ describe('Location Use Cases', () => {
     );
   });
 
-  // it('should find a location by id', async () => {
-  //   const findById = new GetLocationByIdFinder(mockLocationRepository);
-  //   await findById.run('1');
-  //   expect(mockLocationRepository.getLocationById).toHaveBeenCalledWith('1');
-  // });
+  it('should find a location by id', async () => {
+    const findById = new GetLocationByIdFinder(mockLocationRepository);
+    await findById.run('1');
+    expect(mockLocationRepository.getLocationById).toHaveBeenCalledWith('1');
+  });
 
   it('should find all locations', async () => {
     const getAllLocations = new LocationFinder(mockLocationRepository);
@@ -42,9 +42,9 @@ describe('Location Use Cases', () => {
     expect(mockLocationRepository.getLocations).toHaveBeenCalled();
   });
 
-  // it('should delete a location', async () => {
-  //   const deleteLocation = new DeleteLocation(mockLocationRepository);
-  //   await deleteLocation.run('1');
-  //   expect(mockLocationRepository.deleteLocation).toHaveBeenCalledWith('1');
-  // });
+  it('should delete a location', async () => {
+    const deleteLocation = new DeleteLocation(mockLocationRepository);
+    await deleteLocation.run('1');
+    expect(mockLocationRepository.deleteLocation).toHaveBeenCalledWith('1');
+  });
 });

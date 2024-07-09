@@ -1,7 +1,6 @@
 {
   "compilerOptions": {
     "baseUrl": "./",
-    "rootDir": "./",
     "module": "commonjs",
     "target": "ES2022",
     "esModuleInterop": true,

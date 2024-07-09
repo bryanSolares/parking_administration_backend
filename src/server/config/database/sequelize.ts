@@ -17,16 +17,18 @@ export const sequelize = new Sequelize({
   logging: true
 });
 
-//if (isTestEnvironment) {
-sequelize
-  .sync({ force: false })
-  .then(() => {
-    console.log('Database synced');
-  })
-  .catch(err => {
-    console.error(err);
+export const syncDatabase = () => {
+  return new Promise((resolve, reject) => {
+    sequelize
+      .sync({ force: false })
+      .then(() => {
+        resolve('Database synced');
+      })
+      .catch(err => {
+        reject(err);
+      });
   });
-//}
+};
 
 export const sequelizeConnection = () => {
   return new Promise((resolve, reject) => {
