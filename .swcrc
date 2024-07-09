@@ -1,0 +1,25 @@
+{
+  "$schema": "https://json.schemastore.org/swcrc",
+  "sourceMaps": false,
+  "jsc": {
+    "parser": {
+      "syntax": "typescript",
+      "decorators": true,
+      "dynamicImport": true
+    },
+    "baseUrl": "./",
+    "paths": {
+      "@src/*": ["src/*"],
+      "@config/*": ["src/server/config/*"],
+      "@infrastructure/*": ["src/infrastructure/*"],
+      "@core/*": ["src/core/*"],
+      "@application/*": ["src/application/*"]
+    },
+    "target": "es2022"
+  },
+  "module": {
+    "type": "commonjs"
+  },
+  "minify": true,
+  "exclude": ["node_modules", "src/**/*.test.ts"]
+}
