@@ -1,6 +1,6 @@
-import { Location } from '../entities/LocationEntity';
+import { Location } from '@core/entities/location-entity';
 
-export interface ILocationRepository {
+export interface LocationRepository {
   createLocation(location: Location): Promise<void>;
   updateLocation(location: Location): Promise<void>;
   deleteLocation(id: string): Promise<void>;

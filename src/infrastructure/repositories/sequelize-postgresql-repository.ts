@@ -1,11 +1,11 @@
-import { logger } from '../../../infrastructure/config/logger/load-logger';
+import { logger } from '@config/logger/load-logger';
 
-import { LocationModel } from '../database/models/Location';
-import { Location } from '../../core/entities/LocationEntity';
+import { LocationModel } from '@config/database/models/Location';
+import { Location } from '@core/entities/location-entity';
 
-import { ILocationRepository } from '../../core/repositories/ILocationRepository';
+import { LocationRepository } from '@core/repositories/location-repository';
 
-export class SequelizeLocationRepository implements ILocationRepository {
+export class SequelizeLocationRepository implements LocationRepository {
   async createLocation(location: Location): Promise<void> {
     const newLocation = this.transformLocation(location);
     await LocationModel.create({ ...newLocation });

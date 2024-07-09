@@ -6,11 +6,11 @@ import cors from 'cors';
 import helmet from 'helmet';
 import morgan from 'morgan';
 
-import { config } from './config/logger/load-envs';
-import { logger } from './config/logger/load-logger';
-import { sequelizeConnection } from '../mooc/infrastructure/database/sequelize';
+import { config } from '@config/logger/load-envs';
+import { logger } from '@config/logger/load-logger';
+import { sequelizeConnection } from '@config/database/sequelize';
 
-import locationRoutes from './routes/LocationRoutes';
+import locationRoutes from '@infrastructure/http/location-routes';
 
 export class Server {
   private readonly app: express.Application;
