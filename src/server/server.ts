@@ -12,6 +12,7 @@ import { sequelizeConnection } from '@config/database/sequelize';
 import './config/database/models/relations';
 
 import parkingRoutes from '@infrastructure/http/location-routes';
+import assignmentRoutes from '@infrastructure/http/assignment-routes';
 
 export class Server {
   private readonly app: express.Application;
@@ -38,6 +39,7 @@ export class Server {
     });
 
     this.app.use('/api/v1/parking', parkingRoutes);
+    this.app.use('/api/v1/assignment', assignmentRoutes);
   }
 
   public startServer(): Promise<void> {
