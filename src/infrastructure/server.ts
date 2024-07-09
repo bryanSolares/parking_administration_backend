@@ -6,8 +6,11 @@ import cors from 'cors';
 import helmet from 'helmet';
 import morgan from 'morgan';
 
-import { config } from './config/load-envs';
-import { logger } from './config/load-logger';
+import { config } from './config/logger/load-envs';
+import { logger } from './config/logger/load-logger';
+import { sequelizeConnection } from '../mooc/infrastructure/database/sequelize';
+
+import locationRoutes from './routes/LocationRoutes';
 
 export class Server {
   private readonly app: express.Application;
@@ -29,9 +32,11 @@ export class Server {
 
   //Load routes
   private loadRoutes() {
-    this.app.get('/', (req, res) => {
-      res.send('Hello World!');
+    this.app.get('/api/v1/health', (req, res) => {
+      res.send('');
     });
+
+    this.app.use('/api/v1/locations', locationRoutes);
   }
 
   public startServer(): Promise<void> {
@@ -39,6 +44,13 @@ export class Server {
       this.server = this.app.listen(config.PORT, () => {
         const { port, address } = this.server?.address() as AddressInfo;
         logger().info(`Server running on port ${address}:${port}`);
+        sequelizeConnection()
+          .then(message => {
+            logger().info(message);
+          })
+          .catch(error => {
+            logger().error(error);
+          });
         resolve();
       });
     });

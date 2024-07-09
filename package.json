@@ -8,11 +8,11 @@
   },
   "scripts": {
     "start": "node ./build/app.js",
-    "dev": "tsnd --respawn --inspect=0.0.0.0:9229 ./src/app.ts",
+    "dev": "tsnd --respawn --inspect=0.0.0.0:9229 ./src/infrastructure/app.ts",
     "build": "yarn build:validate && yarn build:clean && tsc",
     "build:validate": "tsc --noEmit",
     "build:clean": "rimraf ./build",
-    "lint": "eslint . --ext .ts --quiet --fix",
+    "lint": "eslint . --ext .ts --quiet --fix --ignore-path .eslintignore",
     "format": "prettier --write \"./src/**/*.ts\"",
     "prepare": "husky"
   },
@@ -22,6 +22,10 @@
     "express": "^4.19.2",
     "helmet": "^7.1.0",
     "morgan": "^1.10.0",
+    "pg": "^8.12.0",
+    "pg-hstore": "^2.3.4",
+    "sequelize": "^6.37.3",
+    "uuid": "^10.0.0",
     "winston": "^3.13.0"
   },
   "devDependencies": {

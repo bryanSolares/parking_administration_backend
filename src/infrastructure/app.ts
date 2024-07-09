@@ -1,5 +1,5 @@
-import { Server } from './server/server';
-import { logger } from './server/config/load-logger';
+import { Server } from './server';
+import { logger } from './config/logger/load-logger';
 
 const server = new Server();
 server
