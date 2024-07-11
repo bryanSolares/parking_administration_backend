@@ -1,11 +1,11 @@
 import { LocationRepository } from '@core/repositories/location-repository';
-import { Location } from '@core/entities/location-entity';
+import { LocationEntity } from '@core/entities/location-entity';
 import { LocationNotFoundError } from '@src/core/exceptions/location-not-found';
 
 export class GetLocationByIdFinder {
   constructor(private readonly locationRepository: LocationRepository) {}
 
-  public async run(id: string): Promise<Location> {
+  public async run(id: string): Promise<LocationEntity> {
     const location = await this.locationRepository.getLocationById(id);
 
     if (!location) {

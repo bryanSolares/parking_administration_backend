@@ -8,10 +8,10 @@ import { SlotModel } from '@src/server/config/database/models/slot.model';
 
 import { LocationRepository } from '@core/repositories/location-repository';
 
-import { Location } from '@core/entities/location-entity';
+import { LocationEntity } from '@core/entities/location-entity';
 
 export class SequelizeLocationRepository implements LocationRepository {
-  async createLocation(location: Location): Promise<void> {
+  async createLocation(location: LocationEntity): Promise<void> {
     const transaction = await sequelize.transaction();
 
     // guardar location
@@ -50,7 +50,7 @@ export class SequelizeLocationRepository implements LocationRepository {
     logger().info('Location created');
   }
 
-  async updateLocation(location: Location): Promise<void> {
+  async updateLocation(location: LocationEntity): Promise<void> {
     const transaction = await sequelize.transaction();
 
     // Update Location
@@ -119,19 +119,19 @@ export class SequelizeLocationRepository implements LocationRepository {
     logger().info('Slots deleted');
   }
 
-  async getLocationById(id: string): Promise<Location | null> {
+  async getLocationById(id: string): Promise<LocationEntity | null> {
     const location = await LocationModel.findByPk(id, {
       include: {
         model: SlotModel
       }
     });
 
-    return location as unknown as Location;
+    return location as unknown as LocationEntity;
   }
 
-  async getLocations(): Promise<Location[] | null> {
+  async getLocations(): Promise<LocationEntity[] | null> {
     const locations = await LocationModel.findAll({ include: SlotModel });
 
-    return locations as unknown as Location[];
+    return locations as unknown as LocationEntity[];
   }
 }

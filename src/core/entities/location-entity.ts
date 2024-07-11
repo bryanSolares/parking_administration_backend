@@ -1,6 +1,6 @@
 import { SlotEntity } from './slot-entity';
 
-export class Location {
+export class LocationEntity {
   constructor(
     public id: string,
     public name: string,

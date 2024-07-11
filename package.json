@@ -58,8 +58,9 @@
     "prepare": "husky",
     "start": "node ./server/app.js",
     "test": "jest --config jest.config.js",
-    "test:watch": "jest --watch",
+    "test:watch": "jest --watch --config jest.config.js",
     "test:coverage": "jest --coverage",
+    "test:integration:watch": "jest --watch --config jest.integration.config.js --watch",
     "test:integration": "cross-env NODE_ENV=test jest --config jest.integration.config.js"
   },
   "version": "0.1.0",

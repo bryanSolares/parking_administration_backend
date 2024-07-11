@@ -11,9 +11,9 @@ export class LocationCreateController {
     //TODO: Validate request with Zod
     const locationData = req.body;
 
-    console.log(locationData);
+    console.log({ locationData });
     try {
-      await this.createLocation.run(locationData as Location);
+      await this.createLocation.run(locationData);
       res.status(201).send({ message: 'Location created' });
     } catch (error) {
       logger().error(error);

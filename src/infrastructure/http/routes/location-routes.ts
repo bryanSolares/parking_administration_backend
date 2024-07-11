@@ -4,29 +4,29 @@ import { locationController } from '@infrastructure/repositories/location/depend
 const routes = Router();
 
 routes.post(
-  '/',
+  '/location',
   locationController.createLocation.run.bind(locationController.createLocation)
 );
 routes.get(
-  '/',
+  '/location',
   locationController.getLocations.run.bind(locationController.getLocations)
 );
 routes.get(
-  '/:id',
+  '/location/:id',
   locationController.getLocationById.run.bind(
     locationController.getLocationById
   )
 );
 routes.put(
-  '/:id',
+  '/location/:id',
   locationController.updateLocation.run.bind(locationController.updateLocation)
 );
 routes.delete(
-  '/slots',
+  '/location/slots',
   locationController.deleteSlots.run.bind(locationController.deleteSlots)
 );
 routes.delete(
-  '/:id',
+  '/location/:id',
   locationController.deleteLocation.run.bind(locationController.deleteLocation)
 );
 
