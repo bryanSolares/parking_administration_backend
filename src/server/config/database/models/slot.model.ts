@@ -7,9 +7,9 @@ export class SlotModel extends Model {}
 SlotModel.init(
   {
     id: {
-      type: DataTypes.UUID,
-      defaultValue: DataTypes.UUIDV4,
-      primaryKey: true
+      type: DataTypes.STRING,
+      primaryKey: true,
+      unique: true
     },
     location_id: {
       type: DataTypes.UUID,

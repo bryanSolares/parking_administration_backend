@@ -38,7 +38,7 @@ export class Server {
       res.send('');
     });
 
-    this.app.use('/api/v1/parking', parkingRoutes);
+    this.app.use('/api/v1/parking/', parkingRoutes);
     this.app.use('/api/v1/assignment', assignmentRoutes);
   }
 

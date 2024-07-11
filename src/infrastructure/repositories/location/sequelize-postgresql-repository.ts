@@ -1,4 +1,5 @@
 import { Op } from 'sequelize';
+import { v4 as uuid } from 'uuid';
 
 import { logger } from '@config/logger/load-logger';
 import { sequelize } from '@config/database/sequelize';
@@ -16,9 +17,10 @@ export class SequelizeLocationRepository implements LocationRepository {
 
     // guardar location
     const newLocation = await LocationModel.create(
-      { ...location },
+      { ...location, id: uuid() },
       {
         fields: [
+          'id',
           'name',
           'address',
           'contact_reference',
@@ -38,6 +40,7 @@ export class SequelizeLocationRepository implements LocationRepository {
     const slots = location.slots.map(slot => {
       return {
         ...slot,
+        id: uuid(),
         location_id: idLocation
       };
     });
@@ -76,11 +79,18 @@ export class SequelizeLocationRepository implements LocationRepository {
     );
 
     // Upsert Slots
+    const slots = location.slots.map(slot => {
+      return {
+        ...slot,
+        id: !slot.id ? uuid() : slot.id,
+        location_id: location.id
+      };
+    });
 
     await Promise.all(
-      location.slots.map(async slot => {
+      slots.map(async slot => {
         await SlotModel.upsert(
-          { location_id: location.id, ...slot },
+          { ...slot, location_id: location.id },
           {
             fields: [
               'id',
@@ -100,8 +110,6 @@ export class SequelizeLocationRepository implements LocationRepository {
     );
 
     await transaction.commit();
-
-    // Delete Slots
 
     logger().info('Location updated');
   }
