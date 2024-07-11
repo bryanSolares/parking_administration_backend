@@ -3,8 +3,10 @@ import { UpdateLocation } from '../../application/location/update-location';
 import { DeleteLocation } from '../../application/location/delete-location';
 import { GetLocationByIdFinder } from '../../application/location/location-by-id-finder';
 import { LocationFinder } from '../../application/location/location-finder';
+import { DeleteSlots } from '../../application/location/delete-slots';
 
 import { LocationNotFoundError } from '../../core/exceptions/location-not-found';
+import { SlotsEmptyError } from '../../core/exceptions/slots-empty';
 
 import { LocationRepository } from '../../core/repositories/location-repository';
 
@@ -82,5 +84,19 @@ describe('Location Use Cases', () => {
     mockLocationRepository.getLocationById.mockResolvedValueOnce(null);
     const findById = new DeleteLocation(mockLocationRepository);
     await expect(findById.run('1')).rejects.toThrow(LocationNotFoundError);
+  });
+
+  it('should delete slots', async () => {
+    mockLocationRepository.getLocationById.mockResolvedValueOnce(location);
+    const deleteSlots = new DeleteSlots(mockLocationRepository);
+    await deleteSlots.run([location.id]);
+    expect(mockLocationRepository.deleteSlots).toHaveBeenCalledWith([
+      location.id
+    ]);
+  });
+
+  it('should throw an error if slots are empty', async () => {
+    const deleteSlots = new DeleteSlots(mockLocationRepository);
+    await expect(deleteSlots.run([])).rejects.toThrow(SlotsEmptyError);
   });
 });
