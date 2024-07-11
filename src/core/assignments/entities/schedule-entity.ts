@@ -1,8 +1,10 @@
 export class ScheduleEntity {
   constructor(
-    public id: string,
-    public slot_id: string,
-    public start_time_assignment: string,
-    public end_time_assignment: string
+    public readonly id: string,
+    public readonly slot_id: string,
+    public readonly start_time_assignment: string,
+    public readonly end_time_assignment: string
   ) {}
 }
+
+// Value Object for start and end time

@@ -17,7 +17,8 @@ AssignmentModel.init(
       type: DataTypes.UUID
     },
     assignment_date: {
-      type: DataTypes.DATE
+      type: DataTypes.DATE,
+      defaultValue: DataTypes.NOW
     },
     schedule_id: {
       type: DataTypes.UUID,
