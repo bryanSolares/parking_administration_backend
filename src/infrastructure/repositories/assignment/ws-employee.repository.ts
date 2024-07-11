@@ -7,7 +7,9 @@ import { logger } from '@config/logger/load-logger';
 import { WSError } from '@src/infrastructure/exceptions/WSError';
 
 export class WSEmployeeRepository implements EmployeeRepository {
-  async getEmployeeByCode(codeEmployee: string): Promise<EmployeeEntity> {
+  async getEmployeeByCode(
+    codeEmployee: string
+  ): Promise<EmployeeEntity | null> {
     logger().info(`Fetching employee by code: ${codeEmployee}`);
     let data;
 
@@ -51,26 +53,27 @@ export class WSEmployeeRepository implements EmployeeRepository {
     }
 
     //TODO: DATABASE: validate assignment exists with function
+    // TODO: create entity
 
-    const employee = new EmployeeEntity(
-      data.id,
-      data.username,
-      data.name,
-      'workplace',
-      'identifier_document',
-      data.company.name,
-      'department',
-      'sub_management',
-      'management_1',
-      'management_2',
-      'work_site',
-      data.address.street,
-      data.email,
-      data.phone,
-      '',
-      ''
-    );
+    // const employee = new EmployeeEntity(
+    //   data.id,
+    //   data.username,
+    //   data.name,
+    //   'workplace',
+    //   'identifier_document',
+    //   data.company.name,
+    //   'department',
+    //   'sub_management',
+    //   'management_1',
+    //   'management_2',
+    //   'work_site',
+    //   data.address.street,
+    //   data.email,
+    //   data.phone,
+    //   '',
+    //   ''
+    // );
 
-    return employee;
+    return null;
   }
 }

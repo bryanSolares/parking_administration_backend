@@ -2,7 +2,7 @@ import { Request, Response } from 'express';
 
 import { GetEmployeeByCode } from '@src/application/assignments/get-employee-by-code';
 
-export class EmployeeFinderByCode {
+export class EmployeeFinderByCodeController {
   constructor(private readonly GetEmployeeByCode: GetEmployeeByCode) {}
 
   async run(req: Request, res: Response) {

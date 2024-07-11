@@ -11,8 +11,8 @@ import { logger } from '@config/logger/load-logger';
 import { sequelizeConnection } from '@config/database/sequelize';
 import './config/database/models/relations';
 
-import parkingRoutes from '@infrastructure/http/location-routes';
-import assignmentRoutes from '@infrastructure/http/assignment-routes';
+import parkingRoutes from '@src/infrastructure/http/routes/location-routes';
+import assignmentRoutes from '@src/infrastructure/http/routes/assignment-routes';
 
 export class Server {
   private readonly app: express.Application;

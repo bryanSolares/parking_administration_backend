@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { locationController } from '@infrastructure/dependecies';
+import { locationController } from '@infrastructure/repositories/location/dependecies';
 
 const routes = Router();
 
