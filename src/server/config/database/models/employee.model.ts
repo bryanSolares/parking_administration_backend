@@ -6,9 +6,9 @@ export class EmployeeModel extends Model {}
 EmployeeModel.init(
   {
     id: {
-      type: DataTypes.UUID,
-      defaultValue: DataTypes.UUIDV4,
-      primaryKey: true
+      type: DataTypes.STRING,
+      primaryKey: true,
+      unique: true
     },
     code_employee: {
       type: DataTypes.STRING,

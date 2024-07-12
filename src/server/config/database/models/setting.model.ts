@@ -7,9 +7,9 @@ export class SettingModel extends Model {}
 SettingModel.init(
   {
     id: {
-      type: DataTypes.UUID,
-      defaultValue: DataTypes.UUIDV4,
+      type: DataTypes.STRING,
       primaryKey: true,
+      unique: true,
       allowNull: false
     },
     setting_key: {

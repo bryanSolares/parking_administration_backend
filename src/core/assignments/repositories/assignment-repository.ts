@@ -1,5 +1,6 @@
 import { AssignmentEntity } from '../entities/assignment-entity';
 import { DeAssignmentEntity } from '../entities/deassignment-entity';
+import { DiscountNoteEntity } from '../entities/discount-note-entity';
 
 export interface AssignmentRepository {
   createAssignment(assignment: AssignmentEntity): Promise<void>;
@@ -11,4 +12,6 @@ export interface AssignmentRepository {
   ): Promise<void>;
   // updateAssignment(assignment: AssignmentEntity): Promise<void>;
   // deleteAssignment(id: string): Promise<void>;
+  createDiscountNote(idAssignment: string): Promise<void>;
+  getDiscountNoteByIdAssignment(id: string): Promise<DiscountNoteEntity | null>;
 }

@@ -7,12 +7,12 @@ export class DeAssignmentModel extends Model {}
 DeAssignmentModel.init(
   {
     id: {
-      type: DataTypes.UUID,
-      defaultValue: DataTypes.UUIDV4,
-      primaryKey: true
+      type: DataTypes.STRING,
+      primaryKey: true,
+      unique: true
     },
     assignment_id: {
-      type: DataTypes.UUID,
+      type: DataTypes.STRING,
       allowNull: false
     },
     reason: {

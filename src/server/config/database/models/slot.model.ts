@@ -12,7 +12,7 @@ SlotModel.init(
       unique: true
     },
     location_id: {
-      type: DataTypes.UUID,
+      type: DataTypes.STRING,
       allowNull: false,
       references: {
         model: 'location',

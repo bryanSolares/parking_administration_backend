@@ -5,6 +5,7 @@ import { createAssignmentController } from '@src/infrastructure/repositories/ass
 import { assignmentFinderController } from '@src/infrastructure/repositories/assignment/dependencies';
 import { assignmentFinderByIdController } from '@src/infrastructure/repositories/assignment/dependencies';
 import { deAssignmentByIdController } from '@src/infrastructure/repositories/assignment/dependencies';
+import { createDiscountNoteController } from '@src/infrastructure/repositories/assignment/dependencies';
 
 const routes = Router();
 
@@ -32,5 +33,10 @@ routes.get(
 routes.post(
   '/:id/deassignment',
   deAssignmentByIdController.run.bind(deAssignmentByIdController)
+);
+
+routes.post(
+  '/discount-note/:id_assignment',
+  createDiscountNoteController.run.bind(createDiscountNoteController)
 );
 export default routes;

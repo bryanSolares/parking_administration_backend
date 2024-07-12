@@ -1,4 +1,7 @@
 import { sequelize } from '@config/database/sequelize';
+import { v4 as uuid } from 'uuid';
+
+import { events } from '@src/server/events/events';
 
 import { AssignmentEntity } from '@src/core/assignments/entities/assignment-entity';
 import { AssignmentRepository } from '@src/core/assignments/repositories/assignment-repository';
@@ -11,8 +14,33 @@ import { SlotModel } from '@src/server/config/database/models/slot.model';
 import { LocationModel } from '@src/server/config/database/models/location.model';
 import { DeAssignmentEntity } from '@src/core/assignments/entities/deassignment-entity';
 import { DeAssignmentModel } from '@src/server/config/database/models/de-assignment.model';
+import { DiscountNoteModel } from '@src/server/config/database/models/discount-note.model';
+import { DiscountNoteEntity } from '@src/core/assignments/entities/discount-note-entity';
 
 export class SequelizeAssignmentRepository implements AssignmentRepository {
+  async getDiscountNoteByIdAssignment(
+    id: string
+  ): Promise<DiscountNoteEntity | null> {
+    const discountNote = await DiscountNoteModel.findOne({
+      where: { assignment_id: id }
+    });
+
+    return discountNote as unknown as DiscountNoteEntity;
+  }
+
+  async createDiscountNote(idAssignment: string): Promise<void> {
+    const newDiscountNote = await DiscountNoteModel.create(
+      {
+        id: uuid(),
+        assignment_id: idAssignment
+      },
+      { fields: ['id', 'assignment_id'] }
+    );
+
+    //Event dispatch notifications
+    events.emit('new-discount-note', newDiscountNote.dataValues);
+  }
+
   async deAssignmentById(
     assignmentId: string,
     deAssignment: DeAssignmentEntity
@@ -118,7 +146,7 @@ export class SequelizeAssignmentRepository implements AssignmentRepository {
 
     //Save employee
     const [employeeDatabase] = await EmployeeModel.upsert(
-      { ...employee },
+      { ...employee, id: uuid() },
       {
         fields: [
           'id',
@@ -144,7 +172,11 @@ export class SequelizeAssignmentRepository implements AssignmentRepository {
     await Promise.all(
       vehicles.map(async vehicle => {
         await VehicleModel.upsert(
-          { ...vehicle, employee_id: employeeDatabase.getDataValue('id') },
+          {
+            ...vehicle,
+            id: uuid(),
+            employee_id: employeeDatabase.getDataValue('id')
+          },
           { transaction }
         );
       })
@@ -152,19 +184,23 @@ export class SequelizeAssignmentRepository implements AssignmentRepository {
 
     //Save Schedule
     // TODO: validate schedule
-    const [scheduleDatabase] = await ScheduleModel.upsert(
-      { ...schedule, slot_id: assignment.slot_id },
-      { transaction }
-    );
+    let newSchedule;
+    if (schedule) {
+      [newSchedule] = await ScheduleModel.upsert(
+        { ...schedule, id: uuid(), slot_id: assignment.slot_id },
+        { transaction }
+      );
+    }
 
     //Save assignment
     //TODO: Trigger event prevew assignment
     await AssignmentModel.create(
       {
         ...assignment,
+        id: uuid(),
         slot_id: assignment.slot_id,
         employee_id: employeeDatabase.getDataValue('id'),
-        schedule_id: scheduleDatabase.getDataValue('id')
+        schedule_id: newSchedule?.getDataValue('id')
       },
       { transaction }
     );

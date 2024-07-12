@@ -6,12 +6,14 @@ import { CreateAssignment } from '@src/application/assignments/create-assignment
 import { AssignmentFinder } from '@src/application/assignments/assignment-finder';
 import { AssignmentFinderById } from '@src/application/assignments/assignment-finder-by-id';
 import { DeAssignmentById } from '@src/application/assignments/de-assignment-by-id';
+import { CreateDiscountNote } from '@src/application/assignments/create-discount-note';
 
 import { EmployeeFinderByCodeController } from '@src/infrastructure/http/controllers/assignment/employee-finder-by-code';
 import { CreateAssignmentController } from '@src/infrastructure/http/controllers/assignment/create-assignment';
 import { AssignmentFinderByIdController } from '@src/infrastructure/http/controllers/assignment/assignment-finder-by-id';
 import { AssignmentFinderController } from '@src/infrastructure/http/controllers/assignment/assignment-finder';
 import { DeAssignmentByIdController } from '@src/infrastructure/http/controllers/assignment/deassignment-by-id';
+import { CreateDiscountNoteController } from '@src/infrastructure/http/controllers/assignment/create-discount-note';
 
 const sequelizeAssignmentRepository = new SequelizeAssignmentRepository();
 const employeeRepository = new WSEmployeeRepository();
@@ -24,6 +26,9 @@ const assignmentFinderById = new AssignmentFinderById(
   sequelizeAssignmentRepository
 );
 const deAssignmentById = new DeAssignmentById(sequelizeAssignmentRepository);
+const createDiscountNote = new CreateDiscountNote(
+  sequelizeAssignmentRepository
+);
 
 //Controllers
 const employeeFinderByCodeController = new EmployeeFinderByCodeController(
@@ -45,10 +50,15 @@ const deAssignmentByIdController = new DeAssignmentByIdController(
   deAssignmentById
 );
 
+const createDiscountNoteController = new CreateDiscountNoteController(
+  createDiscountNote
+);
+
 export {
   employeeFinderByCodeController,
   createAssignmentController,
   assignmentFinderByIdController,
   assignmentFinderController,
-  deAssignmentByIdController
+  deAssignmentByIdController,
+  createDiscountNoteController
 };
