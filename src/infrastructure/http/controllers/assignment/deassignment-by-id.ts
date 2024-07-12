@@ -4,14 +4,14 @@ import { DeAssignmentById } from '@src/application/assignments/de-assignment-by-
 import { DeAssignmentReady } from '@src/core/assignments/exceptions/de-assignment-ready';
 
 export class DeAssignmentByIdController {
-  constructor(private readonly DeAssignmentById: DeAssignmentById) {}
+  constructor(private readonly deAssignmentById: DeAssignmentById) {}
 
   async run(req: Request, res: Response) {
-    const assignmentId = req.params.id;
+    const assignmentId = req.params.assignment_id;
     const deAssignment = req.body;
 
     try {
-      await this.DeAssignmentById.run(assignmentId, deAssignment);
+      await this.deAssignmentById.run(assignmentId, deAssignment);
       res.status(201).send({ message: 'DeAssignment created' });
     } catch (error) {
       if (error instanceof DeAssignmentReady) {

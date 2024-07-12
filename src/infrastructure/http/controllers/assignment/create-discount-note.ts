@@ -8,7 +8,7 @@ export class CreateDiscountNoteController {
   constructor(private readonly createDiscountNote: CreateDiscountNote) {}
 
   async run(req: Request, res: Response) {
-    const idAssignment = req.params.id_assignment;
+    const idAssignment = req.params.assignment_id;
 
     try {
       await this.createDiscountNote.run(idAssignment);

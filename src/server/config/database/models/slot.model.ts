@@ -32,11 +32,11 @@ SlotModel.init(
       defaultValue: 0,
       allowNull: false
     },
-    type_vehicle: {
+    vehicle_type: {
       type: DataTypes.ENUM('CARRO', 'MOTO', 'CAMION'),
       defaultValue: 'CARRO'
     },
-    type_cost: {
+    cost_type: {
       type: DataTypes.ENUM('SIN_COSTO', 'DESCUENTO', 'COMPLEMENTO'),
       defaultValue: 'SIN_COSTO'
     },

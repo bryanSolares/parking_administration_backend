@@ -14,14 +14,14 @@ AssignmentModel.init(
       type: DataTypes.STRING
     },
     employee_id: {
-      type: DataTypes.UUID
+      type: DataTypes.STRING
     },
     assignment_date: {
       type: DataTypes.DATE,
       defaultValue: DataTypes.NOW
     },
     schedule_id: {
-      type: DataTypes.UUID,
+      type: DataTypes.STRING,
       allowNull: true
     },
     status: {

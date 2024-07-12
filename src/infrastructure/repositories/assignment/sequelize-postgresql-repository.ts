@@ -52,7 +52,7 @@ export class SequelizeAssignmentRepository implements AssignmentRepository {
     );
 
     await DeAssignmentModel.create(
-      { ...deAssignment, assignment_id: assignmentId },
+      { ...deAssignment, id: uuid(), assignment_id: assignmentId },
       { transaction }
     );
 
@@ -146,7 +146,7 @@ export class SequelizeAssignmentRepository implements AssignmentRepository {
 
     //Save employee
     const [employeeDatabase] = await EmployeeModel.upsert(
-      { ...employee, id: uuid() },
+      { ...employee, id: uuid(), employee_id: employee.id },
       {
         fields: [
           'id',

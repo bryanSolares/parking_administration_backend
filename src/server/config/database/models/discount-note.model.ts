@@ -13,7 +13,7 @@ DiscountNoteModel.init(
       unique: true
     },
     assignment_id: {
-      type: DataTypes.UUID,
+      type: DataTypes.STRING,
       allowNull: false
     },
     status_signature: {
