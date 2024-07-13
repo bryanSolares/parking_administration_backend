@@ -1,7 +1,6 @@
 import { sequelize } from '@config/database/sequelize';
+import { QueryTypes } from 'sequelize';
 import { v4 as uuid } from 'uuid';
-
-import { events } from '@src/server/events/events';
 
 import { AssignmentEntity } from '@src/core/assignments/entities/assignment-entity';
 import { AssignmentRepository } from '@src/core/assignments/repositories/assignment-repository';
@@ -29,16 +28,13 @@ export class SequelizeAssignmentRepository implements AssignmentRepository {
   }
 
   async createDiscountNote(idAssignment: string): Promise<void> {
-    const newDiscountNote = await DiscountNoteModel.create(
+    await DiscountNoteModel.create(
       {
         id: uuid(),
         assignment_id: idAssignment
       },
       { fields: ['id', 'assignment_id'] }
     );
-
-    //Event dispatch notifications
-    events.emit('new-discount-note', newDiscountNote.dataValues);
   }
 
   async deAssignmentById(
@@ -136,17 +132,30 @@ export class SequelizeAssignmentRepository implements AssignmentRepository {
   }
 
   async createAssignment(assignment: AssignmentEntity): Promise<void> {
-    ///Transaction
-
-    const transaction = await sequelize.transaction();
+    // Validate prev assignment how to guest
 
     const employee = assignment.employee;
     const vehicles = assignment.employee.vehicles;
     const schedule = assignment.schedule;
+    let newSchedule;
+
+    if (await this.employeeHasAnActiveAssignment(employee.id)) {
+      throw new Error('Employee already has an assignment');
+    }
+
+    if (!(await this.isAValidSlot(assignment.slot_id))) {
+      throw new Error('Slot not found, please create it first');
+    }
+
+    const transaction = await sequelize.transaction();
 
     //Save employee
     const [employeeDatabase] = await EmployeeModel.upsert(
-      { ...employee, id: uuid(), employee_id: employee.id },
+      {
+        ...employee,
+        id: employee.id ? employee.id : uuid(),
+        employee_id: employee.id
+      },
       {
         fields: [
           'id',
@@ -174,7 +183,7 @@ export class SequelizeAssignmentRepository implements AssignmentRepository {
         await VehicleModel.upsert(
           {
             ...vehicle,
-            id: uuid(),
+            id: vehicle.id ? vehicle.id : uuid(),
             employee_id: employeeDatabase.getDataValue('id')
           },
           { transaction }
@@ -183,17 +192,22 @@ export class SequelizeAssignmentRepository implements AssignmentRepository {
     );
 
     //Save Schedule
-    // TODO: validate schedule
-    let newSchedule;
     if (schedule) {
+      if (!(await this.canCreateMoreSchedulesInSlot(assignment.slot_id))) {
+        throw new Error('Cant create more schedules in slot');
+      }
+
       [newSchedule] = await ScheduleModel.upsert(
-        { ...schedule, id: uuid(), slot_id: assignment.slot_id },
+        {
+          ...schedule,
+          id: schedule.id ? schedule.id : uuid(),
+          slot_id: assignment.slot_id
+        },
         { transaction }
       );
     }
 
     //Save assignment
-    //TODO: Trigger event prevew assignment
     await AssignmentModel.create(
       {
         ...assignment,
@@ -206,5 +220,41 @@ export class SequelizeAssignmentRepository implements AssignmentRepository {
     );
 
     await transaction.commit();
+  }
+
+  private async employeeHasAnActiveAssignment(
+    employeeId: string
+  ): Promise<boolean> {
+    const [resultFunctionHasAssignment]: {
+      employee_has_an_active_assignment: boolean;
+    }[] = await sequelize.query('select employee_has_an_active_assignment(?)', {
+      replacements: [employeeId],
+      type: QueryTypes.SELECT
+    });
+
+    return resultFunctionHasAssignment.employee_has_an_active_assignment;
+  }
+
+  private async isAValidSlot(slotId: string): Promise<boolean> {
+    const [resultQueryFindByIdSlot] = await sequelize.query(
+      'select 1 from slot where id = ?',
+      {
+        replacements: [slotId],
+        type: QueryTypes.SELECT
+      }
+    );
+
+    return Boolean(resultQueryFindByIdSlot);
+  }
+
+  private async canCreateMoreSchedulesInSlot(slotId: string): Promise<boolean> {
+    const [resultFunctionCanCreateMoreSchedulesInSlot]: {
+      can_create_more_schedules_in_slot: boolean;
+    }[] = await sequelize.query('select can_create_more_schedules_in_slot(?)', {
+      replacements: [slotId],
+      type: QueryTypes.SELECT
+    });
+
+    return resultFunctionCanCreateMoreSchedulesInSlot.can_create_more_schedules_in_slot;
   }
 }

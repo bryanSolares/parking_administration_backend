@@ -1,17 +1,28 @@
 TODO:
 
-# Update location
+# Location
 
-1. validate uuid valid for slots, uuid should exists othwerwise return 404
+[ ] validate uuid valid for slots, uuid should exists othwerwise return 404
+[ ] not allow update location from multiple to single
+[ ] create CRUD to maintain schedules
 
-# Create Assignment
+# Assignment
 
-1. fix error duplicated employee
+[X] fix error duplicated employee
+[ ] not create assignment if slot is multiple and not send schedule
+[ ] validate time between 00:00 and 23:59 in schema db
+[ ] add return error 404 if not found in finder by id
 
-# Assignmen Schema
+# All application
 
-1. validate time between 00:00 and 23:59
+[ ] change logger to pino
 
-# Assignment Finder By Id
+# Sequelize relations
 
-1. add return error 404 if not found
+OneToOne (foreing key defined in target model)
+OneToMany (foreing key defined in target model)
+
+A (source) - B (target)
+
+A.hasOne(B) | A.hasMany(B) -> Foreing key in B = a_id
+B.belongTo(A) -> Foreing key in B = a_id
