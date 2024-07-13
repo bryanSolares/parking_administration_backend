@@ -23,7 +23,11 @@ export class LocationDeleteController {
       }
 
       logger().error(error);
-      res.status(500).send('Error deleting location');
+
+      if (error instanceof Error) {
+        res.status(500).send({ message: error.message });
+        return;
+      }
     }
   }
 }

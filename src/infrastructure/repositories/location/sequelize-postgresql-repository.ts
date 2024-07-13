@@ -1,3 +1,4 @@
+import { ForeignKeyConstraintError } from 'sequelize';
 import { Op } from 'sequelize';
 import { v4 as uuid } from 'uuid';
 
@@ -12,36 +13,46 @@ import { LocationRepository } from '@core/repositories/location-repository';
 import { LocationEntity } from '@core/entities/location-entity';
 
 export class SequelizeLocationRepository implements LocationRepository {
+  private readonly fieldsToLocationAllowedToCreateOrUpdate = [
+    'name',
+    'address',
+    'contact_reference',
+    'phone',
+    'email',
+    'comments',
+    'status'
+  ];
+
+  private readonly fieldsToSlotToCreateOrUpdate = [
+    'id',
+    'location_id',
+    'slot_number',
+    'slot_type',
+    'limit_schedules',
+    'type_vehicle',
+    'type_cost',
+    'cost',
+    'status'
+  ];
+
   async createLocation(location: LocationEntity): Promise<void> {
     const transaction = await sequelize.transaction();
 
     // guardar location
-    const newLocation = await LocationModel.create(
-      { ...location, id: uuid() },
+    const locationId = uuid();
+    await LocationModel.create(
+      { ...location, id: locationId },
       {
-        fields: [
-          'id',
-          'name',
-          'address',
-          'contact_reference',
-          'phone',
-          'email',
-          'comments',
-          'latitude',
-          'longitude',
-          'status'
-        ],
+        fields: ['id', ...this.fieldsToLocationAllowedToCreateOrUpdate],
         transaction
       }
     );
-    const idLocation = newLocation.getDataValue('id');
-    logger().info(idLocation);
 
     const slots = location.slots.map(slot => {
       return {
         ...slot,
         id: uuid(),
-        location_id: idLocation
+        location_id: locationId
       };
     });
 
@@ -64,17 +75,7 @@ export class SequelizeLocationRepository implements LocationRepository {
       {
         where: { id: location.id },
         transaction,
-        fields: [
-          'name',
-          'address',
-          'contact_reference',
-          'phone',
-          'email',
-          'comments',
-          'latitude',
-          'longitude',
-          'status'
-        ]
+        fields: [...this.fieldsToLocationAllowedToCreateOrUpdate]
       }
     );
 
@@ -92,17 +93,7 @@ export class SequelizeLocationRepository implements LocationRepository {
         await SlotModel.upsert(
           { ...slot, location_id: location.id },
           {
-            fields: [
-              'id',
-              'location_id',
-              'slot_number',
-              'slot_type',
-              'limit_schedules',
-              'type_vehicle',
-              'type_cost',
-              'cost',
-              'status'
-            ],
+            fields: [...this.fieldsToSlotToCreateOrUpdate],
             transaction
           }
         );
@@ -114,23 +105,46 @@ export class SequelizeLocationRepository implements LocationRepository {
     logger().info('Location updated');
   }
 
-  //TODO: delete on cascade
   async deleteLocation(id: string): Promise<void> {
-    await LocationModel.destroy({ where: { id } });
-    logger().info('Location deleted');
+    try {
+      await LocationModel.destroy({ where: { id } });
+      logger().info('Location deleted');
+    } catch (error) {
+      console.log(error);
+      if (error instanceof ForeignKeyConstraintError) {
+        throw new Error('Dont delete location with assignment or schedule');
+      }
+
+      throw error;
+    }
   }
 
   async deleteSlots(slots: string[]): Promise<void> {
     const transaction = await sequelize.transaction();
-    await SlotModel.destroy({ where: { id: { [Op.in]: slots } }, transaction });
-    await transaction.commit();
-    logger().info('Slots deleted');
+    try {
+      await SlotModel.destroy({
+        where: { id: { [Op.in]: slots } },
+        transaction
+      });
+      await transaction.commit();
+      logger().info('Slots deleted');
+    } catch (error) {
+      await transaction.rollback();
+      if (error instanceof ForeignKeyConstraintError) {
+        throw new Error('Dont delete location with assignment or schedule');
+      }
+
+      throw error;
+    }
   }
 
   async getLocationById(id: string): Promise<LocationEntity | null> {
     const location = await LocationModel.findByPk(id, {
       include: {
-        model: SlotModel
+        model: SlotModel,
+        attributes: {
+          exclude: ['updated_at', 'created_at', 'latitude', 'longitude']
+        }
       }
     });
 
@@ -138,7 +152,17 @@ export class SequelizeLocationRepository implements LocationRepository {
   }
 
   async getLocations(): Promise<LocationEntity[] | null> {
-    const locations = await LocationModel.findAll({ include: SlotModel });
+    const locations = await LocationModel.findAll({
+      include: [
+        {
+          model: SlotModel,
+          attributes: { exclude: ['updated_at', 'created_at'] }
+        }
+      ],
+      attributes: {
+        exclude: ['updated_at', 'created_at', 'latitude', 'longitude']
+      }
+    });
 
     return locations as unknown as LocationEntity[];
   }

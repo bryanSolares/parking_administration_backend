@@ -5,20 +5,44 @@ import { ScheduleModel } from './schedule.model';
 import { SlotModel } from './slot.model';
 import { VehicleModel } from './vehicle.model';
 
-LocationModel.hasMany(SlotModel, { foreignKey: 'location_id' });
+LocationModel.hasMany(SlotModel, {
+  foreignKey: 'location_id',
+  onUpdate: 'CASCADE',
+  onDelete: 'CASCADE'
+});
 SlotModel.belongsTo(LocationModel, { foreignKey: 'location_id' });
 
-EmployeeModel.hasOne(AssignmentModel, { foreignKey: 'employee_id' });
+EmployeeModel.hasOne(AssignmentModel, {
+  foreignKey: 'employee_id',
+  onUpdate: 'RESTRICT',
+  onDelete: 'RESTRICT'
+});
 AssignmentModel.belongsTo(EmployeeModel, { foreignKey: 'employee_id' });
 
-SlotModel.hasOne(AssignmentModel, { foreignKey: 'slot_id' });
+SlotModel.hasOne(AssignmentModel, {
+  foreignKey: 'slot_id',
+  onUpdate: 'RESTRICT',
+  onDelete: 'RESTRICT'
+});
 AssignmentModel.belongsTo(SlotModel, { foreignKey: 'slot_id' });
 
-ScheduleModel.hasOne(AssignmentModel, { foreignKey: 'schedule_id' });
+ScheduleModel.hasOne(AssignmentModel, {
+  foreignKey: 'schedule_id',
+  onUpdate: 'RESTRICT',
+  onDelete: 'RESTRICT'
+});
 AssignmentModel.belongsTo(ScheduleModel, { foreignKey: 'schedule_id' });
 
-EmployeeModel.hasMany(VehicleModel, { foreignKey: 'employee_id' });
+EmployeeModel.hasMany(VehicleModel, {
+  foreignKey: 'employee_id',
+  onUpdate: 'RESTRICT',
+  onDelete: 'RESTRICT'
+});
 VehicleModel.belongsTo(EmployeeModel, { foreignKey: 'employee_id' });
 
-SlotModel.hasMany(ScheduleModel, { foreignKey: 'slot_id' });
+SlotModel.hasMany(ScheduleModel, {
+  foreignKey: 'slot_id',
+  onUpdate: 'RESTRICT',
+  onDelete: 'RESTRICT'
+});
 ScheduleModel.belongsTo(SlotModel, { foreignKey: 'slot_id' });
