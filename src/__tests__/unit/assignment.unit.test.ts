@@ -4,7 +4,9 @@ import { AssignmentFinderById } from '../../application/assignments/assignment-f
 import { DeAssignmentById } from '../../application/assignments/de-assignment-by-id';
 import { GetEmployeeByCode } from '../../application/assignments/get-employee-by-code';
 
-import { AssignmentRepository } from '../../core/assignments//repositories/assignment-repository';
+import { AssignmentDomainService } from '../../application/services/assignment-domain-service';
+
+import { AssignmentRepository } from '../../core/assignments/repositories/assignment-repository';
 import { EmployeeRepository } from '../../core/assignments/repositories/employee-repository';
 
 import { AssignmentEntity } from '../../core/assignments/entities/assignment-entity';
@@ -17,7 +19,12 @@ const mockAssignmentRepository: jest.Mocked<AssignmentRepository> = {
   createAssignment: jest.fn(),
   getAssignmentById: jest.fn(),
   getAssignments: jest.fn().mockReturnValue([]),
-  deAssignmentById: jest.fn()
+  deAssignmentById: jest.fn(),
+  canCreateMoreSchedulesInSlot: jest.fn().mockReturnValue(true),
+  createDiscountNote: jest.fn(),
+  employeeHasAnActiveAssignment: jest.fn().mockReturnValue(false),
+  getDiscountNoteByIdAssignment: jest.fn().mockReturnValue(null),
+  isAValidSlot: jest.fn().mockReturnValue(true)
 };
 
 const mockEmployeeRepository: jest.Mocked<EmployeeRepository> = {
@@ -26,6 +33,13 @@ const mockEmployeeRepository: jest.Mocked<EmployeeRepository> = {
     code: '001',
     name: 'Carlos Perez'
   })
+};
+
+const mockAssignmentDomainService: jest.Mocked<AssignmentDomainService> = {
+  assignmentRepository: mockAssignmentRepository,
+  validateEmployeeAssignment: jest.fn(),
+  validateSlot: jest.fn(),
+  canCreateMoreSchedulesInSlot: jest.fn()
 };
 
 describe('Assignment Use Cases', () => {
@@ -63,7 +77,10 @@ describe('Assignment Use Cases', () => {
   });
 
   it('should create a new assignment', async () => {
-    const createAssignment = new CreateAssignment(mockAssignmentRepository);
+    const createAssignment = new CreateAssignment(
+      mockAssignmentRepository,
+      mockAssignmentDomainService
+    );
     await createAssignment.run(assignment);
     expect(mockAssignmentRepository.createAssignment).toHaveBeenCalledWith(
       expect.any(AssignmentEntity)
