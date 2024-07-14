@@ -1,11 +1,6 @@
 import { Router } from 'express';
 
-import { employeeFinderByCodeController } from '@src/infrastructure/repositories/assignment/dependencies';
-import { createAssignmentController } from '@src/infrastructure/repositories/assignment/dependencies';
-import { assignmentFinderController } from '@src/infrastructure/repositories/assignment/dependencies';
-import { assignmentFinderByIdController } from '@src/infrastructure/repositories/assignment/dependencies';
-import { deAssignmentByIdController } from '@src/infrastructure/repositories/assignment/dependencies';
-import { createDiscountNoteController } from '@src/infrastructure/repositories/assignment/dependencies';
+import { assignmentController } from '@src/infrastructure/repositories/assignment/dependencies';
 
 import { validateRequest } from '@infrastructure/http/middlewares/zod.validate';
 
@@ -21,28 +16,28 @@ const routes = Router();
 routes
   .get(
     '/employee/:code',
-    employeeFinderByCodeController.run.bind(employeeFinderByCodeController)
+    assignmentController.employeeFinderByCode.bind(assignmentController)
   )
   .post(
     '/',
     validateRequest(assignmentCreateSchema, 'body'),
-    createAssignmentController.run.bind(createAssignmentController)
+    assignmentController.createAssignment.bind(assignmentController)
   )
-  .get('/', assignmentFinderController.run.bind(assignmentFinderController))
+  .get('/', assignmentController.assignmentFinder.bind(assignmentController))
   .get(
     '/:id',
     validateRequest(getAssignmentByIdSchema, 'params'),
-    assignmentFinderByIdController.run.bind(assignmentFinderByIdController)
+    assignmentController.assignmentFinderById.bind(assignmentController)
   )
   .post(
     '/:assignment_id/deassignment',
     validateRequest(createDeAssignmentParamsSchema, 'params'),
     validateRequest(createDeAssignmentBodySchema, 'body'),
-    deAssignmentByIdController.run.bind(deAssignmentByIdController)
+    assignmentController.deAssignmentById.bind(assignmentController)
   )
   .post(
     '/discount-note/:assignment_id',
     validateRequest(createDiscountNodeByIdAssignmentSchema, 'params'),
-    createDiscountNoteController.run.bind(createDiscountNoteController)
+    assignmentController.createDiscountNote.bind(assignmentController)
   );
 export default routes;

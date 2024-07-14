@@ -7,12 +7,7 @@ import { GetLocationByIdFinder } from '@application/location/location-by-id-find
 import { LocationFinder } from '@application/location/location-finder';
 import { DeleteSlots } from '@application/location/delete-slots';
 
-import { LocationCreateController } from '@src/infrastructure/http/controllers/location/location-create-controller';
-import { LocationDeleteController } from '@src/infrastructure/http/controllers/location/location-delete-controller';
-import { LocationUpdateController } from '@src/infrastructure/http/controllers/location/location-update-controller';
-import { LocationFinderByIdController } from '@src/infrastructure/http/controllers/location/location-finder-by-id-controller';
-import { LocationFinderController } from '@src/infrastructure/http/controllers/location/location-finder-controller';
-import { SlotsDeleteController } from '@src/infrastructure/http/controllers/location/slot-delete-controller';
+import { LocationController } from '@src/infrastructure/http/controllers/location.controller';
 
 const locationRepository = new SequelizeLocationRepository();
 
@@ -20,28 +15,18 @@ const locationRepository = new SequelizeLocationRepository();
 const createLocation = new CreateLocation(locationRepository);
 const updateLocation = new UpdateLocation(locationRepository);
 const deleteLocation = new DeleteLocation(locationRepository);
-const getLocations = new LocationFinder(locationRepository);
-const getLocationById = new GetLocationByIdFinder(locationRepository);
+const locationFinder = new LocationFinder(locationRepository);
+const locationFinderById = new GetLocationByIdFinder(locationRepository);
 const deleteSlots = new DeleteSlots(locationRepository);
 
 //Controllers
-const locationCreateController = new LocationCreateController(createLocation);
-const locationUpdateController = new LocationUpdateController(updateLocation);
-const locationDeleteController = new LocationDeleteController(deleteLocation);
-const locationGetByIdController = new LocationFinderByIdController(
-  getLocationById
+const locationController = new LocationController(
+  createLocation,
+  updateLocation,
+  deleteLocation,
+  locationFinderById,
+  locationFinder,
+  deleteSlots
 );
-const locationGetController = new LocationFinderController(getLocations);
-const slotsDeleteController = new SlotsDeleteController(deleteSlots);
-
-//Imports
-const locationController = {
-  createLocation: locationCreateController,
-  updateLocation: locationUpdateController,
-  deleteLocation: locationDeleteController,
-  getLocationById: locationGetByIdController,
-  getLocations: locationGetController,
-  deleteSlots: slotsDeleteController
-};
 
 export { locationController };

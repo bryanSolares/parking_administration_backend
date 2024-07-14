@@ -16,40 +16,29 @@ routes
   .post(
     '/location',
     validateRequest(locationCreateSchema, 'body'),
-    locationController.createLocation.run.bind(
-      locationController.createLocation
-    )
+    locationController.createLocation.bind(locationController)
   )
-  .get(
-    '/location',
-    locationController.getLocations.run.bind(locationController.getLocations)
-  )
+  .get('/location', locationController.locationFinder.bind(locationController))
   .get(
     '/location/:id',
     validateRequest(getLocationByIdSchema, 'params'),
-    locationController.getLocationById.run.bind(
-      locationController.getLocationById
-    )
+    locationController.locationFinderById.bind(locationController)
   )
   .put(
     '/location/:id',
     validateRequest(locationUpdateParamsSchema, 'params'),
     validateRequest(locationUpdateSchema, 'body'),
-    locationController.updateLocation.run.bind(
-      locationController.updateLocation
-    )
+    locationController.updateLocation.bind(locationController)
   )
   .delete(
     '/location/slots',
     validateRequest(deleteSlotsSchema, 'body'),
-    locationController.deleteSlots.run.bind(locationController.deleteSlots)
+    locationController.deleteSlots.bind(locationController)
   )
   .delete(
     '/location/:id',
     validateRequest(locationDeleteParamsSchema, 'params'),
-    locationController.deleteLocation.run.bind(
-      locationController.deleteLocation
-    )
+    locationController.deleteLocation.bind(locationController)
   );
 
 export default routes;

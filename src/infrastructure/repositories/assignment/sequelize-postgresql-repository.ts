@@ -139,14 +139,6 @@ export class SequelizeAssignmentRepository implements AssignmentRepository {
     const schedule = assignment.schedule;
     let newSchedule;
 
-    if (await this.employeeHasAnActiveAssignment(employee.id)) {
-      throw new Error('Employee already has an assignment');
-    }
-
-    if (!(await this.isAValidSlot(assignment.slot_id))) {
-      throw new Error('Slot not found, please create it first');
-    }
-
     const transaction = await sequelize.transaction();
 
     //Save employee
@@ -193,10 +185,6 @@ export class SequelizeAssignmentRepository implements AssignmentRepository {
 
     //Save Schedule
     if (schedule) {
-      if (!(await this.canCreateMoreSchedulesInSlot(assignment.slot_id))) {
-        throw new Error('Cant create more schedules in slot');
-      }
-
       [newSchedule] = await ScheduleModel.upsert(
         {
           ...schedule,
@@ -222,9 +210,7 @@ export class SequelizeAssignmentRepository implements AssignmentRepository {
     await transaction.commit();
   }
 
-  private async employeeHasAnActiveAssignment(
-    employeeId: string
-  ): Promise<boolean> {
+  async employeeHasAnActiveAssignment(employeeId: string): Promise<boolean> {
     const [resultFunctionHasAssignment]: {
       employee_has_an_active_assignment: boolean;
     }[] = await sequelize.query('select employee_has_an_active_assignment(?)', {
@@ -235,7 +221,7 @@ export class SequelizeAssignmentRepository implements AssignmentRepository {
     return resultFunctionHasAssignment.employee_has_an_active_assignment;
   }
 
-  private async isAValidSlot(slotId: string): Promise<boolean> {
+  async isAValidSlot(slotId: string): Promise<boolean> {
     const [resultQueryFindByIdSlot] = await sequelize.query(
       'select 1 from slot where id = ?',
       {
@@ -247,7 +233,7 @@ export class SequelizeAssignmentRepository implements AssignmentRepository {
     return Boolean(resultQueryFindByIdSlot);
   }
 
-  private async canCreateMoreSchedulesInSlot(slotId: string): Promise<boolean> {
+  async canCreateMoreSchedulesInSlot(slotId: string): Promise<boolean> {
     const [resultFunctionCanCreateMoreSchedulesInSlot]: {
       can_create_more_schedules_in_slot: boolean;
     }[] = await sequelize.query('select can_create_more_schedules_in_slot(?)', {

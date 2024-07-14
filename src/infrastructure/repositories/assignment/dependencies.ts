@@ -8,19 +8,23 @@ import { AssignmentFinderById } from '@src/application/assignments/assignment-fi
 import { DeAssignmentById } from '@src/application/assignments/de-assignment-by-id';
 import { CreateDiscountNote } from '@src/application/assignments/create-discount-note';
 
-import { EmployeeFinderByCodeController } from '@src/infrastructure/http/controllers/assignment/employee-finder-by-code';
-import { CreateAssignmentController } from '@src/infrastructure/http/controllers/assignment/create-assignment';
-import { AssignmentFinderByIdController } from '@src/infrastructure/http/controllers/assignment/assignment-finder-by-id';
-import { AssignmentFinderController } from '@src/infrastructure/http/controllers/assignment/assignment-finder';
-import { DeAssignmentByIdController } from '@src/infrastructure/http/controllers/assignment/deassignment-by-id';
-import { CreateDiscountNoteController } from '@src/infrastructure/http/controllers/assignment/create-discount-note';
+import { AssignmentDomainService } from '@src/application/services/assignment-domain-service';
+
+import { AssignmentController } from '@src/infrastructure/http/controllers/assignment.controller';
 
 const sequelizeAssignmentRepository = new SequelizeAssignmentRepository();
 const employeeRepository = new WSEmployeeRepository();
 
+const assignmentDomainService = new AssignmentDomainService(
+  sequelizeAssignmentRepository
+);
+
 //Use cases
-const getEmployeeByCode = new GetEmployeeByCode(employeeRepository);
-const createAssignment = new CreateAssignment(sequelizeAssignmentRepository);
+const employeeFinderByCode = new GetEmployeeByCode(employeeRepository);
+const createAssignment = new CreateAssignment(
+  sequelizeAssignmentRepository,
+  assignmentDomainService
+);
 const assignmentFinder = new AssignmentFinder(sequelizeAssignmentRepository);
 const assignmentFinderById = new AssignmentFinderById(
   sequelizeAssignmentRepository
@@ -31,34 +35,13 @@ const createDiscountNote = new CreateDiscountNote(
 );
 
 //Controllers
-const employeeFinderByCodeController = new EmployeeFinderByCodeController(
-  getEmployeeByCode
-);
-const createAssignmentController = new CreateAssignmentController(
-  createAssignment
-);
-
-const assignmentFinderByIdController = new AssignmentFinderByIdController(
-  assignmentFinderById
+const assignmentController = new AssignmentController(
+  createAssignment,
+  createDiscountNote,
+  assignmentFinderById,
+  assignmentFinder,
+  deAssignmentById,
+  employeeFinderByCode
 );
 
-const assignmentFinderController = new AssignmentFinderController(
-  assignmentFinder
-);
-
-const deAssignmentByIdController = new DeAssignmentByIdController(
-  deAssignmentById
-);
-
-const createDiscountNoteController = new CreateDiscountNoteController(
-  createDiscountNote
-);
-
-export {
-  employeeFinderByCodeController,
-  createAssignmentController,
-  assignmentFinderByIdController,
-  assignmentFinderController,
-  deAssignmentByIdController,
-  createDiscountNoteController
-};
+export { assignmentController };

@@ -14,4 +14,7 @@ export interface AssignmentRepository {
   // deleteAssignment(id: string): Promise<void>;
   createDiscountNote(idAssignment: string): Promise<void>;
   getDiscountNoteByIdAssignment(id: string): Promise<DiscountNoteEntity | null>;
+  employeeHasAnActiveAssignment(employeeId: string): Promise<boolean>;
+  isAValidSlot(slotId: string): Promise<boolean>;
+  canCreateMoreSchedulesInSlot(slotId: string): Promise<boolean>;
 }

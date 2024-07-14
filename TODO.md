@@ -16,6 +16,7 @@ TODO:
 # All application
 
 [ ] change logger to pino
+[ ] fix structure of error messages in zod middleware
 
 # Sequelize relations
 
