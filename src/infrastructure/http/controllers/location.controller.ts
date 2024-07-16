@@ -90,12 +90,18 @@ export class LocationController {
   }
 
   async locationFinder(req: Request, res: Response) {
-    try {
-      const locations = await this.locationFinderUseCase.run();
+    const { limit, page } = req.query;
 
-      const response = { data: locations };
+    try {
+      const data = await this.locationFinderUseCase.run(
+        Number(limit),
+        Number(page)
+      );
+
+      const response = { data: data?.data, pageCounter: data?.pageCounter };
       res.status(200).send(response);
     } catch (error) {
+      console.log(error);
       res.status(500).send('Error getting locations');
     }
   }

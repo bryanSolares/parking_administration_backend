@@ -10,17 +10,25 @@ export const locationCreateSchema = z.object({
   email: z.string().email(),
   comments: z.string(),
   status: z.enum(['ACTIVO', 'INACTIVO']),
-  slots: z.array(
-    z.object({
-      slot_number: z.string(),
-      slot_type: z.enum(['SIMPLE', 'MULTIPLE']),
-      limit_schedules: z.number(),
-      vehicle_type: z.enum(['CARRO', 'MOTO', 'CAMION']),
-      cost_type: z.enum(['SIN_COSTO', 'DESCUENTO', 'COMPLEMENTO']),
-      cost: z.number(),
-      status: z.enum(['ACTIVO', 'INACTIVO'])
-    })
-  )
+  slots: z
+    .array(
+      z.object({
+        slot_number: z.string(),
+        slot_type: z.enum(['SIMPLE', 'MULTIPLE']),
+        limit_schedules: z
+          .number({
+            message:
+              'Limit schedule must be number and should be greater than 0 and less than 24'
+          })
+          .min(0)
+          .max(24),
+        vehicle_type: z.enum(['CARRO', 'MOTO', 'CAMION']),
+        cost_type: z.enum(['SIN_COSTO', 'DESCUENTO', 'COMPLEMENTO']),
+        cost: z.number(),
+        status: z.enum(['ACTIVO', 'INACTIVO'])
+      })
+    )
+    .optional()
 });
 
 export const locationUpdateParamsSchema = z.object({
@@ -42,12 +50,19 @@ export const locationUpdateSchema = z.object({
       id: z.string().uuid().optional(),
       slot_number: z.string(),
       slot_type: z.enum(['SIMPLE', 'MULTIPLE']),
-      limit_schedules: z.number(),
+      limit_schedules: z
+        .number({
+          message:
+            'Limit schedule must be number and should be greater than 0 and less than 24'
+        })
+        .min(0)
+        .max(24),
       vehicle_type: z.enum(['CARRO', 'MOTO', 'CAMION']),
       cost_type: z.enum(['SIN_COSTO', 'DESCUENTO', 'COMPLEMENTO']),
       cost: z.number(),
       status: z.enum(['ACTIVO', 'INACTIVO'])
-    })
+    }),
+    { message: 'Slots is required' }
   )
 });
 
@@ -57,6 +72,11 @@ export const locationDeleteParamsSchema = z.object({
 
 export const getLocationByIdSchema = z.object({
   id: z.string().uuid()
+});
+
+export const getLocationsSchemaForQuery = z.object({
+  limit: z.coerce.number().min(1).max(100),
+  page: z.coerce.number().min(1)
 });
 
 export const deleteSlotsSchema = z.object({

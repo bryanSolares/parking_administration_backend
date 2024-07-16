@@ -9,6 +9,7 @@ import { locationUpdateParamsSchema } from '@infrastructure/http/schemas/locatio
 import { locationDeleteParamsSchema } from '@infrastructure/http/schemas/location.schemas';
 import { getLocationByIdSchema } from '@infrastructure/http/schemas/location.schemas';
 import { deleteSlotsSchema } from '@infrastructure/http/schemas/location.schemas';
+import { getLocationsSchemaForQuery } from '@infrastructure/http/schemas/location.schemas';
 
 const routes = Router();
 
@@ -18,7 +19,11 @@ routes
     validateRequest(locationCreateSchema, 'body'),
     locationController.createLocation.bind(locationController)
   )
-  .get('/location', locationController.locationFinder.bind(locationController))
+  .get(
+    '/location',
+    validateRequest(getLocationsSchemaForQuery, 'query'),
+    locationController.locationFinder.bind(locationController)
+  )
   .get(
     '/location/:id',
     validateRequest(getLocationByIdSchema, 'params'),

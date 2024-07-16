@@ -8,9 +8,13 @@ import { sequelize } from '@config/database/sequelize';
 import { LocationModel } from '@src/server/config/database/models/location.model';
 import { SlotModel } from '@src/server/config/database/models/slot.model';
 
-import { LocationRepository } from '@core/repositories/location-repository';
+import {
+  LocationFinderResult,
+  LocationRepository
+} from '@core/repositories/location-repository';
 
 import { LocationEntity } from '@core/entities/location-entity';
+import { SlotEntity } from '@src/core/entities/slot-entity';
 
 export class SequelizeLocationRepository implements LocationRepository {
   private readonly fieldsToLocationAllowedToCreateOrUpdate = [
@@ -35,10 +39,11 @@ export class SequelizeLocationRepository implements LocationRepository {
     'status'
   ];
 
+  private readonly fieldsExcluded = ['updated_at', 'created_at'];
+
   async createLocation(location: LocationEntity): Promise<void> {
     const transaction = await sequelize.transaction();
 
-    // guardar location
     const locationId = uuid();
     await LocationModel.create(
       { ...location, id: locationId },
@@ -48,16 +53,17 @@ export class SequelizeLocationRepository implements LocationRepository {
       }
     );
 
-    const slots = location.slots.map(slot => {
-      return {
-        ...slot,
-        id: uuid(),
-        location_id: locationId
-      };
-    });
+    if (location.slots) {
+      const slots = location.slots.map(slot => {
+        return {
+          ...slot,
+          id: uuid(),
+          location_id: locationId
+        };
+      });
 
-    // guardar slots
-    await SlotModel.bulkCreate(slots, { transaction });
+      await SlotModel.bulkCreate(slots, { transaction });
+    }
 
     await transaction.commit();
 
@@ -80,18 +86,14 @@ export class SequelizeLocationRepository implements LocationRepository {
     );
 
     // Upsert Slots
-    const slots = location.slots.map(slot => {
-      return {
-        ...slot,
-        id: !slot.id ? uuid() : slot.id,
-        location_id: location.id
-      };
-    });
-
     await Promise.all(
-      slots.map(async slot => {
+      location.slots.map(async slot => {
         await SlotModel.upsert(
-          { ...slot, location_id: location.id },
+          {
+            ...slot,
+            id: !slot.id ? uuid() : slot.id,
+            location_id: location.id
+          },
           {
             fields: [...this.fieldsToSlotToCreateOrUpdate],
             transaction
@@ -143,27 +145,43 @@ export class SequelizeLocationRepository implements LocationRepository {
       include: {
         model: SlotModel,
         attributes: {
-          exclude: ['updated_at', 'created_at', 'latitude', 'longitude']
+          exclude: [...this.fieldsExcluded]
         }
+      },
+      attributes: {
+        exclude: [...this.fieldsExcluded, 'latitude', 'longitude']
       }
     });
 
-    return location as unknown as LocationEntity;
+    return location?.get({ plain: true }) as LocationEntity;
   }
 
-  async getLocations(): Promise<LocationEntity[] | null> {
+  async getLocations(
+    limit: number = 20,
+    page: number = 1
+  ): Promise<LocationFinderResult | null> {
+    const locationsCounter = await LocationModel.count();
+    const allPages = Math.ceil(locationsCounter / limit);
+    const offset = (page - 1) * limit;
+
     const locations = await LocationModel.findAll({
-      include: [
-        {
-          model: SlotModel,
-          attributes: { exclude: ['updated_at', 'created_at'] }
-        }
-      ],
       attributes: {
-        exclude: ['updated_at', 'created_at', 'latitude', 'longitude']
-      }
+        exclude: ['updated_at', 'latitude', 'longitude']
+      },
+      order: [['created_at', 'DESC']],
+      limit,
+      offset
     });
 
-    return locations as unknown as LocationEntity[];
+    const locationsData = locations.map(
+      location => location.get({ plain: true }) as LocationEntity
+    );
+
+    return { data: locationsData, pageCounter: allPages };
+  }
+
+  async getSlotById(id: string): Promise<SlotEntity | null> {
+    const slotDatabase = await SlotModel.findByPk(id);
+    return slotDatabase?.get({ plain: true }) as SlotEntity;
   }
 }
