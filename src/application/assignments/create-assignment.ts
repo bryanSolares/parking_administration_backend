@@ -9,9 +9,19 @@ export class CreateAssignment {
   ) {}
 
   async run(assignment: AssignmentEntity): Promise<void> {
-    await this.assignmentDomainService.validateEmployeeAssignment(
-      assignment.employee.id
-    );
+    if (assignment.employee.id) {
+      await this.assignmentDomainService.validateEmployeeAssignment(
+        assignment.employee.id
+      );
+    }
+
+    if (assignment.assignment_loan?.employee.id) {
+      if (assignment.assignment_loan) {
+        await this.assignmentDomainService.validateEmployeeAssignment(
+          assignment.assignment_loan.employee.id
+        );
+      }
+    }
 
     await this.assignmentDomainService.validateSlot(assignment.slot_id);
 

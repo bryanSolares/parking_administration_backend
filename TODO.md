@@ -12,6 +12,7 @@ TODO:
 [ ] not create assignment if slot is multiple and not send schedule
 [ ] validate time between 00:00 and 23:59 in schema db
 [ ] add return error 404 if not found in finder by id
+[ ] fix issue with uuid in create assignment loan and create assignment
 
 # All application
 

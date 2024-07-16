@@ -8,7 +8,7 @@ export class AssignmentDomainService {
     if (
       await this.assignmentRepository.employeeHasAnActiveAssignment(employeeId)
     ) {
-      throw new Error('Employee already has an assignment');
+      throw new Error(`Employee already has an assignment: ${employeeId}`);
     }
   }
 
