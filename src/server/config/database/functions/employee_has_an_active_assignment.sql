@@ -1,23 +1,25 @@
+
 create or replace function employee_has_an_active_assignment(emplo_id varchar)
  	returns bool
  as
  $$
  	declare hasAssignment bool;
 	begin
-		select count(*) > 0 into hasAssignment
-			from assignment a
-			where a.employee_id = emplo_id and status = 'ACTIVO';
 
-	    if hasAssignment then
-		    return hasAssignment;
-        end if;
+        select EXISTS (select 1
+                       from assignment a
+                       where a.employee_id = emplo_id
+                         and a.status = 'ACTIVO'
+                       union all
+                       select 1
+                       from assignment_loan al
+                       where al.employee_id = emplo_id
+                         and al.status = 'ACTIVO')
+        INTO hasAssignment;
 
-		select count(*) > 0 into hasAssignment
-			from assignment_loan a
-			where a.employee_id = emplo_id and status = 'ACTIVO';
-
-		return hasAssignment;
+    return hasAssignment;
 
 	end;
  $$
  	language plpgsql;
+

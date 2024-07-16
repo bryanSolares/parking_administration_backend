@@ -21,6 +21,11 @@ ScheduleModel.init(
     end_time_assignment: {
       type: DataTypes.TIME,
       allowNull: false
+    },
+    status: {
+      type: DataTypes.ENUM('ACTIVO', 'INACTIVO'),
+      allowNull: false,
+      defaultValue: 'ACTIVO'
     }
   },
   {
