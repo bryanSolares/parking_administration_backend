@@ -44,7 +44,7 @@ routes
     '/de_assignment/:assignment_id',
     validateRequest(createDeAssignmentParamsSchema, 'params'),
     validateRequest(createDeAssignmentBodySchema, 'body'),
-    assignmentController.deAssignmentById.bind(assignmentController)
+    assignmentController.createDeAssignment.bind(assignmentController)
   )
   .post(
     '/discount-note/:assignment_id',

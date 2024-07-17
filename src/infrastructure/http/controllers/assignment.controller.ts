@@ -4,7 +4,7 @@ import { CreateAssignment } from '@src/application/assignments/create-assignment
 import { AssignmentFinder } from '@src/application/assignments/assignment-finder';
 import { AssignmentFinderById } from '@src/application/assignments/assignment-finder-by-id';
 import { CreateDiscountNote } from '@src/application/assignments/create-discount-note';
-import { DeAssignmentById } from '@src/application/assignments/de-assignment-by-id';
+import { CreateDeAssignment } from '@src/application/assignments/create-deassignment';
 import { GetEmployeeByCode } from '@src/application/assignments/get-employee-by-code-from-ws';
 
 import { AssignmentNotFoundError } from '@src/core/assignments/exceptions/assignment-not-found';
@@ -17,7 +17,7 @@ export class AssignmentController {
     private readonly createDiscountNoteUseCase: CreateDiscountNote,
     private readonly assignmentFinderByIdUseCase: AssignmentFinderById,
     private readonly assignmentFinderUseCase: AssignmentFinder,
-    private readonly deAssignmentByIdUseCase: DeAssignmentById,
+    private readonly deAssignmentByIdUseCase: CreateDeAssignment,
     private readonly employeeFinderByCodeUseCase: GetEmployeeByCode
   ) {}
 
@@ -51,7 +51,9 @@ export class AssignmentController {
         return res.status(400).json({ message: error.message });
       }
 
-      res.status(500).json({ message: 'Internal server error' });
+      if (error instanceof Error) {
+        res.status(500).json({ error: error.message });
+      }
     }
   }
 
@@ -96,7 +98,7 @@ export class AssignmentController {
     }
   }
 
-  async deAssignmentById(req: Request, res: Response) {
+  async createDeAssignment(req: Request, res: Response) {
     const assignmentId = req.params.assignment_id;
     const deAssignment = req.body;
 
@@ -109,7 +111,9 @@ export class AssignmentController {
         return;
       }
 
-      res.status(500).send('Error creating deAssignment');
+      if (error instanceof Error) {
+        res.status(500).send(error.message);
+      }
     }
   }
 

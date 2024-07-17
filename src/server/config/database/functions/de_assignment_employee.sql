@@ -5,6 +5,7 @@ as
         begin
             update schedule set status = 'INACTIVO' where id = new.schedule_id;
             update assignment_loan set status = 'INACTIVO' where assignment_id = new.id;
+            update slot set status = 'DISPONIBLE' where id = new.slot_id;
             return new;
         end;
     $$
@@ -13,5 +14,5 @@ language plpgsql;
 create or replace trigger de_assignment_action
 after
 update on assignment for each row
-when (old.status is distinct from new.status)
+when (old.status is distinct from new.status and new.status = 'INACTIVO')
 execute function de_assignment_employee();

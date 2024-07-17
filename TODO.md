@@ -26,10 +26,11 @@ TODO:
 [ ] Cant create assignment if slot or location is inactive
 [ ] After create assignment change status from slot
 [ ] save employee from ws in redis
-[ ] add type for employee web service data
+[ ] add types for employee web service data
 [ ] welcome email to employee
 [ ] create api_key for employee
 [ ] handle error if code employee already exists
+[ ] email to owner with discount note
 
 [X] finder all assignments
 [X] finder employee by code
@@ -38,19 +39,23 @@ TODO:
 -- [ ] email to RRHH if slot is type cost
 -- [ ] welcome email to owner
 -- [ ] welcome email to guest
-[ ] create assignment loan
+[X] create assignment loan
+-- [ ] send email to owner, guest
+[X] create discount note
+-- [ ] send email to owner and RRHH with discount note
+[X] create de_assignment
+-- [ ] real time notification
 [ ] update assignment
 [ ] update assignment load
 [ ] delete assignment
 [ ] delete assignment loan
-[ ] create de_assignment
-[ ] create discount note
 
 # All application
 
 [ ] change logger to pino
 [ ] fix structure of error messages in zod middleware
-[ ] uncatched error with wrong formar in request
+[ ] uncatched error with wrong format in request
+[ ] solve problem with casting entities
 
 # Sequelize relations
 

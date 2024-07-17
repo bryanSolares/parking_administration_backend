@@ -17,7 +17,7 @@ export interface AssignmentRepository {
     limit: number,
     page: number
   ): Promise<AssignmentFinderResult | null>;
-  deAssignmentById(
+  createDeAssignment(
     assignmentId: string,
     deAssignment: DeAssignmentEntity
   ): Promise<void>;

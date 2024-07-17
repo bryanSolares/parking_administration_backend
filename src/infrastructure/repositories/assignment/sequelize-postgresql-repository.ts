@@ -44,7 +44,7 @@ export class SequelizeAssignmentRepository implements AssignmentRepository {
     );
   }
 
-  async deAssignmentById(
+  async createDeAssignment(
     assignmentId: string,
     deAssignment: DeAssignmentEntity
   ): Promise<void> {

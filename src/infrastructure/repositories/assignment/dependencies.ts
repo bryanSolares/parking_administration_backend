@@ -6,7 +6,7 @@ import { GetEmployeeByCode } from '@application/assignments/get-employee-by-code
 import { CreateAssignment } from '@src/application/assignments/create-assignment';
 import { AssignmentFinder } from '@src/application/assignments/assignment-finder';
 import { AssignmentFinderById } from '@src/application/assignments/assignment-finder-by-id';
-import { DeAssignmentById } from '@src/application/assignments/de-assignment-by-id';
+import { CreateDeAssignment } from '@src/application/assignments/create-deassignment';
 import { CreateDiscountNote } from '@src/application/assignments/create-discount-note';
 
 import { AssignmentDomainService } from '@src/application/services/assignment-domain-service';
@@ -31,9 +31,10 @@ const assignmentFinder = new AssignmentFinder(sequelizeAssignmentRepository);
 const assignmentFinderById = new AssignmentFinderById(
   sequelizeAssignmentRepository
 );
-const deAssignmentById = new DeAssignmentById(sequelizeAssignmentRepository);
+const deAssignmentById = new CreateDeAssignment(sequelizeAssignmentRepository);
 const createDiscountNote = new CreateDiscountNote(
-  sequelizeAssignmentRepository
+  sequelizeAssignmentRepository,
+  sequelizeLocationRepository
 );
 
 //Controllers
