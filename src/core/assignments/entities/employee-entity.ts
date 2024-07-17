@@ -16,9 +16,9 @@ export class EmployeeEntity {
     public readonly address: string,
     public readonly email: string,
     public readonly phone: string,
-    public readonly access_token: string,
-    public readonly access_token_status: string,
-    public readonly vehicles: VehicleEntity[]
+    public access_token: string,
+    public access_token_status: string,
+    public vehicles: VehicleEntity[]
   ) {}
 }
 

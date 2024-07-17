@@ -4,6 +4,8 @@ import { Transaction } from 'sequelize';
 import { v4 as uuid } from 'uuid';
 
 import { AssignmentEntity } from '@src/core/assignments/entities/assignment-entity';
+import { AssignmentFinderResult } from '@src/core/assignments/repositories/assignment-repository';
+
 import { AssignmentRepository } from '@src/core/assignments/repositories/assignment-repository';
 
 import { AssignmentModel } from '@config/database/models/assignment.model';
@@ -60,16 +62,17 @@ export class SequelizeAssignmentRepository implements AssignmentRepository {
     await transaction.commit();
   }
 
-  async getAssignments(): Promise<AssignmentEntity[] | null> {
+  async getAssignments(
+    limit: number = 20,
+    page: number = 1
+  ): Promise<AssignmentFinderResult | null> {
+    const assignmentsCounter = await AssignmentModel.count();
+    const allPages = Math.ceil(assignmentsCounter / limit);
+    const offset = (page - 1) * limit;
+
     const assignments = await AssignmentModel.findAll({
       attributes: {
-        exclude: [
-          'slot_id',
-          'schedule_id',
-          'employee_id',
-          'created_at',
-          'updated_at'
-        ]
+        exclude: ['slot_id', 'schedule_id', 'employee_id', 'updated_at']
       },
       include: [
         {
@@ -86,9 +89,17 @@ export class SequelizeAssignmentRepository implements AssignmentRepository {
           model: EmployeeModel,
           attributes: ['name', 'email', 'phone']
         }
-      ]
+      ],
+      order: [['created_at', 'DESC']],
+      limit,
+      offset
     });
-    return assignments as unknown as AssignmentEntity[];
+
+    const assignmentsData = assignments.map(
+      assignment => assignment.get({ plain: true }) as AssignmentEntity
+    );
+
+    return { data: assignmentsData, pageCounter: allPages };
   }
 
   async getAssignmentById(id: string): Promise<AssignmentEntity | null> {
@@ -194,6 +205,11 @@ export class SequelizeAssignmentRepository implements AssignmentRepository {
       );
     }
 
+    await SlotModel.update(
+      { status: 'OCUPADO' },
+      { where: { id: assignment.slot_id }, transaction }
+    );
+
     await transaction.commit();
   }
 
@@ -276,18 +292,6 @@ export class SequelizeAssignmentRepository implements AssignmentRepository {
     });
 
     return resultFunctionHasAssignment.employee_has_an_active_assignment;
-  }
-
-  async isAValidSlot(slotId: string): Promise<boolean> {
-    const [resultQueryFindByIdSlot] = await sequelize.query(
-      'select 1 from slot where id = ?',
-      {
-        replacements: [slotId],
-        type: QueryTypes.SELECT
-      }
-    );
-
-    return Boolean(resultQueryFindByIdSlot);
   }
 
   async canCreateMoreSchedulesInSlot(slotId: string): Promise<boolean> {

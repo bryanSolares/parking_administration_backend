@@ -25,7 +25,7 @@ export const locationCreateSchema = z.object({
         vehicle_type: z.enum(['CARRO', 'MOTO', 'CAMION']),
         cost_type: z.enum(['SIN_COSTO', 'DESCUENTO', 'COMPLEMENTO']),
         cost: z.number(),
-        status: z.enum(['ACTIVO', 'INACTIVO'])
+        status: z.enum(['ACTIVO', 'OCUPADO', 'INACTIVO'])
       })
     )
     .optional()

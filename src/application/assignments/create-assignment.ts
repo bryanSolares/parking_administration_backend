@@ -9,27 +9,41 @@ export class CreateAssignment {
   ) {}
 
   async run(assignment: AssignmentEntity): Promise<void> {
-    if (assignment.employee.id) {
-      await this.assignmentDomainService.validateEmployeeAssignment(
-        assignment.employee.id
+    const owner = assignment.employee;
+    const guest = assignment.assignment_loan?.employee;
+    const schedule = assignment.schedule;
+
+    await this.assignmentDomainService.verifyIfSlotExistsAndIsAvailable(
+      assignment.slot_id
+    );
+
+    if (owner.id) {
+      await this.assignmentDomainService.validateIfEmployeeHasAnActiveAssignment(
+        owner.id
       );
     }
 
-    if (assignment.assignment_loan?.employee.id) {
-      if (assignment.assignment_loan) {
-        await this.assignmentDomainService.validateEmployeeAssignment(
-          assignment.assignment_loan.employee.id
-        );
-      }
+    if (guest?.id) {
+      await this.assignmentDomainService.validateIfEmployeeHasAnActiveAssignment(
+        guest.id
+      );
     }
 
-    await this.assignmentDomainService.validateSlot(assignment.slot_id);
+    if (schedule) {
+      await this.assignmentDomainService.verifyIfSlotCanHaveSchedules(
+        assignment.slot_id
+      );
 
-    if (assignment.schedule) {
       await this.assignmentDomainService.canCreateMoreSchedulesInSlot(
         assignment.slot_id
       );
     }
+
+    //TODO: Email to RRHH if slot is type cost
+
+    //TODO: Welcome email to owner
+
+    //TODO: Welcome email to guest
 
     return this.assignmentRepository.createAssignment(assignment);
   }

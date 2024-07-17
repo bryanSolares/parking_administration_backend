@@ -1,79 +1,92 @@
 import { EmployeeEntity } from '@src/core/assignments/entities/employee-entity';
-import { EmployeeRepository } from '@src/core/assignments/repositories/employee-repository';
+import { EmployeeRepositoryWebService } from '@src/core/assignments/repositories/employee-repository';
 
 import { SettingModel } from '@src/server/config/database/models/setting.model';
 
-import { logger } from '@config/logger/load-logger';
 import { WSError } from '@src/infrastructure/exceptions/WSError';
+import { EmployeeModel } from '@src/server/config/database/models/employee.model';
+import { VehicleModel } from '@src/server/config/database/models/vehicle.model';
 
-export class WSEmployeeRepository implements EmployeeRepository {
-  async getEmployeeByCode(
+export class WSEmployeeRepository implements EmployeeRepositoryWebService {
+  async getEmployeeByCodefromWebService(
     codeEmployee: string
   ): Promise<EmployeeEntity | null> {
-    logger().info(`Fetching employee by code: ${codeEmployee}`);
-    let data;
+    let dataEmployeeWebService;
 
-    // Searcht link on database
-    // TODO: redis integration
-
-    const setting = await SettingModel.findOne({
+    const settingDatabase = await SettingModel.findOne({
       where: {
         setting_key: 'WS_EMPLOYEES'
       }
     });
 
-    // TODO: Altevative database if fetch not work
+    if (!settingDatabase) {
+      throw new Error('Setting not found');
+    }
+
     try {
       const response = await fetch(
-        `${setting?.dataValues['setting_value']}/${codeEmployee}`
+        `${settingDatabase?.dataValues['setting_value']}/${codeEmployee}`
       );
 
-      // TODO: improve error handling
-
       if (response.status >= 500) {
-        logger().warn(`Error on service: ${response.status}`);
         throw new WSError('Error on service');
       }
 
       if (response.status === 404) {
-        logger().warn(`Employee not found: ${codeEmployee}`);
         throw new WSError('Employee not found');
       }
 
-      data = await response.json();
+      dataEmployeeWebService = await response.json();
     } catch (error) {
-      logger().error(error);
-      throw error;
+      throw new WSError('Error on service');
     }
 
-    if (!data) {
-      console.log('sencod');
-      logger().warn(`Employee not found: ${codeEmployee}`);
+    if (!dataEmployeeWebService) {
       throw new WSError('Employee not found');
     }
 
-    //TODO: DATABASE: validate assignment exists with function
-    // TODO: create entity
+    const employee = new EmployeeEntity(
+      dataEmployeeWebService.id,
+      dataEmployeeWebService.username,
+      dataEmployeeWebService.name,
+      'workplace',
+      'identifier_document',
+      dataEmployeeWebService.company.name,
+      'department',
+      'sub_management',
+      'management_1',
+      'management_2',
+      'work_site',
+      dataEmployeeWebService.address.street,
+      dataEmployeeWebService.email,
+      dataEmployeeWebService.phone,
+      '',
+      '',
+      []
+    );
 
-    // const employee = new EmployeeEntity(
-    //   data.id,
-    //   data.username,
-    //   data.name,
-    //   'workplace',
-    //   'identifier_document',
-    //   data.company.name,
-    //   'department',
-    //   'sub_management',
-    //   'management_1',
-    //   'management_2',
-    //   'work_site',
-    //   data.address.street,
-    //   data.email,
-    //   data.phone,
-    //   '',
-    //   ''
-    // );
+    return employee;
+  }
 
-    return null;
+  async getEmployeeByCodeFromDatabase(
+    codeEmployee: string
+  ): Promise<EmployeeEntity> {
+    console.log(codeEmployee);
+
+    const employeeDatabase = await EmployeeModel.findOne({
+      where: {
+        code_employee: codeEmployee
+      },
+      include: [
+        {
+          model: VehicleModel,
+          attributes: {
+            exclude: ['updated_at', 'created_at']
+          }
+        }
+      ]
+    });
+
+    return employeeDatabase?.get({ plain: true }) as EmployeeEntity;
   }
 }

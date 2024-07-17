@@ -1,4 +1,5 @@
 import { Router } from 'express';
+import { Request, Response } from 'express';
 
 import { assignmentController } from '@src/infrastructure/repositories/assignment/dependencies';
 
@@ -9,13 +10,19 @@ import { getAssignmentByIdSchema } from '@infrastructure/http/schemas/assignment
 import { createDiscountNodeByIdAssignmentSchema } from '@infrastructure/http/schemas/assignment.schemas';
 import { createDeAssignmentParamsSchema } from '@infrastructure/http/schemas/assignment.schemas';
 import { createDeAssignmentBodySchema } from '@infrastructure/http/schemas/assignment.schemas';
+import { getAssignmentsSchemaForQuery } from '@infrastructure/http/schemas/assignment.schemas';
+import { getEmployeeByCodeSchemaForParams } from '@infrastructure/http/schemas/assignment.schemas';
 
 const routes = Router();
 
 // Employee
 routes
+  .get('/employee', (_: Request, res: Response) => {
+    return res.status(400).json({ message: 'Code employee required' });
+  })
   .get(
     '/employee/:code',
+    validateRequest(getEmployeeByCodeSchemaForParams, 'params'),
     assignmentController.employeeFinderByCode.bind(assignmentController)
   )
   .post(
@@ -23,14 +30,18 @@ routes
     validateRequest(assignmentCreateSchema, 'body'),
     assignmentController.createAssignment.bind(assignmentController)
   )
-  .get('/', assignmentController.assignmentFinder.bind(assignmentController))
+  .get(
+    '/',
+    validateRequest(getAssignmentsSchemaForQuery, 'query'),
+    assignmentController.assignmentFinder.bind(assignmentController)
+  )
   .get(
     '/:id',
     validateRequest(getAssignmentByIdSchema, 'params'),
     assignmentController.assignmentFinderById.bind(assignmentController)
   )
   .post(
-    '/:assignment_id/deassignment',
+    '/de_assignment/:assignment_id',
     validateRequest(createDeAssignmentParamsSchema, 'params'),
     validateRequest(createDeAssignmentBodySchema, 'body'),
     assignmentController.deAssignmentById.bind(assignmentController)

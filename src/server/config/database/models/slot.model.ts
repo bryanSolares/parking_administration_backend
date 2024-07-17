@@ -45,8 +45,8 @@ SlotModel.init(
       defaultValue: 0
     },
     status: {
-      type: DataTypes.ENUM('ACTIVO', 'INACTIVO'),
-      defaultValue: 'ACTIVO'
+      type: DataTypes.ENUM('DISPONIBLE', 'OCUPADO', 'INACTIVO'),
+      defaultValue: 'DISPONIBLE'
     }
   },
   {

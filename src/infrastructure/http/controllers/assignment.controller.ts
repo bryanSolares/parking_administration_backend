@@ -5,7 +5,7 @@ import { AssignmentFinder } from '@src/application/assignments/assignment-finder
 import { AssignmentFinderById } from '@src/application/assignments/assignment-finder-by-id';
 import { CreateDiscountNote } from '@src/application/assignments/create-discount-note';
 import { DeAssignmentById } from '@src/application/assignments/de-assignment-by-id';
-import { GetEmployeeByCode } from '@src/application/assignments/get-employee-by-code';
+import { GetEmployeeByCode } from '@src/application/assignments/get-employee-by-code-from-ws';
 
 import { AssignmentNotFoundError } from '@src/core/assignments/exceptions/assignment-not-found';
 import { PreviewDiscountNoteError } from '@src/core/assignments/exceptions/preview-discount-note';
@@ -29,6 +29,7 @@ export class AssignmentController {
 
       res.status(201).json({ message: 'Assignment created' });
     } catch (error) {
+      console.log(error);
       if (error instanceof Error) {
         res.status(500).json({ error: error.message });
       }
@@ -65,6 +66,10 @@ export class AssignmentController {
 
       res.status(200).json(response);
     } catch (error) {
+      if (error instanceof AssignmentNotFoundError) {
+        return res.status(404).json({ message: error.message });
+      }
+
       if (error instanceof Error) {
         res.status(500).json({ error: error.message });
       }
@@ -72,12 +77,23 @@ export class AssignmentController {
   }
 
   async assignmentFinder(req: Request, res: Response) {
-    const assignments = await this.assignmentFinderUseCase.run();
-    const response = {
-      data: assignments
-    };
+    const { limit, page } = req.query;
 
-    res.status(200).json(response);
+    try {
+      const assignments = await this.assignmentFinderUseCase.run(
+        Number(limit),
+        Number(page)
+      );
+      const response = {
+        data: assignments?.data,
+        pageCounter: assignments?.pageCounter
+      };
+
+      res.status(200).json(response);
+    } catch (error) {
+      console.log(error);
+      res.status(500).send('Error get all assignments');
+    }
   }
 
   async deAssignmentById(req: Request, res: Response) {

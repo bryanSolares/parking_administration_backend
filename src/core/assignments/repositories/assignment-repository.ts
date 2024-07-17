@@ -5,20 +5,25 @@ import { EmployeeEntity } from '../entities/employee-entity';
 import { ScheduleEntity } from '../entities/schedule-entity';
 import { VehicleEntity } from '../entities/vehicle-entity';
 
+export type AssignmentFinderResult = Promise<{
+  pageCounter: number;
+  data: AssignmentEntity[];
+}>;
+
 export interface AssignmentRepository {
   createAssignment(assignment: AssignmentEntity): Promise<void>;
-  getAssignmentById(id?: string): Promise<AssignmentEntity | null>;
-  getAssignments(): Promise<AssignmentEntity[] | null>;
+  getAssignmentById(id: string): Promise<AssignmentEntity | null>;
+  getAssignments(
+    limit: number,
+    page: number
+  ): Promise<AssignmentFinderResult | null>;
   deAssignmentById(
     assignmentId: string,
     deAssignment: DeAssignmentEntity
   ): Promise<void>;
-  // updateAssignment(assignment: AssignmentEntity): Promise<void>;
-  // deleteAssignment(id: string): Promise<void>;
   createDiscountNote(idAssignment: string): Promise<void>;
   getDiscountNoteByIdAssignment(id: string): Promise<DiscountNoteEntity | null>;
   employeeHasAnActiveAssignment(employeeId: string): Promise<boolean>;
-  isAValidSlot(slotId: string): Promise<boolean>;
   canCreateMoreSchedulesInSlot(slotId: string): Promise<boolean>;
 
   upsertEmployee(employee: EmployeeEntity): Promise<string>;

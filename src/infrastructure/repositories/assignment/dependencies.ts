@@ -1,7 +1,8 @@
 import { SequelizeAssignmentRepository } from './sequelize-postgresql-repository';
+import { SequelizeLocationRepository } from '../location/sequelize-postgresql-repository';
 import { WSEmployeeRepository } from './ws-employee.repository';
 
-import { GetEmployeeByCode } from '@application/assignments/get-employee-by-code';
+import { GetEmployeeByCode } from '@application/assignments/get-employee-by-code-from-ws';
 import { CreateAssignment } from '@src/application/assignments/create-assignment';
 import { AssignmentFinder } from '@src/application/assignments/assignment-finder';
 import { AssignmentFinderById } from '@src/application/assignments/assignment-finder-by-id';
@@ -9,14 +10,15 @@ import { DeAssignmentById } from '@src/application/assignments/de-assignment-by-
 import { CreateDiscountNote } from '@src/application/assignments/create-discount-note';
 
 import { AssignmentDomainService } from '@src/application/services/assignment-domain-service';
-
 import { AssignmentController } from '@src/infrastructure/http/controllers/assignment.controller';
 
 const sequelizeAssignmentRepository = new SequelizeAssignmentRepository();
+const sequelizeLocationRepository = new SequelizeLocationRepository();
 const employeeRepository = new WSEmployeeRepository();
 
 const assignmentDomainService = new AssignmentDomainService(
-  sequelizeAssignmentRepository
+  sequelizeAssignmentRepository,
+  sequelizeLocationRepository
 );
 
 //Use cases

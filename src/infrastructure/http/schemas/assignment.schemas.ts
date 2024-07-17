@@ -68,3 +68,12 @@ export const createDeAssignmentBodySchema = z.object({
   reason: z.string(),
   de_assignment_date: z.string().date('YYYY-MM-DD')
 });
+
+export const getAssignmentsSchemaForQuery = z.object({
+  limit: z.coerce.number().min(1).max(100),
+  page: z.coerce.number().min(1)
+});
+
+export const getEmployeeByCodeSchemaForParams = z.object({
+  code: z.string()
+});
