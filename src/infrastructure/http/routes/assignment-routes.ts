@@ -30,6 +30,10 @@ routes
     validateRequest(assignmentCreateSchema, 'body'),
     assignmentController.createAssignment.bind(assignmentController)
   )
+  .put(
+    '/:assignment_id',
+    assignmentController.updateAssignment.bind(assignmentController)
+  )
   .get(
     '/',
     validateRequest(getAssignmentsSchemaForQuery, 'query'),

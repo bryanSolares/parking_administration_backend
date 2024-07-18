@@ -1,6 +1,7 @@
 export class SlotEntity {
   constructor(
     public readonly id: string,
+    public readonly location_id: string,
     public readonly slot_number: string,
     public readonly slot_type: string,
     public readonly cost_type: string,

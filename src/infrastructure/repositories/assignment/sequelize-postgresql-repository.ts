@@ -139,6 +139,28 @@ export class SequelizeAssignmentRepository implements AssignmentRepository {
         {
           model: ScheduleModel,
           attributes: { exclude: [...listExcludedAttributes, 'slot_id'] }
+        },
+        {
+          model: AssignmentLoanModel,
+          include: [
+            {
+              model: EmployeeModel,
+              attributes: {
+                exclude: listExcludedAttributes
+              },
+              include: [
+                {
+                  model: VehicleModel,
+                  attributes: {
+                    exclude: [...listExcludedAttributes, 'employee_id']
+                  }
+                }
+              ]
+            }
+          ],
+          attributes: {
+            exclude: [...listExcludedAttributes, 'assignment_id']
+          }
         }
       ],
       attributes: ['id', 'assignment_date', 'status']
@@ -303,5 +325,42 @@ export class SequelizeAssignmentRepository implements AssignmentRepository {
     });
 
     return resultFunctionCanCreateMoreSchedulesInSlot.can_create_more_schedules_in_slot;
+  }
+
+  async updateAssignment(assignment: AssignmentEntity): Promise<void> {
+    const vehiclesOwnerData = assignment.employee.vehicles;
+    const scheduleData = assignment.schedule;
+    const guestData = assignment.assignment_loan?.employee;
+    const vehiclesGuestData = assignment.assignment_loan?.employee.vehicles;
+    const transaction = await sequelize.transaction();
+    //update vehicles owner
+    await this.upsertVehicles(
+      vehiclesOwnerData,
+      assignment.employee.id,
+      transaction
+    );
+    //update schedule
+    if (scheduleData.id) {
+      await ScheduleModel.update(
+        {
+          start_time_assignment: scheduleData.start_time_assignment,
+          end_time_assignment: scheduleData.end_time_assignment
+        },
+        {
+          where: {
+            id: scheduleData.id
+          },
+          transaction
+        }
+      );
+    }
+    if (guestData && vehiclesGuestData) {
+      //Upsert employee guest
+      await this.upsertEmployee(guestData, transaction);
+      //Upsert vehicles guest
+      await this.upsertVehicles(vehiclesGuestData, guestData.id, transaction);
+      //Upsert Assignment Loan
+    }
+    await transaction.commit();
   }
 }

@@ -43,5 +43,13 @@ export class AssignmentDomainService {
     if (slot.status === 'INACTIVO' || slot.status === 'OCUPADO') {
       throw new Error('Slot is not available');
     }
+
+    const location = await this.locationRepository.getLocationById(
+      slot?.location_id
+    );
+
+    if (location?.status !== 'ACTIVO') {
+      throw new Error('Location is not active');
+    }
   }
 }

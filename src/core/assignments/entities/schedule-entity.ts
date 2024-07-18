@@ -3,7 +3,8 @@ export class ScheduleEntity {
     public readonly id: string,
     public readonly slot_id: string,
     public readonly start_time_assignment: string,
-    public readonly end_time_assignment: string
+    public readonly end_time_assignment: string,
+    public readonly status: string
   ) {}
 }
 

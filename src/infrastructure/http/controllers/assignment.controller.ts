@@ -6,6 +6,7 @@ import { AssignmentFinderById } from '@src/application/assignments/assignment-fi
 import { CreateDiscountNote } from '@src/application/assignments/create-discount-note';
 import { CreateDeAssignment } from '@src/application/assignments/create-deassignment';
 import { GetEmployeeByCode } from '@src/application/assignments/get-employee-by-code-from-ws';
+import { UpdateAssignment } from '@src/application/assignments/update-assignment';
 
 import { AssignmentNotFoundError } from '@src/core/assignments/exceptions/assignment-not-found';
 import { PreviewDiscountNoteError } from '@src/core/assignments/exceptions/preview-discount-note';
@@ -18,7 +19,8 @@ export class AssignmentController {
     private readonly assignmentFinderByIdUseCase: AssignmentFinderById,
     private readonly assignmentFinderUseCase: AssignmentFinder,
     private readonly deAssignmentByIdUseCase: CreateDeAssignment,
-    private readonly employeeFinderByCodeUseCase: GetEmployeeByCode
+    private readonly employeeFinderByCodeUseCase: GetEmployeeByCode,
+    private readonly updateAssignmentUseCase: UpdateAssignment
   ) {}
 
   async createAssignment(req: Request, res: Response) {
@@ -128,6 +130,27 @@ export class AssignmentController {
 
       res.status(200).json(response);
     } catch (error) {
+      if (error instanceof Error) {
+        res.status(500).json({ error: error.message });
+      }
+    }
+  }
+
+  async updateAssignment(req: Request, res: Response) {
+    const assignmentId = req.params.assignment_id;
+    const assignment = req.body;
+
+    try {
+      await this.updateAssignmentUseCase.run({
+        id: assignmentId,
+        ...assignment
+      });
+      res.status(200).json({ message: 'Assignment updated' });
+    } catch (error) {
+      if (error instanceof AssignmentNotFoundError) {
+        return res.status(404).json({ message: error.message });
+      }
+
       if (error instanceof Error) {
         res.status(500).json({ error: error.message });
       }

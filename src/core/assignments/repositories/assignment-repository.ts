@@ -32,4 +32,5 @@ export interface AssignmentRepository {
     ownerVehicle: string
   ): Promise<void>;
   upsertSchedule(schedule: ScheduleEntity, slot_id: string): Promise<string>;
+  updateAssignment(assignment: AssignmentEntity): Promise<void>;
 }

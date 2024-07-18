@@ -4,6 +4,7 @@ import { LocationModel } from './location.model';
 import { ScheduleModel } from './schedule.model';
 import { SlotModel } from './slot.model';
 import { VehicleModel } from './vehicle.model';
+import { AssignmentLoanModel } from './assignment-loan';
 
 LocationModel.hasMany(SlotModel, {
   foreignKey: 'location_id',
@@ -32,6 +33,20 @@ ScheduleModel.hasOne(AssignmentModel, {
   onDelete: 'RESTRICT'
 });
 AssignmentModel.belongsTo(ScheduleModel, { foreignKey: 'schedule_id' });
+
+AssignmentModel.hasOne(AssignmentLoanModel, {
+  foreignKey: 'assignment_id',
+  onUpdate: 'RESTRICT',
+  onDelete: 'RESTRICT'
+});
+AssignmentLoanModel.belongsTo(AssignmentModel, { foreignKey: 'assignment_id' });
+
+EmployeeModel.hasOne(AssignmentLoanModel, {
+  foreignKey: 'employee_id',
+  onUpdate: 'RESTRICT',
+  onDelete: 'RESTRICT'
+});
+AssignmentLoanModel.belongsTo(EmployeeModel, { foreignKey: 'employee_id' });
 
 EmployeeModel.hasMany(VehicleModel, {
   foreignKey: 'employee_id',
