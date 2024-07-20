@@ -9,6 +9,7 @@ import { AssignmentFinderById } from '@src/application/assignments/assignment-fi
 import { CreateDeAssignment } from '@src/application/assignments/create-deassignment';
 import { CreateDiscountNote } from '@src/application/assignments/create-discount-note';
 import { UpdateAssignment } from '@src/application/assignments/update-assignment';
+import { CreateAssignmentLoan } from '@src/application/assignments/create-assignment-loan';
 
 import { AssignmentDomainService } from '@src/application/services/assignment-domain-service';
 import { AssignmentController } from '@src/infrastructure/http/controllers/assignment.controller';
@@ -37,6 +38,9 @@ const createDiscountNote = new CreateDiscountNote(
   sequelizeAssignmentRepository,
   sequelizeLocationRepository
 );
+const createAssignmentLoan = new CreateAssignmentLoan(
+  sequelizeAssignmentRepository
+);
 
 const updateAssignment = new UpdateAssignment(sequelizeAssignmentRepository);
 
@@ -48,7 +52,8 @@ const assignmentController = new AssignmentController(
   assignmentFinder,
   deAssignmentById,
   employeeFinderByCode,
-  updateAssignment
+  updateAssignment,
+  createAssignmentLoan
 );
 
 export { assignmentController };

@@ -7,6 +7,7 @@ import { CreateDiscountNote } from '@src/application/assignments/create-discount
 import { CreateDeAssignment } from '@src/application/assignments/create-deassignment';
 import { GetEmployeeByCode } from '@src/application/assignments/get-employee-by-code-from-ws';
 import { UpdateAssignment } from '@src/application/assignments/update-assignment';
+import { CreateAssignmentLoan } from '@src/application/assignments/create-assignment-loan';
 
 import { AssignmentNotFoundError } from '@src/core/assignments/exceptions/assignment-not-found';
 import { PreviewDiscountNoteError } from '@src/core/assignments/exceptions/preview-discount-note';
@@ -20,7 +21,8 @@ export class AssignmentController {
     private readonly assignmentFinderUseCase: AssignmentFinder,
     private readonly deAssignmentByIdUseCase: CreateDeAssignment,
     private readonly employeeFinderByCodeUseCase: GetEmployeeByCode,
-    private readonly updateAssignmentUseCase: UpdateAssignment
+    private readonly updateAssignmentUseCase: UpdateAssignment,
+    private readonly createAssignmentLoanUseCase: CreateAssignmentLoan
   ) {}
 
   async createAssignment(req: Request, res: Response) {
@@ -32,6 +34,22 @@ export class AssignmentController {
       res.status(201).json({ message: 'Assignment created' });
     } catch (error) {
       console.log(error);
+      if (error instanceof Error) {
+        res.status(500).json({ error: error.message });
+      }
+    }
+  }
+
+  async createAssignmentLoan(req: Request, res: Response) {
+    const assignment = req.body;
+    const assignmentId = req.params.assignment_id;
+    try {
+      await this.createAssignmentLoanUseCase.run({
+        ...assignment,
+        assignment_id: assignmentId
+      });
+      res.status(201).json({ message: 'Assignment loan created' });
+    } catch (error) {
       if (error instanceof Error) {
         res.status(500).json({ error: error.message });
       }
@@ -139,12 +157,16 @@ export class AssignmentController {
   async updateAssignment(req: Request, res: Response) {
     const assignmentId = req.params.assignment_id;
     const assignment = req.body;
+    const vehiclesForDelete = req.body.vehicles_for_delete;
 
     try {
-      await this.updateAssignmentUseCase.run({
-        id: assignmentId,
-        ...assignment
-      });
+      await this.updateAssignmentUseCase.run(
+        {
+          id: assignmentId,
+          ...assignment
+        },
+        vehiclesForDelete
+      );
       res.status(200).json({ message: 'Assignment updated' });
     } catch (error) {
       if (error instanceof AssignmentNotFoundError) {

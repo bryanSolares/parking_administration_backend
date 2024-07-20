@@ -3,36 +3,50 @@ import { AssignmentNotFoundError } from '@src/core/assignments/exceptions/assign
 import { AssignmentRepository } from '@src/core/assignments/repositories/assignment-repository';
 
 export class UpdateAssignment {
-  constructor(public readonly assignmentRepository: AssignmentRepository) {}
+  constructor(private readonly assignmentRepository: AssignmentRepository) {}
 
-  async run(assignment: AssignmentEntity): Promise<void> {
+  async run(
+    assignment: AssignmentEntity,
+    vehicleIdsForDelete: string[]
+  ): Promise<void> {
     const assignmentDatabase =
       await this.assignmentRepository.getAssignmentById(assignment.id);
 
+    // Validate if the assignment exists
     if (!assignmentDatabase) {
       throw new AssignmentNotFoundError('Assignment not found');
     }
 
+    // Validate if the assignment is active
+    if (assignmentDatabase.status === 'INACTIVO') {
+      throw new Error('Can not update an inactive assignment');
+    }
+
+    // Validate if the assignment have loan
+    if (assignment.assignment_loan && !assignmentDatabase.assignment_loan) {
+      throw new Error(
+        'You can not update an assignment with loan if it did not exist before'
+      );
+    }
+
+    // Validate that employee is the same
     if (assignmentDatabase.employee.id !== assignment.employee.id) {
       throw new Error(
         'You can not update an assignment with another employee (owner)'
       );
     }
 
+    // Validate that employee guest is the same
     if (
-      assignmentDatabase.assignment_loan?.employee &&
       assignment.assignment_loan?.employee?.id !==
-        assignmentDatabase.assignment_loan?.employee?.id
+      assignmentDatabase.assignment_loan?.employee?.id
     ) {
       throw new Error(
         'You can not update an assignment with another employee (guest)'
       );
     }
 
-    if (assignmentDatabase.status === 'INACTIVO') {
-      throw new Error('Can not update an inactive assignment');
-    }
-
+    // Validate if schedule previously exist
     if (
       (assignmentDatabase.schedule && !assignment.schedule) ||
       (!assignmentDatabase.schedule && assignment.schedule)
@@ -42,12 +56,15 @@ export class UpdateAssignment {
       );
     }
 
-    await this.assignmentRepository.updateAssignment({
-      ...assignment,
-      schedule: {
-        ...assignment.schedule,
-        id: assignmentDatabase.schedule.id
-      }
-    });
+    await this.assignmentRepository.updateAssignment(
+      {
+        ...assignment,
+        schedule: {
+          ...assignment.schedule,
+          id: assignmentDatabase.schedule.id
+        }
+      },
+      vehicleIdsForDelete
+    );
   }
 }

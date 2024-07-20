@@ -4,6 +4,7 @@ TODO:
 
 [ ] not allow update location from multiple to single or unavailable to available
 [ ] improve delete slots when slot does not exists (technical debt)
+[ ] can not create slot occupied
 
 [X] create location
 [X] create slots
@@ -31,6 +32,7 @@ TODO:
 [ ] create api_key for employee
 [ ] handle error if code employee already exists
 [ ] email to owner with discount note
+[ ] add new method to get assignment loan
 
 [X] finder all assignments
 [X] finder employee by code

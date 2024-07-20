@@ -1,3 +1,4 @@
+import { Op } from 'sequelize';
 import { sequelize } from '@config/database/sequelize';
 import { QueryTypes } from 'sequelize';
 import { Transaction } from 'sequelize';
@@ -22,6 +23,7 @@ import { AssignmentLoanModel } from '@src/server/config/database/models/assignme
 import { EmployeeEntity } from '@src/core/assignments/entities/employee-entity';
 import { VehicleEntity } from '@src/core/assignments/entities/vehicle-entity';
 import { ScheduleEntity } from '@src/core/assignments/entities/schedule-entity';
+import { AssignmentLoadEntity } from '@src/core/assignments/entities/assignment-load-entity';
 
 export class SequelizeAssignmentRepository implements AssignmentRepository {
   async getDiscountNoteByIdAssignment(
@@ -49,15 +51,28 @@ export class SequelizeAssignmentRepository implements AssignmentRepository {
     deAssignment: DeAssignmentEntity
   ): Promise<void> {
     const transaction = await sequelize.transaction();
-    await AssignmentModel.update(
-      { status: 'INACTIVO' },
-      { where: { id: assignmentId }, transaction }
-    );
 
-    await DeAssignmentModel.create(
-      { ...deAssignment, id: uuid(), assignment_id: assignmentId },
-      { transaction }
-    );
+    if (Object.values(deAssignment).length !== 0) {
+      await AssignmentModel.update(
+        { status: 'INACTIVO' },
+        { where: { id: assignmentId }, transaction }
+      );
+
+      await DeAssignmentModel.create(
+        { ...deAssignment, id: uuid(), assignment_id: assignmentId },
+        { transaction }
+      );
+    } else {
+      await AssignmentLoanModel.update(
+        {
+          status: 'INACTIVO'
+        },
+        {
+          where: { assignment_id: assignmentId },
+          transaction
+        }
+      );
+    }
 
     await transaction.commit();
   }
@@ -148,6 +163,7 @@ export class SequelizeAssignmentRepository implements AssignmentRepository {
               attributes: {
                 exclude: listExcludedAttributes
               },
+
               include: [
                 {
                   model: VehicleModel,
@@ -158,6 +174,8 @@ export class SequelizeAssignmentRepository implements AssignmentRepository {
               ]
             }
           ],
+          where: { status: 'ACTIVO' },
+          required: false,
           attributes: {
             exclude: [...listExcludedAttributes, 'assignment_id']
           }
@@ -230,6 +248,34 @@ export class SequelizeAssignmentRepository implements AssignmentRepository {
     await SlotModel.update(
       { status: 'OCUPADO' },
       { where: { id: assignment.slot_id }, transaction }
+    );
+
+    await transaction.commit();
+  }
+
+  async createAssignmentLoan(
+    assignmentLoan: AssignmentLoadEntity
+  ): Promise<void> {
+    const employeeData = assignmentLoan.employee;
+    const vehiclesData = assignmentLoan.employee.vehicles;
+
+    const transaction = await sequelize.transaction();
+
+    //Upsert employee
+    const employeeId = await this.upsertEmployee(employeeData, transaction);
+
+    //Upsert vehicles
+    await this.upsertVehicles(vehiclesData, employeeId, transaction);
+
+    //Add loan assignment
+    await AssignmentLoanModel.create(
+      {
+        ...assignmentLoan,
+        id: uuid(),
+        employee_id: employeeId,
+        assignment_id: assignmentLoan.assignment_id
+      },
+      { transaction }
     );
 
     await transaction.commit();
@@ -327,12 +373,27 @@ export class SequelizeAssignmentRepository implements AssignmentRepository {
     return resultFunctionCanCreateMoreSchedulesInSlot.can_create_more_schedules_in_slot;
   }
 
-  async updateAssignment(assignment: AssignmentEntity): Promise<void> {
+  async updateAssignment(
+    assignment: AssignmentEntity,
+    vehicleIdsForDelete: string[]
+  ): Promise<void> {
     const vehiclesOwnerData = assignment.employee.vehicles;
     const scheduleData = assignment.schedule;
     const guestData = assignment.assignment_loan?.employee;
     const vehiclesGuestData = assignment.assignment_loan?.employee.vehicles;
     const transaction = await sequelize.transaction();
+
+    if (vehicleIdsForDelete.length > 0) {
+      await VehicleModel.destroy({
+        where: {
+          id: {
+            [Op.in]: vehicleIdsForDelete
+          }
+        },
+        transaction
+      });
+    }
+
     //update vehicles owner
     await this.upsertVehicles(
       vehiclesOwnerData,
@@ -355,11 +416,8 @@ export class SequelizeAssignmentRepository implements AssignmentRepository {
       );
     }
     if (guestData && vehiclesGuestData) {
-      //Upsert employee guest
-      await this.upsertEmployee(guestData, transaction);
       //Upsert vehicles guest
-      await this.upsertVehicles(vehiclesGuestData, guestData.id, transaction);
-      //Upsert Assignment Loan
+      await this.upsertVehicles(guestData.vehicles, guestData.id, transaction);
     }
     await transaction.commit();
   }

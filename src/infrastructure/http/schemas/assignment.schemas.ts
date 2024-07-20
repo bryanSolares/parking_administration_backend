@@ -52,6 +52,47 @@ export const assignmentCreateSchema = z.object({
     .optional()
 });
 
+export const assignmentUpdateSchema = z.object({
+  employee: z.object({
+    id: z.string().uuid(),
+    vehicles: z.array(
+      z.object({
+        id: z.string().uuid().optional(),
+        vehicle_badge: z.string(),
+        color: z.string(),
+        brand: z.string(),
+        model: z.string(),
+        type: z.enum(['CARRO', 'MOTO', 'CAMION'])
+      })
+    )
+  }),
+  schedule: scheduleSchema,
+  assignment_loan: z
+    .object({
+      start_date_assignment: z.string().date('YYYY-MM-DD'),
+      end_date_assignment: z.string().date('YYYY-MM-DD'),
+      employee: z.object({
+        id: z.string().uuid(),
+        vehicles: z.array(
+          z.object({
+            id: z.string().uuid().optional(),
+            vehicle_badge: z.string(),
+            color: z.string(),
+            brand: z.string(),
+            model: z.string(),
+            type: z.enum(['CARRO', 'MOTO', 'CAMION'])
+          })
+        )
+      })
+    })
+    .optional(),
+  vehicles_for_delete: z.array(z.string().uuid()).optional()
+});
+
+export const schemaQueryOfAssignmentIdUpdateAssignment = z.object({
+  assignment_id: z.string().uuid()
+});
+
 export const getAssignmentByIdSchema = z.object({
   id: z.string().uuid()
 });
@@ -64,10 +105,12 @@ export const createDeAssignmentParamsSchema = z.object({
   assignment_id: z.string().uuid()
 });
 
-export const createDeAssignmentBodySchema = z.object({
-  reason: z.string(),
-  de_assignment_date: z.string().date('YYYY-MM-DD')
-});
+export const createDeAssignmentBodySchema = z
+  .object({
+    reason: z.string().optional(),
+    de_assignment_date: z.string().date('YYYY-MM-DD').optional()
+  })
+  .optional();
 
 export const getAssignmentsSchemaForQuery = z.object({
   limit: z.coerce.number().min(1).max(100),

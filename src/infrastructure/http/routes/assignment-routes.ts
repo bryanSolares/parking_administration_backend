@@ -12,6 +12,8 @@ import { createDeAssignmentParamsSchema } from '@infrastructure/http/schemas/ass
 import { createDeAssignmentBodySchema } from '@infrastructure/http/schemas/assignment.schemas';
 import { getAssignmentsSchemaForQuery } from '@infrastructure/http/schemas/assignment.schemas';
 import { getEmployeeByCodeSchemaForParams } from '@infrastructure/http/schemas/assignment.schemas';
+import { assignmentUpdateSchema } from '@infrastructure/http/schemas/assignment.schemas';
+import { schemaQueryOfAssignmentIdUpdateAssignment } from '@infrastructure/http/schemas/assignment.schemas';
 
 const routes = Router();
 
@@ -30,8 +32,14 @@ routes
     validateRequest(assignmentCreateSchema, 'body'),
     assignmentController.createAssignment.bind(assignmentController)
   )
+  .post(
+    '/loan/:assignment_id',
+    assignmentController.createAssignmentLoan.bind(assignmentController)
+  )
   .put(
     '/:assignment_id',
+    validateRequest(schemaQueryOfAssignmentIdUpdateAssignment, 'params'),
+    validateRequest(assignmentUpdateSchema, 'body'),
     assignmentController.updateAssignment.bind(assignmentController)
   )
   .get(

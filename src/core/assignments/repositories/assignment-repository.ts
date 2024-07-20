@@ -4,6 +4,7 @@ import { DiscountNoteEntity } from '../entities/discount-note-entity';
 import { EmployeeEntity } from '../entities/employee-entity';
 import { ScheduleEntity } from '../entities/schedule-entity';
 import { VehicleEntity } from '../entities/vehicle-entity';
+import { AssignmentLoadEntity } from '../entities/assignment-load-entity';
 
 export type AssignmentFinderResult = Promise<{
   pageCounter: number;
@@ -12,6 +13,7 @@ export type AssignmentFinderResult = Promise<{
 
 export interface AssignmentRepository {
   createAssignment(assignment: AssignmentEntity): Promise<void>;
+  createAssignmentLoan(assignmentLoan: AssignmentLoadEntity): Promise<void>;
   getAssignmentById(id: string): Promise<AssignmentEntity | null>;
   getAssignments(
     limit: number,
@@ -25,12 +27,14 @@ export interface AssignmentRepository {
   getDiscountNoteByIdAssignment(id: string): Promise<DiscountNoteEntity | null>;
   employeeHasAnActiveAssignment(employeeId: string): Promise<boolean>;
   canCreateMoreSchedulesInSlot(slotId: string): Promise<boolean>;
-
   upsertEmployee(employee: EmployeeEntity): Promise<string>;
   upsertVehicles(
     vehicles: VehicleEntity[],
     ownerVehicle: string
   ): Promise<void>;
   upsertSchedule(schedule: ScheduleEntity, slot_id: string): Promise<string>;
-  updateAssignment(assignment: AssignmentEntity): Promise<void>;
+  updateAssignment(
+    assignment: AssignmentEntity,
+    vehicleIdsForDelete: string[]
+  ): Promise<void>;
 }

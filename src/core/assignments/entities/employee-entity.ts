@@ -2,7 +2,7 @@ import { VehicleEntity } from './vehicle-entity';
 
 export class EmployeeEntity {
   constructor(
-    public readonly id: string,
+    public id: string,
     public readonly code_employee: string,
     public readonly name: string,
     public readonly workplace: string,

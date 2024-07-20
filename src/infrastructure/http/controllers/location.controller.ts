@@ -21,19 +21,18 @@ export class LocationController {
   ) {}
 
   async createLocation(req: Request, res: Response) {
-    //TODO: Validate request with Zod
     const locationData = req.body;
 
     try {
       await this.createLocationUseCase.run(locationData);
       res.status(201).send({ message: 'Location created' });
     } catch (error) {
+      console.log(error);
       res.status(500).send('Error creating location');
     }
   }
 
   async updateLocation(req: Request, res: Response) {
-    //TODO: Validate request with Zod
     const locationData = req.body;
     const locationId = req.params.id;
 
@@ -53,7 +52,6 @@ export class LocationController {
   }
 
   async deleteLocation(req: Request, res: Response) {
-    //TODO: Validate request with Zod
     const locationId = req.params.id;
     try {
       await this.deleteLocationUseCase.run(locationId);
@@ -72,7 +70,6 @@ export class LocationController {
   }
 
   async locationFinderById(req: Request, res: Response) {
-    //TODO: Validate request with Zod
     try {
       const locationId = req.params.id;
       const location = await this.getLocationByIdFinderUseCase.run(locationId);
@@ -107,7 +104,6 @@ export class LocationController {
   }
 
   async deleteSlots(req: Request, res: Response) {
-    //TODO: Validate request with Zod
     const slots = req.body.slots;
     try {
       await this.deleteSlotsUseCase.run(slots);

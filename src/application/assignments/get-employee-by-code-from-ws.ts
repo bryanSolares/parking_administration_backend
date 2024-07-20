@@ -19,6 +19,7 @@ export class GetEmployeeByCode {
     }
 
     if (employeeDatabase) {
+      employeeWebService.id = employeeDatabase.id;
       employeeWebService.vehicles = employeeDatabase.vehicles;
       employeeWebService.access_token = employeeDatabase.access_token;
       employeeWebService.access_token_status =
