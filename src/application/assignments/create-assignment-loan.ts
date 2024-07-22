@@ -14,6 +14,14 @@ export class CreateAssignmentLoan {
     }
 
     //TODO: validate assignment have loan previously
+    const assignmentLoanActive =
+      await this.assignmentRepository.getAssignmentLoanActiveByIdAssignment(
+        assignmentLoan.assignment_id
+      );
+
+    if (assignmentLoanActive) {
+      throw new Error('Assignment already have loan');
+    }
 
     await this.assignmentRepository.createAssignmentLoan(assignmentLoan);
   }

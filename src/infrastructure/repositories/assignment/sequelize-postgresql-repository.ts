@@ -421,4 +421,13 @@ export class SequelizeAssignmentRepository implements AssignmentRepository {
     }
     await transaction.commit();
   }
+
+  async getAssignmentLoanActiveByIdAssignment(
+    id: string
+  ): Promise<AssignmentLoadEntity | null> {
+    const assignmentLoan = await AssignmentLoanModel.findOne({
+      where: { assignment_id: id, status: 'ACTIVO' }
+    });
+    return assignmentLoan?.get({ plain: true }) as AssignmentLoadEntity;
+  }
 }

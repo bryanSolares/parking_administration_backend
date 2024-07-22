@@ -37,4 +37,7 @@ export interface AssignmentRepository {
     assignment: AssignmentEntity,
     vehicleIdsForDelete: string[]
   ): Promise<void>;
+  getAssignmentLoanActiveByIdAssignment(
+    id: string
+  ): Promise<AssignmentLoadEntity | null>;
 }
