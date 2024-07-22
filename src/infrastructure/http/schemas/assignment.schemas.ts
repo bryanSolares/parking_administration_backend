@@ -40,7 +40,6 @@ const scheduleSchema = z.object({
 
 export const assignmentCreateSchema = z.object({
   slot_id: z.string().uuid(),
-  status: z.enum(['ACTIVO', 'INACTIVO']),
   employee: employeeSchema,
   schedule: scheduleSchema.optional(),
   assignment_loan: z
