@@ -29,7 +29,7 @@ SlotModel.init(
     },
     limit_schedules: {
       type: DataTypes.INTEGER,
-      defaultValue: 0,
+      defaultValue: 1,
       allowNull: false
     },
     vehicle_type: {
