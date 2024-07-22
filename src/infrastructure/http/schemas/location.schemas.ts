@@ -60,10 +60,11 @@ export const locationUpdateSchema = z.object({
       vehicle_type: z.enum(['CARRO', 'MOTO', 'CAMION']),
       cost_type: z.enum(['SIN_COSTO', 'DESCUENTO', 'COMPLEMENTO']),
       cost: z.number(),
-      status: z.enum(['ACTIVO', 'INACTIVO'])
+      status: z.enum(['DISPONIBLE', 'OCUPADO', 'INACTIVO'])
     }),
     { message: 'Slots is required' }
-  )
+  ),
+  slots_to_delete: z.array(z.string().uuid().optional())
 });
 
 export const locationDeleteParamsSchema = z.object({

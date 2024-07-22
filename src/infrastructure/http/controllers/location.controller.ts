@@ -5,10 +5,7 @@ import { UpdateLocation } from '@src/application/location/update-location';
 import { DeleteLocation } from '@src/application/location/delete-location';
 import { GetLocationByIdFinder } from '@src/application/location/location-by-id-finder';
 import { LocationFinder } from '@src/application/location/location-finder';
-import { DeleteSlots } from '@src/application/location/delete-slots';
-
 import { LocationNotFoundError } from '@core/exceptions/location-not-found';
-import { SlotsEmptyError } from '@src/core/exceptions/slots-empty';
 
 export class LocationController {
   constructor(
@@ -16,8 +13,7 @@ export class LocationController {
     private readonly updateLocationUseCase: UpdateLocation,
     private readonly deleteLocationUseCase: DeleteLocation,
     private readonly getLocationByIdFinderUseCase: GetLocationByIdFinder,
-    private readonly locationFinderUseCase: LocationFinder,
-    private readonly deleteSlotsUseCase: DeleteSlots
+    private readonly locationFinderUseCase: LocationFinder
   ) {}
 
   async createLocation(req: Request, res: Response) {
@@ -35,13 +31,15 @@ export class LocationController {
   async updateLocation(req: Request, res: Response) {
     const locationData = req.body;
     const locationId = req.params.id;
+    const slotsToDelete = req.body.slots_to_delete;
 
     locationData.id = locationId;
 
     try {
-      await this.updateLocationUseCase.run(locationData);
+      await this.updateLocationUseCase.run(locationData, slotsToDelete);
       res.status(200).send({ message: 'Location updated' });
     } catch (error) {
+      console.log(error);
       if (error instanceof LocationNotFoundError) {
         res.status(404).send({ message: error.message });
         return;
@@ -100,24 +98,6 @@ export class LocationController {
     } catch (error) {
       console.log(error);
       res.status(500).send('Error getting locations');
-    }
-  }
-
-  async deleteSlots(req: Request, res: Response) {
-    const slots = req.body.slots;
-    try {
-      await this.deleteSlotsUseCase.run(slots);
-      res.status(200).send({ message: 'Slots deleted' });
-    } catch (error) {
-      if (error instanceof SlotsEmptyError) {
-        res.status(400).send({ message: error.message });
-        return;
-      }
-
-      if (error instanceof Error) {
-        res.status(500).send({ message: error.message });
-        return;
-      }
     }
   }
 }

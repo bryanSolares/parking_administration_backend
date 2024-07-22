@@ -70,7 +70,10 @@ export class SequelizeLocationRepository implements LocationRepository {
     logger().info('Location created');
   }
 
-  async updateLocation(location: LocationEntity): Promise<void> {
+  async updateLocation(
+    location: LocationEntity,
+    slotsToDelete: string[]
+  ): Promise<void> {
     const transaction = await sequelize.transaction();
 
     // Update Location
@@ -102,6 +105,22 @@ export class SequelizeLocationRepository implements LocationRepository {
       })
     );
 
+    if (slotsToDelete.length > 0) {
+      try {
+        await SlotModel.destroy({
+          where: { id: { [Op.in]: slotsToDelete }, location_id: location.id },
+          transaction
+        });
+      } catch (error) {
+        if (error instanceof ForeignKeyConstraintError) {
+          throw new Error(
+            'You can not delete slots with assignment or schedule'
+          );
+        }
+        throw error;
+      }
+    }
+
     await transaction.commit();
 
     logger().info('Location updated');
@@ -113,25 +132,6 @@ export class SequelizeLocationRepository implements LocationRepository {
       logger().info('Location deleted');
     } catch (error) {
       console.log(error);
-      if (error instanceof ForeignKeyConstraintError) {
-        throw new Error('Dont delete location with assignment or schedule');
-      }
-
-      throw error;
-    }
-  }
-
-  async deleteSlots(slots: string[]): Promise<void> {
-    const transaction = await sequelize.transaction();
-    try {
-      await SlotModel.destroy({
-        where: { id: { [Op.in]: slots } },
-        transaction
-      });
-      await transaction.commit();
-      logger().info('Slots deleted');
-    } catch (error) {
-      await transaction.rollback();
       if (error instanceof ForeignKeyConstraintError) {
         throw new Error('Dont delete location with assignment or schedule');
       }

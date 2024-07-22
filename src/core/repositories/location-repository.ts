@@ -8,13 +8,15 @@ export type LocationFinderResult = Promise<{
 
 export interface LocationRepository {
   createLocation(location: LocationEntity): Promise<void>;
-  updateLocation(location: LocationEntity): Promise<void>;
+  updateLocation(
+    location: LocationEntity,
+    slotsToDelete: string[]
+  ): Promise<void>;
   deleteLocation(id: string): Promise<void>;
   getLocationById(id: string): Promise<LocationEntity | null>;
   getLocations(
     limit: number,
     page: number
   ): Promise<LocationFinderResult | null>;
-  deleteSlots(slots: string[]): Promise<void>;
   getSlotById(id: string): Promise<SlotEntity | null>;
 }
