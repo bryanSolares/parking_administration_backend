@@ -1,16 +1,16 @@
 export class DiscountNoteEntity {
   constructor(
     public readonly id: string,
-    public readonly assignmentId: string,
-    public readonly maxDispatchAttempts?: number,
-    public readonly reminderFrequency?: number,
-    public readonly dispatchAttempts?: number,
-    public readonly lastNotice?: Date,
-    public readonly nextNotice?: Date,
-    public readonly statusSignature?: string,
-    public readonly statusDispatched?: string
+    public readonly assignment_id: string,
+    public readonly max_dispatch_attempts?: number,
+    public readonly reminder_frequency?: number,
+    public readonly dispatch_attempts?: number,
+    public readonly last_notice?: Date,
+    public readonly next_notice?: Date,
+    public readonly status_signature?: string,
+    public readonly status_dispatched?: string
   ) {
-    this.reminderFrequency = 2;
-    this.maxDispatchAttempts = 3;
+    this.reminder_frequency = 2;
+    this.max_dispatch_attempts = 3;
   }
 }

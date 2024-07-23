@@ -430,4 +430,14 @@ export class SequelizeAssignmentRepository implements AssignmentRepository {
     });
     return assignmentLoan?.get({ plain: true }) as AssignmentLoadEntity;
   }
+
+  async updateDiscountNote(
+    assignmentId: string,
+    status: string
+  ): Promise<void> {
+    await DiscountNoteModel.update(
+      { status_signature: status },
+      { where: { assignment_id: assignmentId } }
+    );
+  }
 }

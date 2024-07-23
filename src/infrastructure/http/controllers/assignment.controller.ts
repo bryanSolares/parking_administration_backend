@@ -8,6 +8,7 @@ import { CreateDeAssignment } from '@src/application/assignments/create-deassign
 import { GetEmployeeByCode } from '@src/application/assignments/get-employee-by-code-from-ws';
 import { UpdateAssignment } from '@src/application/assignments/update-assignment';
 import { CreateAssignmentLoan } from '@src/application/assignments/create-assignment-loan';
+import { UpdateDiscountNote } from '@src/application/assignments/update-discount-note';
 
 import { AssignmentNotFoundError } from '@src/core/assignments/exceptions/assignment-not-found';
 import { PreviewDiscountNoteError } from '@src/core/assignments/exceptions/preview-discount-note';
@@ -22,7 +23,8 @@ export class AssignmentController {
     private readonly deAssignmentByIdUseCase: CreateDeAssignment,
     private readonly employeeFinderByCodeUseCase: GetEmployeeByCode,
     private readonly updateAssignmentUseCase: UpdateAssignment,
-    private readonly createAssignmentLoanUseCase: CreateAssignmentLoan
+    private readonly createAssignmentLoanUseCase: CreateAssignmentLoan,
+    private readonly updateDiscountNoteUseCase: UpdateDiscountNote
   ) {}
 
   async createAssignment(req: Request, res: Response) {
@@ -168,6 +170,24 @@ export class AssignmentController {
         vehiclesForDelete
       );
       res.status(200).json({ message: 'Assignment updated' });
+    } catch (error) {
+      if (error instanceof AssignmentNotFoundError) {
+        return res.status(404).json({ message: error.message });
+      }
+
+      if (error instanceof Error) {
+        res.status(500).json({ error: error.message });
+      }
+    }
+  }
+
+  async updateDiscountNode(req: Request, res: Response) {
+    const assignmentId = req.params.assignment_id;
+    const statusSignature = req.body.status;
+
+    try {
+      await this.updateDiscountNoteUseCase.run(assignmentId, statusSignature);
+      res.status(200).json({ message: 'Discount note updated' });
     } catch (error) {
       if (error instanceof AssignmentNotFoundError) {
         return res.status(404).json({ message: error.message });

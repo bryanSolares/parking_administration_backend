@@ -6,14 +6,12 @@ import { assignmentController } from '@src/infrastructure/repositories/assignmen
 import { validateRequest } from '@infrastructure/http/middlewares/zod.validate';
 
 import { assignmentCreateSchema } from '@infrastructure/http/schemas/assignment.schemas';
-import { getAssignmentByIdSchema } from '@infrastructure/http/schemas/assignment.schemas';
-import { createDiscountNodeByIdAssignmentSchema } from '@infrastructure/http/schemas/assignment.schemas';
-import { createDeAssignmentParamsSchema } from '@infrastructure/http/schemas/assignment.schemas';
 import { createDeAssignmentBodySchema } from '@infrastructure/http/schemas/assignment.schemas';
 import { getAssignmentsSchemaForQuery } from '@infrastructure/http/schemas/assignment.schemas';
 import { getEmployeeByCodeSchemaForParams } from '@infrastructure/http/schemas/assignment.schemas';
 import { assignmentUpdateSchema } from '@infrastructure/http/schemas/assignment.schemas';
-import { schemaQueryOfAssignmentIdUpdateAssignment } from '@infrastructure/http/schemas/assignment.schemas';
+import { statusDiscountNoteBodySchema } from '@infrastructure/http/schemas/assignment.schemas';
+import { assignmentIdSchema } from '@infrastructure/http/schemas/assignment.schemas';
 
 const routes = Router();
 
@@ -166,7 +164,7 @@ routes
    */
   .put(
     '/:assignment_id',
-    validateRequest(schemaQueryOfAssignmentIdUpdateAssignment, 'params'),
+    validateRequest(assignmentIdSchema, 'params'),
     validateRequest(assignmentUpdateSchema, 'body'),
     assignmentController.updateAssignment.bind(assignmentController)
   )
@@ -210,7 +208,7 @@ routes
    *      tags: [Assignments]
    *      parameters:
    *        - in: path
-   *          name: id
+   *          name: assignment_id
    *          required: true
    *          description: The assignment id
    *          schema:
@@ -233,8 +231,8 @@ routes
    */
   //
   .get(
-    '/:id',
-    validateRequest(getAssignmentByIdSchema, 'params'),
+    '/:assignment_id',
+    validateRequest(assignmentIdSchema, 'params'),
     assignmentController.assignmentFinderById.bind(assignmentController)
   )
   /**
@@ -271,7 +269,7 @@ routes
    */
   .post(
     '/de_assignment/:assignment_id',
-    validateRequest(createDeAssignmentParamsSchema, 'params'),
+    validateRequest(assignmentIdSchema, 'params'),
     validateRequest(createDeAssignmentBodySchema, 'body'),
     assignmentController.createDeAssignment.bind(assignmentController)
   )
@@ -303,8 +301,14 @@ routes
    */
   .post(
     '/discount-note/:assignment_id',
-    validateRequest(createDiscountNodeByIdAssignmentSchema, 'params'),
+    validateRequest(assignmentIdSchema, 'params'),
     assignmentController.createDiscountNote.bind(assignmentController)
+  )
+  .put(
+    '/discount-note/:assignment_id',
+    validateRequest(assignmentIdSchema, 'params'),
+    validateRequest(statusDiscountNoteBodySchema, 'body'),
+    assignmentController.updateDiscountNode.bind(assignmentController)
   );
 
 //Schemas

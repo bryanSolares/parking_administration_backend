@@ -88,19 +88,7 @@ export const assignmentUpdateSchema = z.object({
   vehicles_for_delete: z.array(z.string().uuid()).optional()
 });
 
-export const schemaQueryOfAssignmentIdUpdateAssignment = z.object({
-  assignment_id: z.string().uuid()
-});
-
-export const getAssignmentByIdSchema = z.object({
-  id: z.string().uuid()
-});
-
-export const createDiscountNodeByIdAssignmentSchema = z.object({
-  assignment_id: z.string().uuid()
-});
-
-export const createDeAssignmentParamsSchema = z.object({
+export const assignmentIdSchema = z.object({
   assignment_id: z.string().uuid()
 });
 
@@ -118,4 +106,8 @@ export const getAssignmentsSchemaForQuery = z.object({
 
 export const getEmployeeByCodeSchemaForParams = z.object({
   code: z.string()
+});
+
+export const statusDiscountNoteBodySchema = z.object({
+  status: z.enum(['APROBADO', 'RECHAZADO', 'CANCELADO'])
 });

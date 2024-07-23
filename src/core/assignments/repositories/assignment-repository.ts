@@ -40,4 +40,5 @@ export interface AssignmentRepository {
   getAssignmentLoanActiveByIdAssignment(
     id: string
   ): Promise<AssignmentLoadEntity | null>;
+  updateDiscountNote(assignmentId: string, status: string): Promise<void>;
 }
