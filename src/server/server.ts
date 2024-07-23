@@ -13,8 +13,7 @@ import { config as swaggerDefinition } from '@config/swagger/config';
 import { sequelizeConnection } from '@config/database/sequelize';
 import './config/database/models/relations';
 
-import parkingRoutes from '@src/infrastructure/http/routes/location-routes';
-import assignmentRoutes from '@src/infrastructure/http/routes/assignment-routes';
+import routes from '@infrastructure/http/routes';
 
 export class Server {
   private readonly app: express.Application;
@@ -36,18 +35,12 @@ export class Server {
 
   //Load routes
   private loadRoutes() {
-    this.app.get('/api/v1/health', (req, res) => {
-      res.send('');
-    });
-
     this.app.use(
       '/api/v1/docs/',
       swaggerUI.serve,
       swaggerUI.setup(swaggerDefinition)
     );
-
-    this.app.use('/api/v1/parking/', parkingRoutes);
-    this.app.use('/api/v1/assignment', assignmentRoutes);
+    this.app.use(routes);
   }
 
   public startServer(): Promise<void> {
