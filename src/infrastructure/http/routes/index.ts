@@ -17,7 +17,7 @@ const routes = Router();
  *         description: Internal server error
  */
 routes.get('/api/v1/health', (req, res) => {
-  res.send('');
+  res.json({ message: 'ok' });
 });
 
 routes.use('/api/v1/parking/', locationRoutes);
