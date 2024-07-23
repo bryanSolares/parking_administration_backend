@@ -5,9 +5,11 @@ import express from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
 import morgan from 'morgan';
+import swaggerUI from 'swagger-ui-express';
 
 import { config } from '@config/logger/load-envs';
 import { logger } from '@config/logger/load-logger';
+import { config as swaggerDefinition } from '@config/swagger/config';
 import { sequelizeConnection } from '@config/database/sequelize';
 import './config/database/models/relations';
 
@@ -37,6 +39,12 @@ export class Server {
     this.app.get('/api/v1/health', (req, res) => {
       res.send('');
     });
+
+    this.app.use(
+      '/api/v1/docs/',
+      swaggerUI.serve,
+      swaggerUI.setup(swaggerDefinition)
+    );
 
     this.app.use('/api/v1/parking/', parkingRoutes);
     this.app.use('/api/v1/assignment', assignmentRoutes);
