@@ -17,7 +17,8 @@ routes
    * @swagger
    *  /parking/location:
    *    post:
-   *      summary: Create a new location
+   *      summary: Create a new location with slots
+   *      description: Create a new location with slots
    *      tags: [Locations]
    *      requestBody:
    *        required: true
@@ -52,7 +53,21 @@ routes
    *  /parking/location:
    *    get:
    *      summary: Get all locations
+   *      description: Get all locations
    *      tags: [Locations]
+   *      parameters:
+   *        - in: query
+   *          name: page
+   *          schema:
+   *            type: number
+   *          required: true
+   *          description: Page number
+   *        - in: query
+   *          name: limit
+   *          schema:
+   *            type: number
+   *          required: true
+   *          description: Number of items per page
    *      responses:
    *        200:
    *          description: Get locations
@@ -71,14 +86,16 @@ routes
    *  /parking/location/{id}:
    *    get:
    *      summary: Get location by id
+   *      description: Get location by id
    *      tags: [Locations]
    *      parameters:
    *        - in: path
    *          name: id
-   *          schema:
-   *            type: uuid
-   *          required: true
    *          description: Location id
+   *          required: true
+   *          schema:
+   *            type: string
+   *            format: uuid
    *      responses:
    *        200:
    *          description: Get location
@@ -111,14 +128,16 @@ routes
    *  /parking/location/{id}:
    *    put:
    *      summary: Update location
+   *      description: Update location
    *      tags: [Locations]
    *      parameters:
    *        - in: path
    *          name: id
-   *          schema:
-   *            type: uuid
    *          required: true
    *          description: Location id
+   *          schema:
+   *            type: string
+   *            format: uuid
    *      requestBody:
    *        required: true
    *        content:
@@ -160,14 +179,16 @@ routes
    *  /parking/location/{id}:
    *    delete:
    *      summary: Delete location
+   *      description: Delete location
    *      tags: [Locations]
    *      parameters:
    *        - in: path
    *          name: id
-   *          schema:
-   *            type: uuid
    *          required: true
    *          description: Location id
+   *          schema:
+   *            type: string
+   *            format: uuid
    *      responses:
    *        200:
    *          description: Location deleted
@@ -220,8 +241,8 @@ routes
  *          example: SIMPLE
  *        limit_schedules:
  *          type: number
- *          description: Limit schedule must be number and should be greater than 0 and less than 24
- *          minimum: 0
+ *          description: Limit schedule must be number and should be greater than 1 and less than 24
+ *          minimum: 1
  *          maximum: 24
  *          example: 8
  *        vehicle_type:
@@ -249,7 +270,6 @@ routes
  *          description: The status of the slot
  *          enum:
  *            - DISPONIBLE
- *            - OCUPADO
  *            - INACTIVO
  *          example: DISPONIBLE
  *    Location:
@@ -269,8 +289,8 @@ routes
  *          example: John Doe
  *        phone:
  *          type: string
- *          description: Phone number in the format +5XX XXXX-XXXX
- *          example: +502 45454545
+ *          description: Phone number in the format +(5XX) XXXXXXXX
+ *          example: +(502) 45454545
  *          pattern: '^\\+\\(50\\d{1}\\) \\d{8}$'
  *        email:
  *          type: string
@@ -329,7 +349,7 @@ routes
  *          example: Angelina Kovacek
  *        phone:
  *          type: string
- *          description: Phone number in the format +5XX XXXX-XXXX
+ *          description: Phone number in the format +(5XX) XXXXXXXX
  *          example: +(502) 45573001
  *          pattern: '^\\+\\(50\\d{1}\\) \\d{8}$'
  *        email:
@@ -425,7 +445,6 @@ routes
  *          description: The status of the slot
  *          enum:
  *            - DISPONIBLE
- *            - OCUPADO
  *            - INACTIVO
  *          example: DISPONIBLE
  *    Location-location-by-id:
@@ -449,7 +468,7 @@ routes
  *          example: Angelina Kovacek
  *        phone:
  *          type: string
- *          description: Phone number in the format +5XX XXXX-XXXX
+ *          description: Phone number in the format +(5XX) XXXXXXXX
  *          example: +(502) 45573001
  *          pattern: '^\\+\\(50\\d{1}\\) \\d{8}$'
  *        email:
@@ -524,7 +543,6 @@ routes
  *          description: The status of the slot
  *          enum:
  *            - DISPONIBLE
- *            - OCUPADO
  *            - INACTIVO
  *          example: DISPONIBLE
  *        cost_type:
@@ -564,8 +582,8 @@ routes
  *          example: John Doe
  *        phone:
  *          type: string
- *          description: Phone number in the format +5XX XXXX-XXXX
- *          example: +502 45454545
+ *          description: Phone number in the format +(5XX) XXXXXXXX
+ *          example: +(502) 45454545
  *          pattern: '^\\+\\(50\\d{1}\\) \\d{8}$'
  *        email:
  *          type: string
