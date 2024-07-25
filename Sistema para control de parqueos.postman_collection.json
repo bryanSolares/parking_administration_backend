@@ -1,0 +1,666 @@
+{
+  "info": {
+    "_postman_id": "a93332a8-0760-4e43-a8d9-aae2cc822cd7",
+    "name": "Sistema para control de parqueos",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "9869225"
+  },
+  "item": [
+    {
+      "name": "Manage Assignments",
+      "item": [
+        {
+          "name": "Get employee",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [""],
+                "type": "text/javascript",
+                "packages": {}
+              }
+            }
+          ],
+          "protocolProfileBehavior": {
+            "followRedirects": true,
+            "disableUrlEncoding": false,
+            "disableCookies": false
+          },
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "User-Agent",
+                "value": "insomnia/9.3.1"
+              }
+            ],
+            "url": {
+              "raw": "{{ _.host }}:{{ _.port }}/api/v1/assignment/employee/10",
+              "host": ["{{ _.host }}"],
+              "port": "{{ _.port }}",
+              "path": ["api", "v1", "assignment", "employee", "10"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get all assignments",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [""],
+                "type": "text/javascript",
+                "packages": {}
+              }
+            }
+          ],
+          "protocolProfileBehavior": {
+            "followRedirects": true,
+            "disableUrlEncoding": false,
+            "disableCookies": false
+          },
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "User-Agent",
+                "value": "insomnia/9.3.1"
+              }
+            ],
+            "url": {
+              "raw": "{{ _.host }}:{{ _.port }}/api/v1/assignment?limit=20&page=1",
+              "host": ["{{ _.host }}"],
+              "port": "{{ _.port }}",
+              "path": ["api", "v1", "assignment"],
+              "query": [
+                {
+                  "key": "limit",
+                  "value": "20"
+                },
+                {
+                  "key": "page",
+                  "value": "1"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get assignment by id",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [""],
+                "type": "text/javascript",
+                "packages": {}
+              }
+            }
+          ],
+          "protocolProfileBehavior": {
+            "followRedirects": true,
+            "disableUrlEncoding": false,
+            "disableCookies": false
+          },
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "User-Agent",
+                "value": "insomnia/9.3.1"
+              }
+            ],
+            "url": {
+              "raw": "{{ _.host }}:{{ _.port }}/api/v1/assignment/0ef77d47-3559-429e-be1c-4ea4fa6f29e6",
+              "host": ["{{ _.host }}"],
+              "port": "{{ _.port }}",
+              "path": [
+                "api",
+                "v1",
+                "assignment",
+                "0ef77d47-3559-429e-be1c-4ea4fa6f29e6"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update assignment",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [""],
+                "type": "text/javascript",
+                "packages": {}
+              }
+            }
+          ],
+          "protocolProfileBehavior": {
+            "followRedirects": true,
+            "disableUrlEncoding": false,
+            "disableCookies": false
+          },
+          "request": {
+            "method": "PUT",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"employee\": {\n        \"id\": \"aa83c50f-c13a-4623-87ab-219a8e6dbc14\",\n        \"vehicles\": [\n            {\n                //     \"id\": \"f07f558f-0f65-4ef4-a683-17a5c7fa12c7\", (Optional)\n                \"vehicle_badge\": \"{{$randomBankAccount}} - owner\",\n                \"color\": \"{{$randomColor}} - owner\",\n                \"brand\": \"{{$randomColor}} - owner\",\n                \"model\": \"{{$randomColor}} - owner\",\n                \"type\": \"CAMION\"\n            }\n        ]\n    },\n    \"schedule\": {\n        \"start_time_assignment\": \"10:00\",\n        \"end_time_assignment\": \"15:00\"\n    },\n    \"assignment_loan\": {\n        \"start_date_assignment\": \"2024-07-15\",\n        \"end_date_assignment\": \"2024-07-16\",\n        \"employee\": {\n            \"id\": \"0e1a2a05-5908-44f1-ab12-993694c61846\",\n            \"vehicles\": [\n                {\n                    //     \"id\": \"f07f558f-0f65-4ef4-a683-17a5c7fa12c7\", (Optional)\n                    \"vehicle_badge\": \"{{$randomBankAccount}} - guest\",\n                    \"color\": \"{{$randomColor}} - guest\",\n                    \"brand\": \"{{$randomColor}} - guest\",\n                    \"model\": \"{{$randomColor}} - guest\",\n                    \"type\": \"CAMION\"\n                }\n            ]\n        }\n    },\n    \"vehicles_for_delete\": [\n        \"f07f558f-0f65-4ef4-a683-17a5c7fa12c7\",\n        \"1217f20a-6c61-41ec-a6c0-0a11d9e8cb3a\",\n        \"538d13bd-a1fc-4927-832f-2209e0594e65\",\n        \"b0a97dfa-5d37-4666-bace-8682fce19660\"\n    ]\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{ _.host }}:{{ _.port }}/api/v1/assignment/38fbf554-789b-4507-8611-234f0b969f76",
+              "host": ["{{ _.host }}"],
+              "port": "{{ _.port }}",
+              "path": [
+                "api",
+                "v1",
+                "assignment",
+                "38fbf554-789b-4507-8611-234f0b969f76"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Create assignment loan",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [""],
+                "type": "text/javascript",
+                "packages": {}
+              }
+            }
+          ],
+          "protocolProfileBehavior": {
+            "followRedirects": true,
+            "disableUrlEncoding": false,
+            "disableCookies": false
+          },
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"start_date_assignment\": \"2024-07-15\",\n    \"end_date_assignment\": \"2024-07-16\",\n    \"employee\": {\n        ///\"id\": \"61f978bc-040a-48d9-affe-fcce9b1b7c28\",\n        \"code_employee\": \"{{$randomDomainWord}}\",\n        \"name\": \"{{$randomFullName}}\",\n        \"workplace\": \"{{$randomCompanySuffix}}\",\n        \"identifier_document\": \"1234432150101\",\n        \"company\": \"{{$randomCompanyName}}\",\n        \"department\": \"{{$randomJobArea}}\",\n        \"sub_management\": \"{{$randomJobArea}}\",\n        \"management_1\": \"{{$randomJobArea}}\",\n        \"management_2\": \"{{$randomJobArea}}\",\n        \"work_site\": \"{{$randomJobArea}}\",\n        \"address\": \"{{$randomStreetAddress}}\",\n        \"email\": \"solares.josue@outlook.com\",\n        \"phone\": \"+(502) 45573001\",\n        \"vehicles\": [\n            {\n                //\"id\": \"{{$randomUUID}}\",\n                \"vehicle_badge\": \"{{$randomBankAccount}}\",\n                \"color\": \"{{$randomColor}}\",\n                \"brand\": \"{{$randomColor}}\",\n                \"model\": \"{{$randomColor}}\",\n                \"type\": \"CARRO\"\n            }\n        ]\n    }\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{ _.host }}:{{ _.port }}/api/v1/assignment/loan/590dba60-2bf5-438f-b05d-8d2b7b4f1a45",
+              "host": ["{{ _.host }}"],
+              "port": "{{ _.port }}",
+              "path": [
+                "api",
+                "v1",
+                "assignment",
+                "loan",
+                "590dba60-2bf5-438f-b05d-8d2b7b4f1a45"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Create assignment",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [""],
+                "type": "text/javascript",
+                "packages": {}
+              }
+            }
+          ],
+          "protocolProfileBehavior": {
+            "followRedirects": true,
+            "disableUrlEncoding": false,
+            "disableCookies": false
+          },
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"slot_id\": \"1eb76106-2726-47c2-814e-ac16d831560d\",\n    \"employee\": {\n        //\"id\": \"a1d8fec0-0c45-4f1b-a42c-5f2fad304c7d\", (Optional)\n        \"code_employee\": \"{{$randomDomainWord}}\",\n        \"name\": \"{{$randomFullName}}\",\n        \"workplace\": \"{{$randomCompanySuffix}}\",\n        \"identifier_document\": \"1234432150101\",\n        \"company\": \"{{$randomCompanyName}}\",\n        \"department\": \"{{$randomJobArea}}\",\n        \"sub_management\": \"{{$randomJobArea}}\",\n        \"management_1\": \"{{$randomJobArea}}\",\n        \"management_2\": \"{{$randomJobArea}}\",\n        \"work_site\": \"{{$randomJobArea}}\",\n        \"address\": \"{{$randomStreetAddress}}\",\n        \"email\": \"solares.josue@outlook.com\",\n        \"phone\": \"+(502) 45573001\",\n        \"vehicles\": [\n            {\n                \"vehicle_badge\": \"{{$randomBankAccount}}\",\n                \"color\": \"{{$randomColor}}\",\n                \"brand\": \"{{$randomColor}}\",\n                \"model\": \"{{$randomColor}}\",\n                \"type\": \"CARRO\"\n            }\n        ]\n    },\n    \"schedule\": {\n        \"start_time_assignment\": \"10:00\",\n        \"end_time_assignment\": \"12:00\"\n    },\n    \"assignment_loan\": {\n        \"start_date_assignment\": \"2024-07-15\",\n        \"end_date_assignment\": \"2024-07-16\",\n        \"employee\": {\n            //\"id\": \"a1d8fec0-0c45-4f1b-a42c-5f2fad304c7d\", (Optional)\n            \"code_employee\": \"{{$randomDomainWord}}\",\n            \"name\": \"{{$randomFullName}}\",\n            \"workplace\": \"{{$randomCompanySuffix}}\",\n            \"identifier_document\": \"1234432150101\",\n            \"company\": \"{{$randomCompanyName}}\",\n            \"department\": \"{{$randomJobArea}}\",\n            \"sub_management\": \"{{$randomJobArea}}\",\n            \"management_1\": \"{{$randomJobArea}}\",\n            \"management_2\": \"{{$randomJobArea}}\",\n            \"work_site\": \"{{$randomJobArea}}\",\n            \"address\": \"{{$randomStreetAddress}}\",\n            \"email\": \"solares.josue@outlook.com\",\n            \"phone\": \"+(502) 45573001\",\n            \"vehicles\": [\n                {\n                    \"vehicle_badge\": \"{{$randomBankAccount}}\",\n                    \"color\": \"{{$randomColor}}\",\n                    \"brand\": \"{{$randomColor}}\",\n                    \"model\": \"{{$randomColor}}\",\n                    \"type\": \"CARRO\"\n                }\n            ]\n        }\n    }\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{ _.host }}:{{ _.port }}/api/v1/assignment",
+              "host": ["{{ _.host }}"],
+              "port": "{{ _.port }}",
+              "path": ["api", "v1", "assignment"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Create discount note",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [""],
+                "type": "text/javascript",
+                "packages": {}
+              }
+            }
+          ],
+          "protocolProfileBehavior": {
+            "followRedirects": true,
+            "disableUrlEncoding": false,
+            "disableCookies": false
+          },
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{ _.host }}:{{ _.port }}/api/v1/assignment/discount-note/0ef77d47-3559-429e-be1c-4ea4fa6f29e6",
+              "host": ["{{ _.host }}"],
+              "port": "{{ _.port }}",
+              "path": [
+                "api",
+                "v1",
+                "assignment",
+                "discount-note",
+                "0ef77d47-3559-429e-be1c-4ea4fa6f29e6"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update discount note",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [""],
+                "type": "text/javascript",
+                "packages": {}
+              }
+            }
+          ],
+          "protocolProfileBehavior": {
+            "followRedirects": true,
+            "disableUrlEncoding": false,
+            "disableCookies": false
+          },
+          "request": {
+            "method": "PUT",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    //\"status\": \"APROBADO\"\r\n    //\"status\": \"RECHAZADO\"\r\n    // \"status\": \"CANCELADO\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{ _.host }}:{{ _.port }}/api/v1/assignment/discount-note/0ef77d47-3559-429e-be1c-4ea4fa6f29e6",
+              "host": ["{{ _.host }}"],
+              "port": "{{ _.port }}",
+              "path": [
+                "api",
+                "v1",
+                "assignment",
+                "discount-note",
+                "0ef77d47-3559-429e-be1c-4ea4fa6f29e6"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "DeAssignment",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [""],
+                "type": "text/javascript",
+                "packages": {}
+              }
+            }
+          ],
+          "protocolProfileBehavior": {
+            "followRedirects": true,
+            "disableUrlEncoding": false,
+            "disableCookies": false
+          },
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "//Optional\r\n// {\r\n//     \"reason\": \"{{$randomLoremText}}\",\r\n//     \"de_assignment_date\": \"2024-07-22\"\r\n// }",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{ _.host }}:{{ _.port }}/api/v1/assignment/de_assignment/ebff035c-41ba-4164-a522-c2208435f001",
+              "host": ["{{ _.host }}"],
+              "port": "{{ _.port }}",
+              "path": [
+                "api",
+                "v1",
+                "assignment",
+                "de_assignment",
+                "ebff035c-41ba-4164-a522-c2208435f001"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Manage parking",
+      "item": [
+        {
+          "name": "Create location",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 201\", function () {\r",
+                  "    pm.response.to.have.status(201);\r",
+                  "});"
+                ],
+                "type": "text/javascript",
+                "packages": {}
+              }
+            }
+          ],
+          "protocolProfileBehavior": {
+            "followRedirects": true,
+            "disableUrlEncoding": false,
+            "disableCookies": false
+          },
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"name\": \"{{$randomCompanyName}}\",\n    \"address\": \"{{$randomStreetAddress}}\",\n    \"contact_reference\": \"{{$randomFullName}}\",\n    \"phone\": \"+(502) 45573001\",\n    \"email\": \"{{$randomEmail}}\",\n    \"comments\": \"{{$randomAdjective}}\",\n    \"status\": \"ACTIVO\",\n    \"slots\": [\n        {\n            \"slot_number\": \"{{$randomBankAccountBic}}\",\n            \"slot_type\": \"MULTIPLE\",\n            \"limit_schedules\": 5,\n            \"status\": \"DISPONIBLE\",\n            \"cost_type\": \"DESCUENTO\",\n            \"vehicle_type\": \"CARRO\",\n            \"cost\": 100\n        }\n    ]\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{ _.host }}:{{ _.port }}/api/v1/parking/location",
+              "host": ["{{ _.host }}"],
+              "port": "{{ _.port }}",
+              "path": ["api", "v1", "parking", "location"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update location",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [""],
+                "type": "text/javascript",
+                "packages": {}
+              }
+            }
+          ],
+          "protocolProfileBehavior": {
+            "followRedirects": true,
+            "disableUrlEncoding": false,
+            "disableCookies": false
+          },
+          "request": {
+            "method": "PUT",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"name\": \"{{$randomCompanySuffix}}\",\n    \"address\": \"{{$randomStreetAddress}}\",\n    \"contact_reference\": \"{{$randomFullName}}\",\n    \"phone\": \"+(502) 45454545\",\n    \"email\": \"{{$randomEmail}}\",\n    \"comments\": \"{{$randomLoremSentence}}\",\n    \"status\": \"ACTIVO\",\n    \"slots\": [\n        {\n            \"id\": \"895110f9-75d0-4444-a9e5-46cf7d0d25ed\",\n            \"slot_number\": \"abc-abc-abc\",\n            \"slot_type\": \"SIMPLE\",\n            \"limit_schedules\": 10,\n            \"status\": \"DISPONIBLE\",\n            \"cost_type\": \"DESCUENTO\",\n            \"vehicle_type\": \"MOTO\",\n            \"cost\": 100.50\n        }\n    ],\n    //Optional\n    \"slots_to_delete\": [\n        \"9507106f-0049-4c8b-84eb-207e8914b3fd\",\n        \"7fec05e7-1d37-4fbe-96b1-94a235464211\"\n    ]\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{ _.host }}:{{ _.port }}/api/v1/parking/location/895b40e8-2fbf-4312-bd2e-15aa3ae96c82",
+              "host": ["{{ _.host }}"],
+              "port": "{{ _.port }}",
+              "path": [
+                "api",
+                "v1",
+                "parking",
+                "location",
+                "895b40e8-2fbf-4312-bd2e-15aa3ae96c82"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Delete location",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [""],
+                "type": "text/javascript",
+                "packages": {}
+              }
+            }
+          ],
+          "protocolProfileBehavior": {
+            "followRedirects": true,
+            "disableUrlEncoding": false,
+            "disableCookies": false
+          },
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{ _.host }}:{{ _.port }}/api/v1/parking/location/059727b7-cfcc-49ee-bc6a-146f52ca1dcd",
+              "host": ["{{ _.host }}"],
+              "port": "{{ _.port }}",
+              "path": [
+                "api",
+                "v1",
+                "parking",
+                "location",
+                "059727b7-cfcc-49ee-bc6a-146f52ca1dcd"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get all locations",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {\r",
+                  "    pm.response.to.have.status(200);\r",
+                  "});"
+                ],
+                "type": "text/javascript",
+                "packages": {}
+              }
+            }
+          ],
+          "protocolProfileBehavior": {
+            "followRedirects": true,
+            "disableUrlEncoding": false,
+            "disableCookies": false
+          },
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{ _.host }}:{{ _.port }}/api/v1/parking/location?limit=50&page=6",
+              "host": ["{{ _.host }}"],
+              "port": "{{ _.port }}",
+              "path": ["api", "v1", "parking", "location"],
+              "query": [
+                {
+                  "key": "limit",
+                  "value": "50"
+                },
+                {
+                  "key": "page",
+                  "value": "6"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get location by id",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [""],
+                "type": "text/javascript",
+                "packages": {}
+              }
+            }
+          ],
+          "protocolProfileBehavior": {
+            "followRedirects": true,
+            "disableUrlEncoding": false,
+            "disableCookies": false
+          },
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "User-Agent",
+                "value": "insomnia/9.3.1"
+              }
+            ],
+            "url": {
+              "raw": "{{ _.host }}:{{ _.port }}/api/v1/parking/location/3a80202a-2db6-4d60-a207-9c711120f359",
+              "host": ["{{ _.host }}"],
+              "port": "{{ _.port }}",
+              "path": [
+                "api",
+                "v1",
+                "parking",
+                "location",
+                "3a80202a-2db6-4d60-a207-9c711120f359"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Health Check",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [""],
+            "type": "text/javascript",
+            "packages": {}
+          }
+        }
+      ],
+      "protocolProfileBehavior": {
+        "followRedirects": true,
+        "disableUrlEncoding": false,
+        "disableCookies": false
+      },
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{ _.host }}:{{ _.port }}/api/v1/health",
+          "host": ["{{ _.host }}"],
+          "port": "{{ _.port }}",
+          "path": ["api", "v1", "health"]
+        }
+      },
+      "response": []
+    }
+  ],
+  "variable": [
+    {
+      "key": "host",
+      "value": "http://localhost"
+    },
+    {
+      "key": "port",
+      "value": 3500
+    },
+    {
+      "key": " _.host ",
+      "value": "http://localhost"
+    },
+    {
+      "key": " _.port ",
+      "value": "3500"
+    }
+  ]
+}
