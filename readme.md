@@ -1,5 +1,24 @@
 # Parking system (backend)
 
+## Run with docker compose for test endpoints (🧪)
+
+```bash
+docker compose up -d
+```
+
+## Run app in development mode
+
+### Pre-requisites (🧑‍💻)
+
+- node >= 18
+- yarn >= 1.22
+- Docker
+- Docker compose
+
+```bash
+docker compose up database -d
+```
+
 ### Copy .env.example to .env
 
 (update the values in .env)
@@ -20,7 +39,7 @@ yarn install
 yarn dev
 ```
 
-### Run the server in production mode
+## Run test (in progress 🔃)
 
 ```bash
 yarn build
