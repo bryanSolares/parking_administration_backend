@@ -11,9 +11,9 @@ import { config } from '@config/logger/load-envs';
 import { logger } from '@config/logger/load-logger';
 import { config as swaggerDefinition } from '@config/swagger/config';
 import { sequelizeConnection } from '@config/database/sequelize';
-import './config/database/models/relations';
+import '@config/database/models/relations';
 
-import routes from '@infrastructure/http/routes';
+import routes from '@routes/index';
 
 export class Server {
   private readonly app: express.Application;
