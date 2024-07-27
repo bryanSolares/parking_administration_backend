@@ -1,11 +1,15 @@
+import crypto from 'node:crypto';
+
 import { AssignmentRepository } from '@assignment-module-core/repositories/assignment-repository';
 import { AssignmentEntity } from '@assignment-module-core/entities/assignment-entity';
 import { AssignmentDomainService } from '../services/assignment-domain-service';
+import { NotificationMailRepository } from '@assignment-module-core/repositories/notification-mail-repository';
 
 export class CreateAssignment {
   constructor(
     private readonly assignmentRepository: AssignmentRepository,
-    private readonly assignmentDomainService: AssignmentDomainService
+    private readonly assignmentDomainService: AssignmentDomainService,
+    private readonly notificationMailRepository: NotificationMailRepository
   ) {}
 
   async run(assignment: AssignmentEntity): Promise<void> {
@@ -39,12 +43,57 @@ export class CreateAssignment {
       );
     }
 
-    //TODO: Email to RRHH if slot is type cost
+    await this.assignmentRepository.createAssignment(assignment);
 
-    //TODO: Welcome email to owner
+    //Generate token for owner
+    const secret = crypto.randomBytes(32).toString('hex');
+    //TODO: Insert token in database
 
-    //TODO: Welcome email to guest
+    //owner
+    /* eslint-disable  @typescript-eslint/no-floating-promises */
+    this.notificationMailRepository.assignmentMail(
+      { name: owner.name, email: owner.email, token: secret },
+      {
+        name: 'Los capitol',
+        address: 'Guatemala zona 1',
+        slotNumber: 'abc123'
+      },
+      {
+        startTime: schedule?.start_time_assignment,
+        endTime: schedule?.end_time_assignment
+      }
+    );
 
-    return this.assignmentRepository.createAssignment(assignment);
+    //Guest
+    if (guest && assignment.assignment_loan) {
+      this.notificationMailRepository.assignmentGuestMail(
+        { name: owner.name, email: owner.email },
+        { name: guest.name, email: guest.email },
+        {
+          name: 'Los capitol',
+          address: 'Guatemala zona 1',
+          slotNumber: 'abc123'
+        },
+        {
+          startDate: new Date(
+            assignment.assignment_loan.start_date_assignment
+          ).toLocaleDateString('es-GT', {
+            timeZone: 'America/Guatemala'
+          }),
+          endDate: new Date(
+            assignment.assignment_loan.end_date_assignment
+          ).toLocaleDateString('es-GT', {
+            timeZone: 'America/Guatemala'
+          })
+        }
+      );
+    }
+
+    //TODO: Validate if slot is type cost
+    //RRHH
+    this.notificationMailRepository.discountNoteMail(
+      { name: owner.name, email: owner.email },
+      { name: 'RRHH', email: 'solares.josue@outlook.com' }
+    );
   }
 }
