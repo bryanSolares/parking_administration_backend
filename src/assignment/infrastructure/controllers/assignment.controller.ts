@@ -80,7 +80,7 @@ export class AssignmentController {
   }
 
   async assignmentFinderById(req: Request, res: Response) {
-    const id = req.params.id;
+    const id = req.params.assignment_id;
 
     try {
       const assignment = await this.assignmentFinderByIdUseCase.run(id);
