@@ -41,13 +41,19 @@ const assignmentFinder = new AssignmentFinder(sequelizeAssignmentRepository);
 const assignmentFinderById = new AssignmentFinderById(
   sequelizeAssignmentRepository
 );
-const deAssignmentById = new CreateDeAssignment(sequelizeAssignmentRepository);
+const deAssignmentById = new CreateDeAssignment(
+  sequelizeAssignmentRepository,
+  nodemailerNotificationRepository,
+  employeeRepository
+);
 const createDiscountNote = new CreateDiscountNote(
   sequelizeAssignmentRepository,
-  sequelizeLocationRepository
+  sequelizeLocationRepository,
+  nodemailerNotificationRepository
 );
 const createAssignmentLoan = new CreateAssignmentLoan(
-  sequelizeAssignmentRepository
+  sequelizeAssignmentRepository,
+  nodemailerNotificationRepository
 );
 const updateAssignment = new UpdateAssignment(sequelizeAssignmentRepository);
 const updateDiscountNote = new UpdateDiscountNote(

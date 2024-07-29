@@ -5,19 +5,27 @@ export type EmailData = {
 };
 
 export interface NotificationMailRepository {
-  assignmentMail(
+  assignmentNotification(
     employee: { name: string; email: string; token: string },
     location: { name: string; address: string; slotNumber: string },
     schedule: { startTime: string; endTime: string }
   ): Promise<void>;
-  assignmentGuestMail(
+  assignmentGuestNotification(
     owner: { name: string; email: string },
     guest: { name: string; email: string },
     location: { name: string; address: string; slotNumber: string },
     schedule: { startDate: string; endDate: string }
   ): Promise<void>;
-  discountNoteMail(
+  discountNoteNotification(
     owner: { name: string; email: string },
     rrhh: { name: string; email: string }
   ): Promise<void>;
+  deAssignmentOwnerNotification(owner: {
+    name: string;
+    email: string;
+  }): Promise<void>;
+  deAssignmentGuestNotification(guest: {
+    name: string;
+    email: string;
+  }): Promise<void>;
 }

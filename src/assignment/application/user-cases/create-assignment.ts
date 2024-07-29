@@ -51,7 +51,7 @@ export class CreateAssignment {
 
     //owner
     /* eslint-disable  @typescript-eslint/no-floating-promises */
-    this.notificationMailRepository.assignmentMail(
+    this.notificationMailRepository.assignmentNotification(
       { name: owner.name, email: owner.email, token: secret },
       {
         name: 'Los capitol',
@@ -66,7 +66,7 @@ export class CreateAssignment {
 
     //Guest
     if (guest && assignment.assignment_loan) {
-      this.notificationMailRepository.assignmentGuestMail(
+      this.notificationMailRepository.assignmentGuestNotification(
         { name: owner.name, email: owner.email },
         { name: guest.name, email: guest.email },
         {
@@ -88,12 +88,5 @@ export class CreateAssignment {
         }
       );
     }
-
-    //TODO: Validate if slot is type cost
-    //RRHH
-    this.notificationMailRepository.discountNoteMail(
-      { name: owner.name, email: owner.email },
-      { name: 'RRHH', email: 'solares.josue@outlook.com' }
-    );
   }
 }

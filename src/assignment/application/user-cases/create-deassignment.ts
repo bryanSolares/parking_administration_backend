@@ -1,10 +1,16 @@
 import { AssignmentRepository } from '@assignment-module-core/repositories/assignment-repository';
+import { NotificationMailRepository } from '@assignment-module-core/repositories/notification-mail-repository';
+import { EmployeeRepositoryWebService } from '@assignment-module-core/repositories/employee-repository';
 import { DeAssignmentEntity } from '@assignment-module-core/entities/deassignment-entity';
 import { DeAssignmentReady } from '@assignment-module-core/exceptions/de-assignment-ready';
 import { AssignmentNotFoundError } from '@assignment-module-core/exceptions/assignment-not-found';
 
 export class CreateDeAssignment {
-  constructor(private readonly assignmentRepository: AssignmentRepository) {}
+  constructor(
+    private readonly assignmentRepository: AssignmentRepository,
+    private readonly notificationMailRepository: NotificationMailRepository,
+    private readonly employeeRepository: EmployeeRepositoryWebService
+  ) {}
 
   async run(
     assignmentId: string,
@@ -21,9 +27,36 @@ export class CreateDeAssignment {
       throw new DeAssignmentReady('Assignment is already inactive');
     }
 
-    return this.assignmentRepository.createDeAssignment(
+    await this.assignmentRepository.createDeAssignment(
       assignmentId,
       deAssignment
     );
+
+    const employeeOwner =
+      await this.employeeRepository.getEmployeeByCodeFromDatabase(
+        assignment.employee.code_employee
+      );
+    /* eslint-disable  @typescript-eslint/no-floating-promises */
+    this.notificationMailRepository.deAssignmentOwnerNotification({
+      name: employeeOwner.name,
+      email: employeeOwner.email
+    });
+
+    //Notification to guest
+    await this.assignmentRepository.getAssignmentLoanActiveByIdAssignment(
+      assignmentId
+    );
+
+    // if (assignmentLoan) {
+    //   const employeeGuest =
+    //     await this.employeeRepository.getEmployeeByCodeFromDatabase(
+    //       assignmentLoan.employee.code_employee
+    //     );
+
+    //   this.notificationMailRepository.deAssignmentGuestNotification({
+    //     name: employeeGuest.name,
+    //     email: employeeGuest.email
+    //   });
+    // }
   }
 }

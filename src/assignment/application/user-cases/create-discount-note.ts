@@ -1,4 +1,5 @@
 import { AssignmentRepository } from '@assignment-module-core/repositories/assignment-repository';
+import { NotificationMailRepository } from '@assignment-module-core/repositories/notification-mail-repository';
 import { LocationRepository } from '@location-module-core/repositories/location-repository';
 import { AssignmentNotFoundError } from '@assignment-module-core/exceptions/assignment-not-found';
 import { PreviewDiscountNoteError } from '@assignment-module-core/exceptions/preview-discount-note';
@@ -6,7 +7,8 @@ import { PreviewDiscountNoteError } from '@assignment-module-core/exceptions/pre
 export class CreateDiscountNote {
   constructor(
     private readonly assignmentRepository: AssignmentRepository,
-    private readonly locationRepository: LocationRepository
+    private readonly locationRepository: LocationRepository,
+    private readonly notificationMailRepository: NotificationMailRepository
   ) {}
 
   async run(idAssignment: string): Promise<void> {
@@ -42,5 +44,11 @@ export class CreateDiscountNote {
     await this.assignmentRepository.createDiscountNote(idAssignment);
 
     //TODO: send email with discount note
+    /* eslint-disable  @typescript-eslint/no-floating-promises */
+    const employee = assignment.employee;
+    this.notificationMailRepository.discountNoteNotification(
+      { name: employee.name, email: employee.email },
+      { name: 'RRHH', email: 'solares.josue@outlook.com' }
+    );
   }
 }

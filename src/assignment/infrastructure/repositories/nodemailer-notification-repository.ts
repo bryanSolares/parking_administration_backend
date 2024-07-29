@@ -11,7 +11,7 @@ export class NodemailerNotificationRepository
     this._transporter = new Mailer();
   }
 
-  async assignmentMail(
+  async assignmentNotification(
     employee: { name: string; email: string; token: string },
     location: { name: string; address: string; slotNumber: string },
     schedule: { startTime: string; endTime: string }
@@ -34,7 +34,7 @@ export class NodemailerNotificationRepository
     );
   }
 
-  async assignmentGuestMail(
+  async assignmentGuestNotification(
     owner: { name: string; email: string },
     guest: { name: string; email: string },
     location: { name: string; address: string; slotNumber: string },
@@ -57,7 +57,7 @@ export class NodemailerNotificationRepository
     );
   }
 
-  async discountNoteMail(
+  async discountNoteNotification(
     owner: { name: string; email: string },
     rrhh: { name: string; email: string }
   ): Promise<void> {
@@ -88,6 +88,46 @@ export class NodemailerNotificationRepository
           content: attachment ?? ''
         }
       ]
+    );
+  }
+
+  async deAssignmentOwnerNotification(owner: {
+    name: string;
+    email: string;
+  }): Promise<void> {
+    const message = `
+    <h1>De-Assignment Notification</h1>
+    <h2>Estimad(@): ${owner.name}!</h2>
+
+    <p>Le informamos que su asignación ubicada en: "<>" y con número: <> ha sido desactivada, por lo cuál ya no podrá disponer de esta ubicación.</p>
+    <p>Si esto ha sido un error, le suplicamos que pueda comunicase al +(502) xxxx-xxxx o al correo.</p>
+    `;
+
+    await this._transporter.sendNotification(
+      owner.email,
+      '',
+      'Parking De-Assignment Owner',
+      message
+    );
+  }
+
+  async deAssignmentGuestNotification(guest: {
+    name: string;
+    email: string;
+  }): Promise<void> {
+    const message = `
+    <h1>De-Assignment Notification</h1>
+    <h2>Estimad(@): ${guest.name}!</h2>
+
+    <p>Le informamos que su asignación ubicada en: "<>" y con número: <> ha sido desactivada, por lo cuál ya no podrá disponer de esta ubicación.</p>
+    <p>Si esto ha sido un error, le suplicamos que pueda comunicase al +(502) xxxx-xxxx o al correo.</p>
+    `;
+
+    await this._transporter.sendNotification(
+      guest.email,
+      '',
+      'Parking De-Assignment Guest',
+      message
     );
   }
 }

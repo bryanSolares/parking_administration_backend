@@ -61,12 +61,18 @@ TODO:
 [ ] implement handle error in hole application
 [ ] fix issue with timezone in docker
 
-# Sequelize relations
+# Notifications
 
-OneToOne (foreing key defined in target model)
-OneToMany (foreing key defined in target model)
-
-A (source) - B (target)
-
-A.hasOne(B) | A.hasMany(B) -> Foreing key in B = a_id
-B.belongTo(A) -> Foreing key in B = a_id
+- Create assignment
+  [X] Owner
+  [X] Guest if exists
+- Create Assignment Guest
+  [X] Owner
+  [X] Guest
+  [ ] Owner location
+- Create discount note
+  [X] RRHH
+  [X] Owner
+- De-Assignment
+  [X] Owner
+  [ ] Guest if exists
