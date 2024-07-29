@@ -43,20 +43,16 @@ export class CreateDeAssignment {
     });
 
     //Notification to guest
-    await this.assignmentRepository.getAssignmentLoanActiveByIdAssignment(
-      assignmentId
-    );
+    const assignmentLoan =
+      await this.assignmentRepository.getAssignmentLoanActiveByIdAssignment(
+        assignmentId
+      );
 
-    // if (assignmentLoan) {
-    //   const employeeGuest =
-    //     await this.employeeRepository.getEmployeeByCodeFromDatabase(
-    //       assignmentLoan.employee.code_employee
-    //     );
-
-    //   this.notificationMailRepository.deAssignmentGuestNotification({
-    //     name: employeeGuest.name,
-    //     email: employeeGuest.email
-    //   });
-    // }
+    if (assignmentLoan) {
+      this.notificationMailRepository.deAssignmentGuestNotification({
+        name: assignmentLoan.employee.name,
+        email: assignmentLoan.employee.email
+      });
+    }
   }
 }

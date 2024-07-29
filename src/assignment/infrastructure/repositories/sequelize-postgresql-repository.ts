@@ -426,7 +426,8 @@ export class SequelizeAssignmentRepository implements AssignmentRepository {
     id: string
   ): Promise<AssignmentLoadEntity | null> {
     const assignmentLoan = await AssignmentLoanModel.findOne({
-      where: { assignment_id: id, status: 'ACTIVO' }
+      where: { assignment_id: id, status: 'ACTIVO' },
+      include: [{ model: EmployeeModel, as: 'employee' }]
     });
     return assignmentLoan?.get({ plain: true }) as AssignmentLoadEntity;
   }
