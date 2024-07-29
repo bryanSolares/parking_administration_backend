@@ -1,6 +1,5 @@
 import { AssignmentRepository } from '@assignment-module-core/repositories/assignment-repository';
-import { NotificationMailRepository } from '@assignment-module-core/repositories/notification-mail-repository';
-import { EmployeeRepositoryWebService } from '@assignment-module-core/repositories/employee-repository';
+import { NotificationService } from '../services/notification-service';
 import { DeAssignmentEntity } from '@assignment-module-core/entities/deassignment-entity';
 import { DeAssignmentReady } from '@assignment-module-core/exceptions/de-assignment-ready';
 import { AssignmentNotFoundError } from '@assignment-module-core/exceptions/assignment-not-found';
@@ -8,8 +7,7 @@ import { AssignmentNotFoundError } from '@assignment-module-core/exceptions/assi
 export class CreateDeAssignment {
   constructor(
     private readonly assignmentRepository: AssignmentRepository,
-    private readonly notificationMailRepository: NotificationMailRepository,
-    private readonly employeeRepository: EmployeeRepositoryWebService
+    private readonly notificationService: NotificationService
   ) {}
 
   async run(
@@ -32,27 +30,18 @@ export class CreateDeAssignment {
       deAssignment
     );
 
-    const employeeOwner =
-      await this.employeeRepository.getEmployeeByCodeFromDatabase(
-        assignment.employee.code_employee
-      );
-    /* eslint-disable  @typescript-eslint/no-floating-promises */
-    this.notificationMailRepository.deAssignmentOwnerNotification({
-      name: employeeOwner.name,
-      email: employeeOwner.email
-    });
+    const owner = {
+      name: assignment.employee.name,
+      email: assignment.employee.email
+    };
 
-    //Notification to guest
-    const assignmentLoan =
-      await this.assignmentRepository.getAssignmentLoanActiveByIdAssignment(
-        assignmentId
-      );
+    const guest = assignment.assignment_loan
+      ? {
+          name: assignment.assignment_loan.employee.name,
+          email: assignment.assignment_loan.employee.email
+        }
+      : null;
 
-    if (assignmentLoan) {
-      this.notificationMailRepository.deAssignmentGuestNotification({
-        name: assignmentLoan.employee.name,
-        email: assignmentLoan.employee.email
-      });
-    }
+    this.notificationService.createDeAssignmentNotification(owner, guest);
   }
 }

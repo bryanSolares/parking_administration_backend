@@ -15,6 +15,7 @@ import { CreateAssignmentLoan } from '@assignment-module-application/user-cases/
 import { UpdateDiscountNote } from '@assignment-module-application/user-cases/update-discount-note';
 
 import { AssignmentDomainService } from '@assignment-module-application/services/assignment-domain-service';
+import { NotificationService } from '@assignment-module-application/services/notification-service';
 
 import { NodemailerNotificationRepository } from '../repositories/nodemailer-notification-repository';
 
@@ -27,15 +28,18 @@ const assignmentDomainService = new AssignmentDomainService(
   sequelizeLocationRepository
 );
 
-//
 const nodemailerNotificationRepository = new NodemailerNotificationRepository();
+
+const notificationService = new NotificationService(
+  nodemailerNotificationRepository
+);
 
 //Use cases
 const employeeFinderByCode = new GetEmployeeByCode(employeeRepository);
 const createAssignment = new CreateAssignment(
   sequelizeAssignmentRepository,
   assignmentDomainService,
-  nodemailerNotificationRepository
+  notificationService
 );
 const assignmentFinder = new AssignmentFinder(sequelizeAssignmentRepository);
 const assignmentFinderById = new AssignmentFinderById(
@@ -43,17 +47,16 @@ const assignmentFinderById = new AssignmentFinderById(
 );
 const deAssignmentById = new CreateDeAssignment(
   sequelizeAssignmentRepository,
-  nodemailerNotificationRepository,
-  employeeRepository
+  notificationService
 );
 const createDiscountNote = new CreateDiscountNote(
   sequelizeAssignmentRepository,
   sequelizeLocationRepository,
-  nodemailerNotificationRepository
+  notificationService
 );
 const createAssignmentLoan = new CreateAssignmentLoan(
   sequelizeAssignmentRepository,
-  nodemailerNotificationRepository
+  notificationService
 );
 const updateAssignment = new UpdateAssignment(sequelizeAssignmentRepository);
 const updateDiscountNote = new UpdateDiscountNote(

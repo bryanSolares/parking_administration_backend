@@ -14,14 +14,18 @@ export class NodemailerNotificationRepository
   async assignmentNotification(
     employee: { name: string; email: string; token: string },
     location: { name: string; address: string; slotNumber: string },
-    schedule: { startTime: string; endTime: string }
+    schedule: { startTime: string; endTime: string } | null
   ): Promise<void> {
     const message = `
     <h1>Assignment Notification</h1>
     <h2>Bienvenido estimad(@): ${employee.name}!</h2>
 
     <p>El equipo de Asignación de Parqueos te informa que se le ha asignado  un nuevo parqueo disponible. El número de parqueo es ${location.slotNumber} y su ubicación es ${location.address}, puede llegar cualquier duda adicional a soporte@parqueos.com.</p>
-    <p>Puede disponer de esta asignación a partir de las ${schedule.startTime} hasta ${schedule.endTime}.</p>
+    ${
+      schedule
+        ? `<p>Puede disponer de esta asignación a partir de las ${schedule.startTime} hasta ${schedule.endTime}.</p>`
+        : ``
+    }
     <p>Tu token de acceso es: ${employee.token}</p>
     <p>Puedes consultar tu asignación aquí: <a href="https://parqueos.com.gt">https://parqueos.com.gt</a></p>
     `;
