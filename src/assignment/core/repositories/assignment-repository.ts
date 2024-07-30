@@ -41,4 +41,5 @@ export interface AssignmentRepository {
     id: string
   ): Promise<AssignmentLoadEntity | null>;
   updateDiscountNote(assignmentId: string, status: string): Promise<void>;
+  deleteAssignmentLoan(assignmentId: string): Promise<void>;
 }

@@ -441,4 +441,11 @@ export class SequelizeAssignmentRepository implements AssignmentRepository {
       { where: { assignment_id: assignmentId } }
     );
   }
+
+  async deleteAssignmentLoan(assignmentId: string): Promise<void> {
+    await AssignmentLoanModel.update(
+      { status: 'INACTIVO' },
+      { where: { assignment_id: assignmentId } }
+    );
+  }
 }

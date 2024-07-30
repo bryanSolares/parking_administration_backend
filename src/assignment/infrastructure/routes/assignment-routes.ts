@@ -309,6 +309,11 @@ routes
     validateRequest(assignmentIdSchema, 'params'),
     validateRequest(statusDiscountNoteBodySchema, 'body'),
     assignmentController.updateDiscountNode.bind(assignmentController)
+  )
+  .delete(
+    '/assignment-loan/:assignment_id',
+    validateRequest(assignmentIdSchema, 'params'),
+    assignmentController.deleteAssignmentLoan.bind(assignmentController)
   );
 
 //Schemas

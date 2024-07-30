@@ -18,39 +18,38 @@ TODO:
 # Assignment
 
 [ ] resolve hole dependency from employee web service (technical debt)
+[ ] save employee from ws in redis (technical debt)
+[ ] Improve save data employee in create assignment (cache data)
+[ ] add types for employee web service data
 [X] fix error duplicated employee
 [X] not create assignment if slot is multiple and not send schedule
 [ ] validate time between 00:00 and 23:59 in schema db
 [X] add return error 404 if not found in finder by id
 [X] fix issue with uuid in create assignment loan and create assignment
-[ ] Improve save data employee in create assignment (cache data)
-[ ] Cant create assignment if slot or location is inactive
-[ ] After create assignment change status from slot
-[ ] save employee from ws in redis
-[ ] add types for employee web service data
-[ ] welcome email to employee
-[ ] create api_key for employee
-[ ] handle error if code employee already exists
-[ ] email to owner with discount note
-[ ] add new method to get assignment loan
+[X] Cant create assignment if slot or location is inactive
+[X] After create assignment change status from slot
+[X] welcome email to employee
+[X] create api_key for employee
+[X] handle error if code employee already exists
+[X] email to owner with discount note
+[X] add new method to get assignment loan
 
 [X] finder all assignments
 [X] finder employee by code
 [X] assignment by id
 [X] create assignment
--- [ ] email to RRHH if slot is type cost
--- [ ] welcome email to owner
--- [ ] welcome email to guest
+-- [X] email to RRHH if slot is type cost
+-- [X] welcome email to owner
+-- [X] welcome email to guest
 [X] create assignment loan
--- [ ] send email to owner, guest
+-- [X] send email to owner, guest
 [X] create discount note
--- [ ] send email to owner and RRHH with discount note
+-- [X] send email to owner and RRHH with discount note
 [X] create de_assignment
 -- [ ] real time notification
-[ ] update assignment
-[ ] update assignment load
-[ ] delete assignment
-[ ] delete assignment loan
+[X] update assignment
+[X] update assignment load
+[X] delete assignment loan
 
 # All application
 
@@ -75,4 +74,4 @@ TODO:
   [X] Owner
 - De-Assignment
   [X] Owner
-  [ ] Guest if exists
+  [X] Guest if exists

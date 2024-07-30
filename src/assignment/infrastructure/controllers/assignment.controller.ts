@@ -9,6 +9,7 @@ import { GetEmployeeByCode } from '@src/assignment/application/user-cases/get-em
 import { UpdateAssignment } from '@src/assignment/application/user-cases/update-assignment';
 import { CreateAssignmentLoan } from '@src/assignment/application/user-cases/create-assignment-loan';
 import { UpdateDiscountNote } from '@src/assignment/application/user-cases/update-discount-note';
+import { DeleteAssignmentLoan } from '@src/assignment/application/user-cases/delete-assignment-loan';
 
 import { AssignmentNotFoundError } from '@src/assignment/core/exceptions/assignment-not-found';
 import { PreviewDiscountNoteError } from '@src/assignment/core/exceptions/preview-discount-note';
@@ -24,7 +25,8 @@ export class AssignmentController {
     private readonly employeeFinderByCodeUseCase: GetEmployeeByCode,
     private readonly updateAssignmentUseCase: UpdateAssignment,
     private readonly createAssignmentLoanUseCase: CreateAssignmentLoan,
-    private readonly updateDiscountNoteUseCase: UpdateDiscountNote
+    private readonly updateDiscountNoteUseCase: UpdateDiscountNote,
+    private readonly deleteAssignmentLoanUseCase: DeleteAssignmentLoan
   ) {}
 
   async createAssignment(req: Request, res: Response) {
@@ -188,6 +190,22 @@ export class AssignmentController {
     try {
       await this.updateDiscountNoteUseCase.run(assignmentId, statusSignature);
       res.status(200).json({ message: 'Discount note updated' });
+    } catch (error) {
+      if (error instanceof AssignmentNotFoundError) {
+        return res.status(404).json({ message: error.message });
+      }
+
+      if (error instanceof Error) {
+        res.status(500).json({ error: error.message });
+      }
+    }
+  }
+
+  async deleteAssignmentLoan(req: Request, res: Response) {
+    const assignmentId = req.params.assignment_id;
+    try {
+      await this.deleteAssignmentLoanUseCase.run(assignmentId);
+      res.status(200).json({ message: 'Assignment loan deleted' });
     } catch (error) {
       if (error instanceof AssignmentNotFoundError) {
         return res.status(404).json({ message: error.message });

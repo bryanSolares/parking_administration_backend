@@ -13,6 +13,7 @@ import { CreateDiscountNote } from '@assignment-module-application/user-cases/cr
 import { UpdateAssignment } from '@assignment-module-application/user-cases/update-assignment';
 import { CreateAssignmentLoan } from '@assignment-module-application/user-cases/create-assignment-loan';
 import { UpdateDiscountNote } from '@assignment-module-application/user-cases/update-discount-note';
+import { DeleteAssignmentLoan } from '@assignment-module-application/user-cases/delete-assignment-loan';
 
 import { AssignmentDomainService } from '@assignment-module-application/services/assignment-domain-service';
 import { NotificationService } from '@assignment-module-application/services/notification-service';
@@ -62,6 +63,9 @@ const updateAssignment = new UpdateAssignment(sequelizeAssignmentRepository);
 const updateDiscountNote = new UpdateDiscountNote(
   sequelizeAssignmentRepository
 );
+const deleteAssignmentLoan = new DeleteAssignmentLoan(
+  sequelizeAssignmentRepository
+);
 
 //Controllers
 const assignmentController = new AssignmentController(
@@ -73,7 +77,8 @@ const assignmentController = new AssignmentController(
   employeeFinderByCode,
   updateAssignment,
   createAssignmentLoan,
-  updateDiscountNote
+  updateDiscountNote,
+  deleteAssignmentLoan
 );
 
 export { assignmentController };
