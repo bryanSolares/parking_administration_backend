@@ -21,15 +21,12 @@ export class CreateDiscountNote {
       );
     }
 
-    if (assignment.slot) {
-      const slot = await this.locationRepository.getSlotById(
-        assignment.slot.id
+    //FIXME: cambiar estructura de assignment. Error to validate slot correctly
+    const slot = await this.locationRepository.getSlotById(assignment.slot_id);
+    if (slot?.cost_type !== 'DESCUENTO') {
+      throw new Error(
+        'Cant create discount note for assignments type "COMPLEMENTO o SIN_COSTO"'
       );
-      if (slot?.cost_type !== 'DESCUENTO') {
-        throw new Error(
-          'Cant create discount note for assignments type "COMPLEMENTO o SIN_COSTO"'
-        );
-      }
     }
 
     const discountNote =
