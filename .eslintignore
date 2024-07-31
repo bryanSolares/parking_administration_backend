@@ -4,3 +4,4 @@ coverage
 *.test.ts
 package.json
 yarn.lock
+__tests__
