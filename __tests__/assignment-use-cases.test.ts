@@ -1,6 +1,11 @@
-import { AssignmentRepository } from '../src/assignment/core/repositories/assignment-repository';
-import { NotificationMailRepository } from '../src/assignment/core/repositories/notification-mail-repository';
-import { EmployeeRepositoryWebService } from '../src/assignment/core/repositories/employee-repository';
+import { mockAssignmentRepository } from "./__mocks__/assignment-mocks";
+import { mockEmployeeRepository } from "./__mocks__/assignment-mocks";
+import { mockAssignmentDomainService } from "./__mocks__/assignment-mocks";
+import { mockNotificationService } from "./__mocks__/assignment-mocks";
+import { mockLocationRepository  } from "./__mocks__/location-mocks";
+
+import { AssignmentMother } from "./mother/assignment-mother";
+import { LocationMother } from "./mother/location-mother";
 
 import { CreateAssignment } from '../src/assignment/application/user-cases/create-assignment';
 import { CreateAssignmentLoan } from '../src/assignment/application/user-cases/create-assignment-loan';
@@ -13,163 +18,87 @@ import { UpdateDiscountNote } from '../src/assignment/application/user-cases/upd
 import { UpdateAssignment } from '../src/assignment/application/user-cases/update-assignment';
 import { GetEmployeeByCode } from '../src/assignment/application/user-cases/get-employee-by-code-from-ws';
 
-import { AssignmentDomainService } from '../src/assignment/application/services/assignment-domain-service';
-import { NotificationService } from '../src/assignment/application/services/notification-service';
-
-import {
-  assignmentEntityMock,
-  deAssignmentEntityMock,
-  discountNoteEntityMock,
-  ownerEmployeeEntityMock
-} from './__mocks__/assignment_mocks';
-import { assignmentLoanEntityMock } from './__mocks__/assignment_mocks';
-import { locationEntityMock } from './__mocks__/assignment_mocks';
-import { slotEntityMock } from './__mocks__/assignment_mocks';
-
-import { mockLocationRepository } from './location-use-cases.test';
-
-const mockAssignmentRepository: jest.Mocked<AssignmentRepository> = {
-  createAssignment: jest.fn(),
-  createAssignmentLoan: jest.fn(),
-  createDiscountNote: jest.fn(),
-  createDeAssignment: jest.fn(),
-  updateAssignment: jest.fn(),
-  updateDiscountNote: jest.fn(),
-  deleteAssignmentLoan: jest.fn(),
-  upsertEmployee: jest.fn(),
-  upsertSchedule: jest.fn(),
-  upsertVehicles: jest.fn(),
-  getAssignmentById: jest.fn(),
-  getDiscountNoteByIdAssignment: jest.fn(),
-  getAssignmentLoanActiveByIdAssignment: jest.fn(),
-  getAssignments: jest.fn(),
-  canCreateMoreSchedulesInSlot: jest.fn(),
-  employeeHasAnActiveAssignment: jest.fn()
-};
-
-const mockNotificationRepository: jest.Mocked<NotificationMailRepository> = {
-  assignmentGuestNotification: jest.fn(),
-  assignmentNotification: jest.fn(),
-  deAssignmentGuestNotification: jest.fn(),
-  deAssignmentOwnerNotification: jest.fn(),
-  discountNoteNotification: jest.fn()
-};
-
-const mockEmployeeRepository: jest.Mocked<EmployeeRepositoryWebService> = {
-  getEmployeeByCodeFromDatabase: jest.fn(),
-  getEmployeeByCodefromWebService: jest.fn()
-};
-
-const mockAssignmentDomainService = new AssignmentDomainService(
-  mockAssignmentRepository,
-  mockLocationRepository
-);
-
-const mockNotificationService = new NotificationService(
-  mockNotificationRepository
-);
-
 describe('ASSIGNMENT: Use Cases', () => {
   beforeEach(() => {
     jest.clearAllMocks();
   });
 
   it('should create a new assignment', async () => {
-    mockLocationRepository.getSlotById.mockResolvedValueOnce(slotEntityMock);
-    mockLocationRepository.getLocationById.mockResolvedValueOnce(
-      locationEntityMock
-    );
-    mockAssignmentDomainService.verifyIfSlotExistsAndIsAvailable = jest
-      .fn()
-      .mockResolvedValue(true);
+    mockLocationRepository.getSlotById.mockResolvedValueOnce(LocationMother.createSlot());
+    mockLocationRepository.getLocationById.mockResolvedValueOnce(LocationMother.createLocation());
+    mockAssignmentDomainService.verifyIfSlotExistsAndIsAvailable = jest.fn().mockResolvedValue(true);
 
-    mockAssignmentDomainService.canCreateMoreSchedulesInSlot = jest
-      .fn()
-      .mockReturnValue(true);
+    mockAssignmentDomainService.canCreateMoreSchedulesInSlot = jest.fn().mockReturnValue(true);
 
     const createAssignment = new CreateAssignment(
       mockAssignmentRepository,
       mockAssignmentDomainService,
       mockNotificationService
     );
-    await createAssignment.run(assignmentEntityMock);
-    expect(mockAssignmentRepository.createAssignment).toHaveBeenCalledWith(
-      assignmentEntityMock
-    );
+    const assignment = AssignmentMother.createAssignment()
+    await createAssignment.run(assignment);
+    expect(mockAssignmentRepository.createAssignment).toHaveBeenCalledWith(assignment);
   });
 
   it('should create assignment loan', async () => {
-    mockAssignmentRepository.getAssignmentLoanActiveByIdAssignment.mockResolvedValueOnce(
-      null
-    );
-    mockAssignmentRepository.getAssignmentById.mockResolvedValueOnce(
-      assignmentEntityMock
-    );
+    const assignment = AssignmentMother.createAssignment()
+    const assignmentLoan = AssignmentMother.createAssignmentLoan()
+    mockAssignmentRepository.getAssignmentLoanActiveByIdAssignment.mockResolvedValueOnce(null);
+    mockAssignmentRepository.getAssignmentById.mockResolvedValueOnce(assignment);
     const createAssignmentLoan = new CreateAssignmentLoan(
       mockAssignmentRepository,
       mockNotificationService
     );
 
-    await createAssignmentLoan.run(assignmentLoanEntityMock);
-    expect(mockAssignmentRepository.createAssignmentLoan).toHaveBeenCalledWith(
-      assignmentLoanEntityMock
-    );
+    await createAssignmentLoan.run(assignmentLoan);
+    expect(mockAssignmentRepository.createAssignmentLoan).toHaveBeenCalledWith(assignmentLoan);
   });
 
   it('should create de-assignment', async () => {
+    const assignment = AssignmentMother.createAssignment()
+    const deAssignment = AssignmentMother.createDeAssignment()
     mockAssignmentRepository.getAssignmentById.mockResolvedValueOnce(
-      assignmentEntityMock
+      assignment
     );
     const deAssignmentById = new CreateDeAssignment(
       mockAssignmentRepository,
       mockNotificationService
     );
-    await deAssignmentById.run('1', deAssignmentEntityMock);
-    expect(mockAssignmentRepository.createDeAssignment).toHaveBeenCalledWith(
-      '1',
-      deAssignmentEntityMock
-    );
+    await deAssignmentById.run(assignment.id, deAssignment);
+    expect(mockAssignmentRepository.createDeAssignment).toHaveBeenCalledWith(assignment.id, deAssignment);
   });
 
   it('should throw an errors if assignment not found or assignment already inactive to create de-assignment', async () => {
+    const assignment = AssignmentMother.createAssignment()
+    const deAssignment = AssignmentMother.createDeAssignment()
     const deAssignmentById = new CreateDeAssignment(
       mockAssignmentRepository,
       mockNotificationService
     );
     await expect(
-      deAssignmentById.run('1', deAssignmentEntityMock)
+      deAssignmentById.run(assignment.id, deAssignment)
     ).rejects.toThrow('Assignment not found');
 
-    mockAssignmentRepository.getAssignmentById.mockResolvedValueOnce({
-      ...assignmentEntityMock,
-      status: 'INACTIVO'
-    });
+    mockAssignmentRepository.getAssignmentById.mockResolvedValueOnce({...assignment, status: 'INACTIVO'});
 
     await expect(
-      deAssignmentById.run('1', deAssignmentEntityMock)
+      deAssignmentById.run(assignment.id, deAssignment)
     ).rejects.toThrow('Assignment is already inactive');
   });
 
   it('should create discount note', async () => {
-    mockAssignmentRepository.getAssignmentById.mockResolvedValueOnce(
-      assignmentEntityMock
-    );
-    mockLocationRepository.getSlotById.mockResolvedValueOnce({
-      ...slotEntityMock,
-      cost_type: 'DESCUENTO'
-    });
-    mockAssignmentRepository.getDiscountNoteByIdAssignment.mockResolvedValueOnce(
-      null
-    );
+    const assignment = AssignmentMother.createAssignment()
+    const slot = LocationMother.createSlot()
+    mockAssignmentRepository.getAssignmentById.mockResolvedValueOnce(assignment);
+    mockLocationRepository.getSlotById.mockResolvedValueOnce({...slot,  cost_type: 'DESCUENTO'});
+    mockAssignmentRepository.getDiscountNoteByIdAssignment.mockResolvedValueOnce(null);
     const createDiscountNote = new CreateDiscountNote(
       mockAssignmentRepository,
       mockLocationRepository,
       mockNotificationService
     );
-    await createDiscountNote.run('1');
-    expect(mockAssignmentRepository.createDiscountNote).toHaveBeenCalledWith(
-      '1'
-    );
+    await createDiscountNote.run(assignment.id);
+    expect(mockAssignmentRepository.createDiscountNote).toHaveBeenCalledWith(assignment.id);
   });
 
   it('should throw errors if assignment not exists, discount note already exists or slot is type SIN_COSTO', async () => {
@@ -190,55 +119,53 @@ describe('ASSIGNMENT: Use Cases', () => {
   });
 
   it('should delete assignment loan', async () => {
+    const assignmentLoan = AssignmentMother.createAssignmentLoan()
     mockAssignmentRepository.getAssignmentLoanActiveByIdAssignment.mockResolvedValueOnce(
-      assignmentLoanEntityMock
+      assignmentLoan
     );
     const deleteAssignmentLoan = new DeleteAssignmentLoan(
       mockAssignmentRepository
     );
-    await deleteAssignmentLoan.run('1');
-    expect(mockAssignmentRepository.deleteAssignmentLoan).toHaveBeenCalledWith(
-      '1'
-    );
+    await deleteAssignmentLoan.run(assignmentLoan.assignment_id);
+    expect(mockAssignmentRepository.deleteAssignmentLoan).toHaveBeenCalledWith(assignmentLoan.assignment_id);
   });
 
   it('should update discount note status', async () => {
+    const assignment = AssignmentMother.createAssignment()
+    const discountNote = AssignmentMother.createDiscountNote()
     mockAssignmentRepository.getAssignmentById.mockResolvedValueOnce(
-      assignmentEntityMock
+      assignment
     );
 
     mockAssignmentRepository.getDiscountNoteByIdAssignment.mockResolvedValueOnce(
-      discountNoteEntityMock
+      discountNote
     );
 
-    await new UpdateDiscountNote(mockAssignmentRepository).run('1', 'APROBADO');
-    expect(mockAssignmentRepository.updateDiscountNote).toHaveBeenCalledWith(
-      '1',
-      'APROBADO'
-    );
+    await new UpdateDiscountNote(mockAssignmentRepository).run(assignment.id, 'APROBADO');
+    expect(mockAssignmentRepository.updateDiscountNote).toHaveBeenCalledWith(assignment.id, 'APROBADO');
   });
 
   it('should update an assignment', async () => {
+    const assignment = AssignmentMother.createAssignment()
     mockAssignmentRepository.getAssignmentById.mockResolvedValueOnce(
-      assignmentEntityMock
+      assignment
     );
     const updateAssignment = new UpdateAssignment(mockAssignmentRepository);
-    await updateAssignment.run(assignmentEntityMock, []);
+    await updateAssignment.run(assignment, []);
     expect(mockAssignmentRepository.updateAssignment).toHaveBeenCalledWith(
-      assignmentEntityMock,
+      assignment,
       []
     );
   });
 
   it('should find an assignment by id', async () => {
+    const assignment = AssignmentMother.createAssignment()
     mockAssignmentRepository.getAssignmentById.mockResolvedValueOnce(
-      assignmentEntityMock
+      assignment
     );
     const findById = new AssignmentFinderById(mockAssignmentRepository);
-    await findById.run('1');
-    expect(mockAssignmentRepository.getAssignmentById).toHaveBeenCalledWith(
-      '1'
-    );
+    await findById.run(assignment.id);
+    expect(mockAssignmentRepository.getAssignmentById).toHaveBeenCalledWith(assignment.id);
   });
 
   it('should find all assignments', async () => {
@@ -248,10 +175,11 @@ describe('ASSIGNMENT: Use Cases', () => {
   });
 
   it('should get employee information', async () => {
+    const employee = AssignmentMother.createEmployee()
     mockEmployeeRepository.getEmployeeByCodefromWebService.mockResolvedValueOnce(
-      ownerEmployeeEntityMock
+      employee
     );
-    await new GetEmployeeByCode(mockEmployeeRepository).run('1');
+    await new GetEmployeeByCode(mockEmployeeRepository).run(employee.code_employee);
     expect(
       mockEmployeeRepository.getEmployeeByCodefromWebService
     ).toHaveBeenCalled();

@@ -1,17 +1,11 @@
-import { TagRepository } from '../src/parameters/core/repositories/tag-repository';
+import { mocksTagRepository } from "./__mocks__/tag-mocks";
 import { CreateTag } from '../src/parameters/application/use-cases/create-tag';
 import { UpdateTag } from '../src/parameters/application/use-cases/update-tag';
 import { DeleteTag } from '../src/parameters/application/use-cases/delete-tag';
 import { TagFinderById } from '../src/parameters/application/use-cases/tag-finder-by-id';
 import { TagFinder } from '../src/parameters/application/use-cases/tag-finder';
 
-const mocksTagRepository: jest.Mocked<TagRepository> = {
-  create: jest.fn(),
-  update: jest.fn(),
-  delete: jest.fn(),
-  getById: jest.fn().mockReturnValue({}),
-  getAll: jest.fn().mockReturnValue([])
-};
+import { TagMother } from "./mother/tag-mother";
 
 describe('TAG: Use Cases', () => {
   beforeAll(() => {
@@ -19,60 +13,39 @@ describe('TAG: Use Cases', () => {
   });
 
   it('should create a new tag', async () => {
+    const tag = TagMother.createTag();
     const createTag = new CreateTag(mocksTagRepository);
-    await createTag.run({
-      name: 'test tag',
-      description: 'test description',
-      status: 'ACTIVO'
-    });
-    expect(mocksTagRepository.create).toHaveBeenCalledWith({
-      name: 'test tag',
-      description: 'test description',
-      status: 'ACTIVO'
-    });
+    await createTag.run(tag);
+    expect(mocksTagRepository.create).toHaveBeenCalledWith(tag);
   });
 
   it('should update a tag and throw an error if tag not found', async () => {
+    const tag = TagMother.createTag();
     const updateTag = new UpdateTag(mocksTagRepository);
-    await updateTag.run({
-      id: '1',
-      name: 'test tag',
-      description: 'test description',
-      status: 'ACTIVO'
-    });
-    expect(mocksTagRepository.update).toHaveBeenCalledWith({
-      id: '1',
-      name: 'test tag',
-      description: 'test description',
-      status: 'ACTIVO'
-    });
+    await updateTag.run(tag);
+    expect(mocksTagRepository.update).toHaveBeenCalledWith(tag);
     mocksTagRepository.getById.mockResolvedValueOnce(null);
-    await expect(
-      updateTag.run({
-        id: '1',
-        name: 'test tag',
-        description: 'test description',
-        status: 'ACTIVO'
-      })
-    ).rejects.toThrow('Tag not found');
+    await expect(updateTag.run(tag)).rejects.toThrow('Tag not found');
   });
 
   it('should delete a tag and throw an error if tag not found', async () => {
+    const tag = TagMother.createTag();
     const deleteTag = new DeleteTag(mocksTagRepository);
-    await deleteTag.run('1');
-    expect(mocksTagRepository.delete).toHaveBeenCalledWith('1');
+    await deleteTag.run(tag.id);
+    expect(mocksTagRepository.delete).toHaveBeenCalledWith(tag.id);
 
     mocksTagRepository.getById.mockResolvedValueOnce(null);
-    await expect(deleteTag.run('1')).rejects.toThrow('Tag not found');
+    await expect(deleteTag.run(tag.id)).rejects.toThrow('Tag not found');
   });
 
   it('should find a tag by id and throw an error if tag not found', async () => {
+    const tag = TagMother.createTag();
     const tagFinderById = new TagFinderById(mocksTagRepository);
-    await tagFinderById.run('1');
-    expect(mocksTagRepository.getById).toHaveBeenCalledWith('1');
+    await tagFinderById.run(tag.id);
+    expect(mocksTagRepository.getById).toHaveBeenCalledWith(tag.id);
 
     mocksTagRepository.getById.mockResolvedValueOnce(null);
-    await expect(tagFinderById.run('1')).rejects.toThrow('Tag not found');
+    await expect(tagFinderById.run(tag.id)).rejects.toThrow('Tag not found');
   });
 
   it('should find all tags', async () => {
