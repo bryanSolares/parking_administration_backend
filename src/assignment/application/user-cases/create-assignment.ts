@@ -21,15 +21,14 @@ export class CreateAssignment {
       assignment.slot_id
     );
 
-    if (owner.id) {
-      await this.assignmentDomainService.validateIfEmployeeHasAnActiveAssignment(
-        owner.id
-      );
-    }
-
-    if (guest?.id) {
-      await this.assignmentDomainService.validateIfEmployeeHasAnActiveAssignment(
-        guest.id
+    if (
+      !scheduleAssignment &&
+      (await this.assignmentDomainService.slotIsMultipleType(
+        assignment.slot_id
+      ))
+    ) {
+      throw new Error(
+        'You should provide a schedule if the slot is multiple type'
       );
     }
 
@@ -43,6 +42,18 @@ export class CreateAssignment {
       );
     }
 
+    if (owner.id) {
+      await this.assignmentDomainService.validateIfEmployeeHasAnActiveAssignment(
+        owner.id
+      );
+    }
+
+    if (guest?.id) {
+      await this.assignmentDomainService.validateIfEmployeeHasAnActiveAssignment(
+        guest.id
+      );
+    }
+
     await this.assignmentRepository.createAssignment(assignment);
 
     //Generate token for owner
@@ -51,6 +62,13 @@ export class CreateAssignment {
 
     const guestInformation = guest
       ? { name: guest.name, email: guest.email }
+      : null;
+
+    const scheduleAssignmentData = scheduleAssignment
+      ? {
+          startTime: scheduleAssignment.start_time_assignment,
+          endTime: scheduleAssignment.end_time_assignment
+        }
       : null;
 
     const scheduleLoan = assignment.assignment_loan
@@ -68,10 +86,7 @@ export class CreateAssignment {
     this.notificationService.createAssignmentNotification(
       { name: owner.name, email: owner.email, token: secret },
       guestInformation,
-      {
-        startTime: scheduleAssignment.start_time_assignment,
-        endTime: scheduleAssignment.end_time_assignment
-      },
+      scheduleAssignmentData,
       scheduleLoan,
       {
         name: "Parqueos 'El pumpim'",

@@ -8,7 +8,7 @@ export interface NotificationMailRepository {
   assignmentNotification(
     employee: { name: string; email: string; token: string },
     location: { name: string; address: string; slotNumber: string },
-    schedule: { startTime: string; endTime: string }
+    schedule: { startTime: string; endTime: string } | null
   ): Promise<void>;
   assignmentGuestNotification(
     owner: { name: string; email: string },

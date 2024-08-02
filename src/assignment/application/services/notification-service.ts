@@ -12,7 +12,7 @@ export class NotificationService {
     scheduleAssignment: {
       startTime: string;
       endTime: string;
-    },
+    } | null,
     scheduleLoan: {
       startDate: string;
       endDate: string;

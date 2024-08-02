@@ -7,6 +7,11 @@ export class AssignmentDomainService {
     private readonly locationRepository: LocationRepository
   ) {}
 
+  async slotIsMultipleType(slotId: string): Promise<boolean> {
+    const slot = await this.locationRepository.getSlotById(slotId);
+    return slot!.slot_type === 'MULTIPLE';
+  }
+
   async validateIfEmployeeHasAnActiveAssignment(
     employeeId: string
   ): Promise<void> {
