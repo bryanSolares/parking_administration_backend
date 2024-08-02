@@ -5,6 +5,8 @@ import { ScheduleModel } from './schedule.model';
 import { SlotModel } from './slot.model';
 import { VehicleModel } from './vehicle.model';
 import { AssignmentLoanModel } from './assignment-loan';
+import { TagModel } from './tag.model';
+import { AssignmentTagDetailModel } from './assignment-tag-detail';
 
 LocationModel.hasMany(SlotModel, {
   foreignKey: 'location_id',
@@ -61,3 +63,7 @@ SlotModel.hasMany(ScheduleModel, {
   onDelete: 'RESTRICT'
 });
 ScheduleModel.belongsTo(SlotModel, { foreignKey: 'slot_id' });
+
+TagModel.belongsToMany(AssignmentModel, {
+  through: AssignmentTagDetailModel
+});

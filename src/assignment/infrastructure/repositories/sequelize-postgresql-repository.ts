@@ -24,6 +24,7 @@ import { SlotModel } from '@config/database/models/slot.model';
 import { LocationModel } from '@config/database/models/location.model';
 import { DeAssignmentModel } from '@config/database/models/de-assignment.model';
 import { DiscountNoteModel } from '@config/database/models/discount-note.model';
+import { AssignmentTagDetailModel } from '@src/server/config/database/models/assignment-tag-detail';
 
 export class SequelizeAssignmentRepository implements AssignmentRepository {
   async getDiscountNoteByIdAssignment(
@@ -191,6 +192,7 @@ export class SequelizeAssignmentRepository implements AssignmentRepository {
     const ownerData = assignment.employee;
     const vehiclesOwnerData = assignment.employee.vehicles;
     const scheduleData = assignment.schedule;
+    const tags = assignment.tags;
 
     const loanAssignmentData = assignment.assignment_loan;
     const guestData = assignment.assignment_loan?.employee;
@@ -248,6 +250,15 @@ export class SequelizeAssignmentRepository implements AssignmentRepository {
     await SlotModel.update(
       { status: 'OCUPADO' },
       { where: { id: assignment.slot_id }, transaction }
+    );
+
+    await AssignmentTagDetailModel.bulkCreate(
+      tags.map(tag => ({
+        id: uuid(),
+        tag_id: tag,
+        assignment_id: assignmentSaved.getDataValue('id')
+      })),
+      { transaction }
     );
 
     await transaction.commit();
@@ -381,6 +392,8 @@ export class SequelizeAssignmentRepository implements AssignmentRepository {
     const scheduleData = assignment.schedule;
     const guestData = assignment.assignment_loan?.employee;
     const vehiclesGuestData = assignment.assignment_loan?.employee.vehicles;
+    const tags = assignment.tags;
+
     const transaction = await sequelize.transaction();
 
     if (vehicleIdsForDelete.length > 0) {
@@ -419,6 +432,23 @@ export class SequelizeAssignmentRepository implements AssignmentRepository {
       //Upsert vehicles guest
       await this.upsertVehicles(guestData.vehicles, guestData.id, transaction);
     }
+
+    await AssignmentTagDetailModel.destroy({
+      where: {
+        assignment_id: assignment.id
+      },
+      transaction
+    });
+
+    await AssignmentTagDetailModel.bulkCreate(
+      tags.map(tag => ({
+        id: uuid(),
+        assignment_id: assignment.id,
+        tag_id: tag
+      })),
+      { transaction }
+    );
+
     await transaction.commit();
   }
 

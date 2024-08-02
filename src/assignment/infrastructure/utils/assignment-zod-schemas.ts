@@ -48,7 +48,8 @@ export const assignmentCreateSchema = z.object({
       end_date_assignment: z.string().date('YYYY-MM-DD'),
       employee: employeeSchema
     })
-    .optional()
+    .optional(),
+  tags: z.array(z.string().uuid())
 });
 
 export const assignmentUpdateSchema = z.object({
@@ -85,7 +86,8 @@ export const assignmentUpdateSchema = z.object({
       })
     })
     .optional(),
-  vehicles_for_delete: z.array(z.string().uuid()).optional()
+  vehicles_for_delete: z.array(z.string().uuid()).optional(),
+  tags: z.array(z.string().uuid())
 });
 
 export const assignmentIdSchema = z.object({
