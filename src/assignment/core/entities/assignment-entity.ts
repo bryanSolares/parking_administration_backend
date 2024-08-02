@@ -1,4 +1,5 @@
 import { AssignmentLoadEntity } from './assignment-load-entity';
+import { DiscountNoteEntity } from './discount-note-entity';
 import { EmployeeEntity } from './employee-entity';
 import { ScheduleEntity } from './schedule-entity';
 
@@ -16,7 +17,8 @@ export class AssignmentEntity {
     tags: string[],
     public readonly assignment_loan?: AssignmentLoadEntity,
     public readonly assignment_date?: Date,
-    public readonly slot?: SlotEntity
+    public readonly slot?: SlotEntity,
+    public readonly discount_note?: DiscountNoteEntity
   ) {
     this.tags = tags;
   }

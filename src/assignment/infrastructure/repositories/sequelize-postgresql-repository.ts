@@ -27,11 +27,9 @@ import { DiscountNoteModel } from '@config/database/models/discount-note.model';
 import { AssignmentTagDetailModel } from '@src/server/config/database/models/assignment-tag-detail';
 
 export class SequelizeAssignmentRepository implements AssignmentRepository {
-  async getDiscountNoteByIdAssignment(
-    id: string
-  ): Promise<DiscountNoteEntity | null> {
+  async getDiscountNoteById(id: string): Promise<DiscountNoteEntity | null> {
     const discountNote = await DiscountNoteModel.findOne({
-      where: { assignment_id: id }
+      where: { id }
     });
 
     return discountNote?.get({ plain: true }) as DiscountNoteEntity;
@@ -41,9 +39,11 @@ export class SequelizeAssignmentRepository implements AssignmentRepository {
     await DiscountNoteModel.create(
       {
         id: uuid(),
-        assignment_id: idAssignment
+        assignment_id: idAssignment,
+        status_dispatched: 'EXITOSO',
+        last_notice: new Date()
       },
-      { fields: ['id', 'assignment_id'] }
+      { fields: ['id', 'assignment_id', 'status_dispatched', 'last_notice'] }
     );
   }
 
@@ -104,6 +104,18 @@ export class SequelizeAssignmentRepository implements AssignmentRepository {
         {
           model: EmployeeModel,
           attributes: ['name', 'email', 'phone']
+        },
+        {
+          model: DiscountNoteModel,
+          attributes: {
+            exclude: [
+              'assignment_id',
+              'reminder_frequency',
+              'max_dispatch_attempts',
+              'created_at',
+              'updated_at'
+            ]
+          }
         }
       ],
       order: [['created_at', 'DESC']],
@@ -179,6 +191,17 @@ export class SequelizeAssignmentRepository implements AssignmentRepository {
           required: false,
           attributes: {
             exclude: [...listExcludedAttributes, 'assignment_id']
+          }
+        },
+        {
+          model: DiscountNoteModel,
+          attributes: {
+            exclude: [
+              ...listExcludedAttributes,
+              'assignment_id',
+              'reminder_frequency',
+              'max_dispatch_attempts'
+            ]
           }
         }
       ],
@@ -388,10 +411,12 @@ export class SequelizeAssignmentRepository implements AssignmentRepository {
     assignment: AssignmentEntity,
     vehicleIdsForDelete: string[]
   ): Promise<void> {
-    const vehiclesOwnerData = assignment.employee.vehicles;
-    const scheduleData = assignment.schedule;
+    const ownerData = assignment.employee;
     const guestData = assignment.assignment_loan?.employee;
+    const vehiclesOwnerData = assignment.employee.vehicles;
     const vehiclesGuestData = assignment.assignment_loan?.employee.vehicles;
+    const scheduleData = assignment.schedule;
+    const assignmentLoanData = assignment.assignment_loan;
     const tags = assignment.tags;
 
     const transaction = await sequelize.transaction();
@@ -401,6 +426,9 @@ export class SequelizeAssignmentRepository implements AssignmentRepository {
         where: {
           id: {
             [Op.in]: vehicleIdsForDelete
+          },
+          employee_id: {
+            [Op.in]: [ownerData.id, guestData?.id]
           }
         },
         transaction
@@ -408,11 +436,8 @@ export class SequelizeAssignmentRepository implements AssignmentRepository {
     }
 
     //update vehicles owner
-    await this.upsertVehicles(
-      vehiclesOwnerData,
-      assignment.employee.id,
-      transaction
-    );
+    await this.upsertVehicles(vehiclesOwnerData, ownerData.id, transaction);
+
     //update schedule
     if (scheduleData.id) {
       await ScheduleModel.update(
@@ -428,54 +453,79 @@ export class SequelizeAssignmentRepository implements AssignmentRepository {
         }
       );
     }
+
     if (guestData && vehiclesGuestData) {
       //Upsert vehicles guest
       await this.upsertVehicles(guestData.vehicles, guestData.id, transaction);
     }
 
-    await AssignmentTagDetailModel.destroy({
-      where: {
-        assignment_id: assignment.id
-      },
-      transaction
-    });
+    if (assignmentLoanData) {
+      await AssignmentLoanModel.update(
+        {
+          start_date_assignment: assignmentLoanData.start_date_assignment,
+          end_date_assignment: assignmentLoanData.end_date_assignment
+        },
+        {
+          where: {
+            assignment_id: assignment.id
+          },
+          transaction
+        }
+      );
+    }
 
-    await AssignmentTagDetailModel.bulkCreate(
-      tags.map(tag => ({
-        id: uuid(),
-        assignment_id: assignment.id,
-        tag_id: tag
-      })),
-      { transaction }
-    );
+    if (tags.length > 0) {
+      await AssignmentTagDetailModel.destroy({
+        where: {
+          assignment_id: assignment.id
+        },
+        transaction
+      });
+
+      await AssignmentTagDetailModel.bulkCreate(
+        tags.map(tag => ({
+          id: uuid(),
+          assignment_id: assignment.id,
+          tag_id: tag
+        })),
+        { transaction }
+      );
+    }
 
     await transaction.commit();
   }
 
-  async getAssignmentLoanActiveByIdAssignment(
+  async getAssignmentLoanById(
     id: string
   ): Promise<AssignmentLoadEntity | null> {
     const assignmentLoan = await AssignmentLoanModel.findOne({
-      where: { assignment_id: id, status: 'ACTIVO' },
+      where: { id, status: 'ACTIVO' },
       include: [{ model: EmployeeModel, as: 'employee' }]
     });
     return assignmentLoan?.get({ plain: true }) as AssignmentLoadEntity;
   }
 
-  async updateDiscountNote(
-    assignmentId: string,
-    status: string
-  ): Promise<void> {
+  async getAssignmentLoanByIdAssignment(
+    assignmentId: string
+  ): Promise<AssignmentLoadEntity | null> {
+    const assignmentLoan = await AssignmentLoanModel.findOne({
+      where: { assignment_id: assignmentId },
+      include: [{ model: EmployeeModel, as: 'employee' }]
+    });
+    return assignmentLoan?.get({ plain: true }) as AssignmentLoadEntity;
+  }
+
+  async updateStatusDiscountNote(id: string, status: string): Promise<void> {
     await DiscountNoteModel.update(
       { status_signature: status },
-      { where: { assignment_id: assignmentId } }
+      { where: { id } }
     );
   }
 
-  async deleteAssignmentLoan(assignmentId: string): Promise<void> {
+  async deleteAssignmentLoan(assignmentLoanId: string): Promise<void> {
     await AssignmentLoanModel.update(
       { status: 'INACTIVO' },
-      { where: { assignment_id: assignmentId } }
+      { where: { id: assignmentLoanId } }
     );
   }
 }

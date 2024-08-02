@@ -305,13 +305,13 @@ routes
     assignmentController.createDiscountNote.bind(assignmentController)
   )
   .put(
-    '/discount-note/:assignment_id',
+    '/discount-note/:discount_note_id',
     validateRequest(assignmentIdSchema, 'params'),
     validateRequest(statusDiscountNoteBodySchema, 'body'),
-    assignmentController.updateDiscountNode.bind(assignmentController)
+    assignmentController.updateStatusDiscountNode.bind(assignmentController)
   )
   .delete(
-    '/assignment-loan/:assignment_id',
+    '/assignment-loan/:assignment_loan_id',
     validateRequest(assignmentIdSchema, 'params'),
     assignmentController.deleteAssignmentLoan.bind(assignmentController)
   );

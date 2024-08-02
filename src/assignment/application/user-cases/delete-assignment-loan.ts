@@ -4,16 +4,14 @@ import { AssignmentNotFoundError } from '@src/assignment/core/exceptions/assignm
 export class DeleteAssignmentLoan {
   constructor(private readonly assignmentRepository: AssignmentRepository) {}
 
-  async run(assignmentId: string): Promise<void> {
+  async run(assignmentLoanId: string): Promise<void> {
     const assignmentLoan =
-      await this.assignmentRepository.getAssignmentLoanActiveByIdAssignment(
-        assignmentId
-      );
+      await this.assignmentRepository.getAssignmentLoanById(assignmentLoanId);
 
     if (!assignmentLoan || assignmentLoan.status === 'INACTIVO') {
-      throw new AssignmentNotFoundError('Assignment not found');
+      throw new AssignmentNotFoundError('Assignment loan not found');
     }
 
-    return this.assignmentRepository.deleteAssignmentLoan(assignmentId);
+    return this.assignmentRepository.deleteAssignmentLoan(assignmentLoanId);
   }
 }

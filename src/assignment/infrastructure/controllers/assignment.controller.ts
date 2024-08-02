@@ -8,7 +8,7 @@ import { CreateDeAssignment } from '@src/assignment/application/user-cases/creat
 import { GetEmployeeByCode } from '@src/assignment/application/user-cases/get-employee-by-code-from-ws';
 import { UpdateAssignment } from '@src/assignment/application/user-cases/update-assignment';
 import { CreateAssignmentLoan } from '@src/assignment/application/user-cases/create-assignment-loan';
-import { UpdateDiscountNote } from '@src/assignment/application/user-cases/update-discount-note';
+import { UpdateStatusDiscountNote } from '@src/assignment/application/user-cases/update-status-discount-note';
 import { DeleteAssignmentLoan } from '@src/assignment/application/user-cases/delete-assignment-loan';
 
 import { AssignmentNotFoundError } from '@src/assignment/core/exceptions/assignment-not-found';
@@ -25,7 +25,7 @@ export class AssignmentController {
     private readonly employeeFinderByCodeUseCase: GetEmployeeByCode,
     private readonly updateAssignmentUseCase: UpdateAssignment,
     private readonly createAssignmentLoanUseCase: CreateAssignmentLoan,
-    private readonly updateDiscountNoteUseCase: UpdateDiscountNote,
+    private readonly updateDiscountNoteUseCase: UpdateStatusDiscountNote,
     private readonly deleteAssignmentLoanUseCase: DeleteAssignmentLoan
   ) {}
 
@@ -128,15 +128,15 @@ export class AssignmentController {
 
     try {
       await this.deAssignmentByIdUseCase.run(assignmentId, deAssignment);
-      res.status(201).send({ message: 'DeAssignment created' });
+      res.status(201).json({ message: 'DeAssignment created' });
     } catch (error) {
       if (error instanceof DeAssignmentReady) {
-        res.status(400).send({ message: error.message });
+        res.status(400).json({ message: error.message });
         return;
       }
 
       if (error instanceof Error) {
-        res.status(500).send(error.message);
+        res.status(500).json({ message: error.message });
       }
     }
   }
@@ -183,8 +183,8 @@ export class AssignmentController {
     }
   }
 
-  async updateDiscountNode(req: Request, res: Response) {
-    const assignmentId = req.params.assignment_id;
+  async updateStatusDiscountNode(req: Request, res: Response) {
+    const assignmentId = req.params.discount_note_id;
     const statusSignature = req.body.status;
 
     try {
@@ -202,7 +202,7 @@ export class AssignmentController {
   }
 
   async deleteAssignmentLoan(req: Request, res: Response) {
-    const assignmentId = req.params.assignment_id;
+    const assignmentId = req.params.assignment_loan_id;
     try {
       await this.deleteAssignmentLoanUseCase.run(assignmentId);
       res.status(200).json({ message: 'Assignment loan deleted' });

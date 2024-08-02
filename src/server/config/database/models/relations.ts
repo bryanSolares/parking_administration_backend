@@ -7,6 +7,7 @@ import { VehicleModel } from './vehicle.model';
 import { AssignmentLoanModel } from './assignment-loan';
 import { TagModel } from './tag.model';
 import { AssignmentTagDetailModel } from './assignment-tag-detail';
+import { DiscountNoteModel } from './discount-note.model';
 
 LocationModel.hasMany(SlotModel, {
   foreignKey: 'location_id',
@@ -66,4 +67,13 @@ ScheduleModel.belongsTo(SlotModel, { foreignKey: 'slot_id' });
 
 TagModel.belongsToMany(AssignmentModel, {
   through: AssignmentTagDetailModel
+});
+
+AssignmentModel.hasOne(DiscountNoteModel, {
+  foreignKey: 'assignment_id',
+  onUpdate: 'RESTRICT',
+  onDelete: 'RESTRICT'
+});
+DiscountNoteModel.belongsTo(AssignmentModel, {
+  foreignKey: 'assignment_id'
 });

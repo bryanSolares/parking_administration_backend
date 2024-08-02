@@ -12,7 +12,7 @@ import { CreateDeAssignment } from '@assignment-module-application/user-cases/cr
 import { CreateDiscountNote } from '@assignment-module-application/user-cases/create-discount-note';
 import { UpdateAssignment } from '@assignment-module-application/user-cases/update-assignment';
 import { CreateAssignmentLoan } from '@assignment-module-application/user-cases/create-assignment-loan';
-import { UpdateDiscountNote } from '@assignment-module-application/user-cases/update-discount-note';
+import { UpdateStatusDiscountNote } from '@src/assignment/application/user-cases/update-status-discount-note';
 import { DeleteAssignmentLoan } from '@assignment-module-application/user-cases/delete-assignment-loan';
 
 import { AssignmentDomainService } from '@assignment-module-application/services/assignment-domain-service';
@@ -52,15 +52,15 @@ const deAssignmentById = new CreateDeAssignment(
 );
 const createDiscountNote = new CreateDiscountNote(
   sequelizeAssignmentRepository,
-  sequelizeLocationRepository,
   notificationService
 );
 const createAssignmentLoan = new CreateAssignmentLoan(
   sequelizeAssignmentRepository,
-  notificationService
+  notificationService,
+  assignmentDomainService
 );
 const updateAssignment = new UpdateAssignment(sequelizeAssignmentRepository);
-const updateDiscountNote = new UpdateDiscountNote(
+const updateDiscountNote = new UpdateStatusDiscountNote(
   sequelizeAssignmentRepository
 );
 const deleteAssignmentLoan = new DeleteAssignmentLoan(

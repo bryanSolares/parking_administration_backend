@@ -24,7 +24,7 @@ export interface AssignmentRepository {
     deAssignment: DeAssignmentEntity
   ): Promise<void>;
   createDiscountNote(idAssignment: string): Promise<void>;
-  getDiscountNoteByIdAssignment(id: string): Promise<DiscountNoteEntity | null>;
+  getDiscountNoteById(id: string): Promise<DiscountNoteEntity | null>;
   employeeHasAnActiveAssignment(employeeId: string): Promise<boolean>;
   canCreateMoreSchedulesInSlot(slotId: string): Promise<boolean>;
   upsertEmployee(employee: EmployeeEntity): Promise<string>;
@@ -37,9 +37,15 @@ export interface AssignmentRepository {
     assignment: AssignmentEntity,
     vehicleIdsForDelete: string[]
   ): Promise<void>;
-  getAssignmentLoanActiveByIdAssignment(
-    id: string
+  getAssignmentLoanById(
+    assignmentLoanId: string
   ): Promise<AssignmentLoadEntity | null>;
-  updateDiscountNote(assignmentId: string, status: string): Promise<void>;
-  deleteAssignmentLoan(assignmentId: string): Promise<void>;
+  getAssignmentLoanByIdAssignment(
+    assignmentId: string
+  ): Promise<AssignmentLoadEntity | null>;
+  updateStatusDiscountNote(
+    discountNoteId: string,
+    status: string
+  ): Promise<void>;
+  deleteAssignmentLoan(assignmentLoanId: string): Promise<void>;
 }

@@ -66,7 +66,7 @@ export const assignmentUpdateSchema = z.object({
       })
     )
   }),
-  schedule: scheduleSchema,
+  schedule: scheduleSchema.optional(),
   assignment_loan: z
     .object({
       start_date_assignment: z.string().date('YYYY-MM-DD'),
@@ -90,16 +90,28 @@ export const assignmentUpdateSchema = z.object({
   tags: z.array(z.string().uuid())
 });
 
-export const assignmentIdSchema = z.object({
+const assignmentId = z.object({
   assignment_id: z.string().uuid()
 });
 
-export const createDeAssignmentBodySchema = z
-  .object({
-    reason: z.string().optional(),
-    de_assignment_date: z.string().date('YYYY-MM-DD').optional()
-  })
-  .optional();
+const assignmentLoanId = z.object({
+  assignment_loan_id: z.string().uuid()
+});
+
+const discountNoteId = z.object({
+  discount_note_id: z.string().uuid()
+});
+
+export const assignmentIdSchema = z.union([
+  assignmentId,
+  assignmentLoanId,
+  discountNoteId
+]);
+
+export const createDeAssignmentBodySchema = z.object({
+  reason: z.string().optional(),
+  de_assignment_date: z.string().date('YYYY-MM-DD').optional()
+});
 
 export const getAssignmentsSchemaForQuery = z.object({
   limit: z.coerce.number().min(1).max(100),

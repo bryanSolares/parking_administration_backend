@@ -1,30 +1,40 @@
 import { AssignmentRepository } from '@assignment-module-core/repositories/assignment-repository';
-import { NotificationService } from '../services/notification-service';
 import { AssignmentLoadEntity } from '@assignment-module-core/entities/assignment-load-entity';
 import { AssignmentNotFoundError } from '@assignment-module-core/exceptions/assignment-not-found';
+import { NotificationService } from '../services/notification-service';
+import { AssignmentDomainService } from '../services/assignment-domain-service';
 
 export class CreateAssignmentLoan {
   constructor(
     private readonly assignmentRepository: AssignmentRepository,
-    private readonly notificationService: NotificationService
+    private readonly notificationService: NotificationService,
+    private readonly assignmentService: AssignmentDomainService
   ) {}
 
   async run(assignmentLoan: AssignmentLoadEntity) {
     const assignment = await this.assignmentRepository.getAssignmentById(
       assignmentLoan.assignment_id
     );
+
     if (!assignment) {
       throw new AssignmentNotFoundError('Assignment not found');
     }
 
     //TODO: validate assignment have loan previously
     const assignmentLoanActive =
-      await this.assignmentRepository.getAssignmentLoanActiveByIdAssignment(
+      await this.assignmentRepository.getAssignmentLoanByIdAssignment(
         assignmentLoan.assignment_id
       );
 
-    if (assignmentLoanActive) {
+    if (assignmentLoanActive && assignmentLoanActive.status === 'ACTIVO') {
       throw new Error('Assignment already have loan');
+    }
+
+    //TODO: validate if employee has an active assignment
+    if (assignmentLoan.employee.id) {
+      await this.assignmentService.validateIfEmployeeHasAnActiveAssignment(
+        assignmentLoan.employee.id
+      );
     }
 
     await this.assignmentRepository.createAssignmentLoan(assignmentLoan);
