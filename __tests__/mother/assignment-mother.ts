@@ -14,7 +14,7 @@ import { DiscountNoteEntity } from "../../src/assignment/core/entities/discount-
 export class AssignmentMother{
 
   static createAssignment(): AssignmentEntity{
-    return new AssignmentEntity(uuid(), "abc-1", this.createEmployee(), this.createSchedule(), "ACTIVO", this.createAssignmentLoan(), new Date(), LocationMother.createSlot())
+    return new AssignmentEntity(uuid(), "abc-1", this.createEmployee(), this.createSchedule(), "ACTIVO", [], this.createAssignmentLoan(), new Date(), LocationMother.createSlot())
   }
   static createAssignmentLoan(): AssignmentLoadEntity{
     return new AssignmentLoadEntity(uuid(), uuid(), this.createEmployee(), new Date(), new Date(), new Date(), "ACTIVO")

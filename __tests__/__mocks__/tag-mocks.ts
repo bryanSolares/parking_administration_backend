@@ -5,5 +5,6 @@ export const mocksTagRepository: jest.Mocked<TagRepository> = {
   update: jest.fn(),
   delete: jest.fn(),
   getById: jest.fn().mockReturnValue({}),
-  getAll: jest.fn().mockReturnValue([])
+  getAll: jest.fn().mockReturnValue([]),
+  getDetailTagsWithAssignment: jest.fn()
 };
