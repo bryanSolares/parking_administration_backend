@@ -9,6 +9,13 @@ export class DeleteTag {
       throw new Error('Tag not found');
     }
 
+    const tagWithAssignmentRelation =
+      await this.tagRepository.getDetailTagsWithAssignment(id);
+
+    if (tagWithAssignmentRelation) {
+      throw new Error('You can not delete a tag related to an assignment');
+    }
+
     return this.tagRepository.delete(id);
   }
 }

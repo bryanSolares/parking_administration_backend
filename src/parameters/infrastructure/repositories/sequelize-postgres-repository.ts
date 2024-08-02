@@ -3,6 +3,8 @@ import { v4 as uuid } from 'uuid';
 import { TagRepository } from '@src/parameters/core/repositories/tag-repository';
 import { TagModel } from '@config/database/models/tag.model';
 import { TagEntity } from '@src/parameters/core/entities/tag-entity';
+import { TagAssignmentDetailEntity } from '@src/parameters/core/entities/tag-assignment-detail-entity';
+import { AssignmentTagDetailModel } from '@src/server/config/database/models/assignment-tag-detail';
 
 export class SequelizePostgresRepository implements TagRepository {
   async create(tag: {
@@ -54,5 +56,19 @@ export class SequelizePostgresRepository implements TagRepository {
       data: tags,
       pageCounter: allPages
     };
+  }
+
+  async getDetailTagsWithAssignment(
+    tagId: string
+  ): Promise<TagAssignmentDetailEntity | null> {
+    const tagDetailDatabase = await AssignmentTagDetailModel.findOne({
+      where: { tag_id: tagId }
+    });
+
+    return tagDetailDatabase
+      ? TagAssignmentDetailEntity.fromPrimitives(
+          tagDetailDatabase?.get({ plain: true })
+        )
+      : null;
   }
 }

@@ -1,5 +1,13 @@
 TODO:
 
+# Tags
+
+[X] Create tag
+[X] Update tag
+[X] Get tag by id
+[X] Get all tags
+[X] Delete tag
+
 # Location
 
 [ ] not allow update location from multiple to single or unavailable to available
@@ -33,6 +41,7 @@ TODO:
 [X] handle error if code employee already exists
 [X] email to owner with discount note
 [X] add new method to get assignment loan
+[X] add tags workflow
 
 [X] finder all assignments
 [X] finder employee by code
