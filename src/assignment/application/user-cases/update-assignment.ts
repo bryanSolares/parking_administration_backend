@@ -22,14 +22,27 @@ export class UpdateAssignment {
       throw new Error('Can not update an inactive assignment');
     }
 
-    // Validate if the assignment have loan
-    if (assignment.assignment_loan && !assignmentDatabase.assignment_loan) {
+    // Validate if schedule previously exist
+    if (
+      (assignmentDatabase.schedule && !assignment.schedule) ||
+      (!assignmentDatabase.schedule && assignment.schedule)
+    ) {
       throw new Error(
-        'You can not update an assignment with loan if it did not exist before'
+        'You can not add a schedule if it did exist before and you must provide a schedule if it had before'
       );
     }
 
-    // Validate that employee is the same
+    // Validate if the assignment have or not a loan
+    if (
+      (assignment.assignment_loan && !assignmentDatabase.assignment_loan) ||
+      (!assignment.assignment_loan && assignmentDatabase.assignment_loan)
+    ) {
+      throw new Error(
+        'You can not update an assignment if it had not loan before or you should provide a loan if it had before'
+      );
+    }
+
+    // Validate that employee is the same (owner)
     if (assignmentDatabase.employee.id !== assignment.employee.id) {
       throw new Error(
         'You can not update an assignment with another employee (owner)'
@@ -46,22 +59,12 @@ export class UpdateAssignment {
       );
     }
 
-    // Validate if schedule previously exist
-    if (
-      (assignmentDatabase.schedule && !assignment.schedule) ||
-      (!assignmentDatabase.schedule && assignment.schedule)
-    ) {
-      throw new Error(
-        'You can not add a schedule if it did exist before and you must provide a schedule if it did exist before'
-      );
-    }
-
     await this.assignmentRepository.updateAssignment(
       {
         ...assignment,
         schedule: {
           ...assignment.schedule,
-          id: assignmentDatabase.schedule.id
+          id: assignmentDatabase.schedule?.id
         }
       },
       vehicleIdsForDelete
