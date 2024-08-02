@@ -13,7 +13,7 @@ export class UpdateLocation {
       location.id
     );
 
-    if (!locationExists?.id) {
+    if (!locationExists) {
       throw new LocationNotFoundError('Location not found');
     }
 

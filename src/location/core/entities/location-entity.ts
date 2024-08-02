@@ -12,8 +12,34 @@ export class LocationEntity {
     public comments?: string,
     public latitude?: number,
     public longitude?: number,
-    public status?: string,
-    public created_at?: Date,
-    public updated_at?: Date
+    public status?: string
   ) {}
+
+  static fromPrimitives(plainData: {
+    id: string;
+    name: string;
+    address: string;
+    slots: SlotEntity[];
+    contact_reference?: string;
+    phone?: string;
+    email?: string;
+    comments?: string;
+    latitude?: number;
+    longitude?: number;
+    status?: string;
+  }) {
+    return new LocationEntity(
+      plainData.id,
+      plainData.name,
+      plainData.address,
+      plainData.slots,
+      plainData.contact_reference,
+      plainData.phone,
+      plainData.email,
+      plainData.comments,
+      plainData.latitude,
+      plainData.longitude,
+      plainData.status
+    );
+  }
 }

@@ -162,7 +162,7 @@ export class SequelizeLocationRepository implements LocationRepository {
     const allPages = Math.ceil(locationsCounter / limit);
     const offset = (page - 1) * limit;
 
-    const locations = await LocationModel.findAll({
+    const locationsDatabase = await LocationModel.findAll({
       attributes: {
         exclude: ['updated_at', 'latitude', 'longitude']
       },
@@ -171,8 +171,8 @@ export class SequelizeLocationRepository implements LocationRepository {
       offset
     });
 
-    const locationsData = locations.map(
-      location => location.get({ plain: true }) as LocationEntity
+    const locationsData = locationsDatabase.map(location =>
+      LocationEntity.fromPrimitives(location.get({ plain: true }))
     );
 
     return { data: locationsData, pageCounter: allPages };
