@@ -619,7 +619,28 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
+                  "oneOf": [
+                    {
+                      "$ref": "#/components/schemas/ErrorResponse"
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "message": {
+                          "type": "string",
+                          "enum": [
+                            "Slot not have plenty schedules",
+                            "You should provide a schedule if the slot is multiple type",
+                            "Employee already has an assignment",
+                            "Cant create more schedules in slot",
+                            "Slot cant have schedules",
+                            "Slot is not available",
+                            "Location is not active"
+                          ]
+                        }
+                      }
+                    }
+                  ]
                 }
               }
             }
@@ -685,7 +706,11 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "object"
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/Assignment"
+                    }
+                  ]
                 }
               }
             }
@@ -723,6 +748,17 @@
             "required": true
           }
         ],
+        "requestBody": {
+          "description": "Data to update assignment",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateAssignment"
+              }
+            }
+          }
+        },
         "responses": {
           "200": {
             "description": "Assignment updated succesfully",
@@ -732,6 +768,47 @@
                   "type": "object",
                   "example": {
                     "message": "Assignment updated"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request (Invalid format)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "oneOf": [
+                    {
+                      "$ref": "#/components/schemas/ErrorResponse"
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "message": {
+                          "type": "string",
+                          "enum": [
+                            "Can not update an inactive assignment",
+                            "You can not add a schedule if it did exist before and you must provide a schedule if it had before",
+                            "You can not update an assignment if it had not loan before or you should provide a loan if it had before",
+                            "You can not update an assignment with another employee (owner - guest)"
+                          ]
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Assignment not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "example": {
+                    "error": "Assignment not found"
                   }
                 }
               }
@@ -774,7 +851,42 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "object"
+                  "$ref": "#/components/schemas/AssignmentById"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request (Invalid format)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "oneOf": [
+                    {
+                      "$ref": "#/components/schemas/ErrorResponse"
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "message": {
+                          "type": "string"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Assignment not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "example": {
+                    "error": "Assignment not found"
+                  }
                 }
               }
             }
@@ -812,13 +924,62 @@
             "required": true
           }
         ],
+        "requestBody": {
+          "description": "Data to create assignment loan",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AssignmentLoan"
+              }
+            }
+          }
+        },
         "responses": {
           "200": {
             "description": "Assignment loan create succesfully",
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "object"
+                  "type": "object",
+                  "example": {
+                    "message": "Assignment loan created"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request (Invalid format)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "oneOf": [
+                    {
+                      "$ref": "#/components/schemas/ErrorResponse"
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "message": {
+                          "type": "string"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Assignment not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "example": {
+                    "error": "Assignment not found"
+                  }
                 }
               }
             }
@@ -862,7 +1023,45 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "object"
+                  "type": "object",
+                  "example": {
+                    "message": "Assignment loan deleted"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request (Invalid format)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "oneOf": [
+                    {
+                      "$ref": "#/components/schemas/ErrorResponse"
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "message": {
+                          "type": "string"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Assignment not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "example": {
+                    "error": "Assignment not found"
+                  }
                 }
               }
             }
@@ -906,7 +1105,45 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "object"
+                  "type": "object",
+                  "example": {
+                    "message": "Discount note created"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request (Invalid format)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "oneOf": [
+                    {
+                      "$ref": "#/components/schemas/ErrorResponse"
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "message": {
+                          "type": "string"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Assignment not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "example": {
+                    "error": "Assignment not found"
+                  }
                 }
               }
             }
@@ -944,13 +1181,68 @@
             "required": true
           }
         ],
+        "requestBody": {
+          "description": "Update discount note status",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "status": {
+                    "type": "string",
+                    "enum": ["APROBADO", "RECHAZADO", "CANCELADO"]
+                  }
+                }
+              }
+            }
+          }
+        },
         "responses": {
           "200": {
             "description": "Discount note update succesfully",
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "object"
+                  "type": "object",
+                  "example": {
+                    "message": "Discount node updated"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request (Invalid format)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "oneOf": [
+                    {
+                      "$ref": "#/components/schemas/ErrorResponse"
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "message": {
+                          "type": "string"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Discount note not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "example": {
+                    "error": "Discount note not found"
+                  }
                 }
               }
             }
@@ -988,13 +1280,62 @@
             "required": true
           }
         ],
+        "requestBody": {
+          "description": "Data to create deassignment",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DeAssignment"
+              }
+            }
+          }
+        },
         "responses": {
           "201": {
             "description": "De-assignment create succesfully",
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "object"
+                  "type": "object",
+                  "example": {
+                    "message": "Deassignmente create succesfully"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request (Invalid format)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "oneOf": [
+                    {
+                      "$ref": "#/components/schemas/ErrorResponse"
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "message": {
+                          "type": "string"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Assignment not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "example": {
+                    "error": "Assignment not found"
+                  }
                 }
               }
             }
@@ -1620,6 +1961,354 @@
           }
         },
         "required": ["message"]
+      },
+      "DiscountNote": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "status_signature": {
+            "type": "string",
+            "enum": ["PENDIENTE", "APROBADO", "RECHAZO", "CANCELADO"]
+          },
+          "status_dispatched": {
+            "type": "string",
+            "enum": ["PENDIENTE", "EXITOSO", "FALLIDO", "REINTENTANDO"]
+          },
+          "last_notice": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "next_notice": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "dispatch_attempts": {
+            "type": "number"
+          }
+        }
+      },
+      "Assignment": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string",
+                  "format": "uuid"
+                },
+                "assignment_date": {
+                  "type": "string",
+                  "format": "date-time"
+                },
+                "status": {
+                  "type": "string",
+                  "enum": ["ACTIVO", "INACTIVO"]
+                },
+                "created_at": {
+                  "type": "string",
+                  "format": "date-time"
+                },
+                "slot": {
+                  "type": "object",
+                  "properties": {
+                    "slot_number": {
+                      "type": "string"
+                    },
+                    "location": {
+                      "type": "object",
+                      "properties": {
+                        "name": {
+                          "type": "string"
+                        }
+                      }
+                    }
+                  }
+                },
+                "employee": {
+                  "type": "object",
+                  "properties": {
+                    "name": {
+                      "type": "string"
+                    },
+                    "email": {
+                      "type": "string"
+                    },
+                    "phone": {
+                      "type": "string"
+                    }
+                  }
+                },
+                "discount_note": {
+                  "$ref": "#/components/schemas/DiscountNote"
+                }
+              }
+            }
+          }
+        }
+      },
+      "AssignmentLoan": {
+        "type": "object",
+        "properties": {
+          "start_date_assignment": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "end_date_assignment": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "employee": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/Employee"
+              },
+              {
+                "type": "object",
+                "properties": {
+                  "id": {
+                    "readOnly": false
+                  },
+                  "vehicles": {
+                    "type": "array",
+                    "items": {
+                      "allOf": [
+                        {
+                          "$ref": "#/components/schemas/Vehicle"
+                        },
+                        {
+                          "type": "object",
+                          "properties": {
+                            "id": {
+                              "readOnly": false
+                            }
+                          }
+                        }
+                      ]
+                    }
+                  }
+                }
+              }
+            ]
+          }
+        }
+      },
+      "UpdateAssignment": {
+        "type": "object",
+        "properties": {
+          "employee": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string",
+                "format": "uuid"
+              },
+              "vehicles": {
+                "type": "array",
+                "items": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/Vehicle"
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "string",
+                          "format": "uuid",
+                          "readOnly": false
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "schedule": {
+            "$ref": "#/components/schemas/Schedule"
+          },
+          "assignment_loan": {
+            "type": "object",
+            "properties": {
+              "start_date_assignment": {
+                "type": "string",
+                "format": "date-time"
+              },
+              "end_date_assignment": {
+                "type": "string",
+                "format": "date-time"
+              },
+              "employee": {
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/Employee"
+                  },
+                  {
+                    "type": "object",
+                    "properties": {
+                      "id": {
+                        "readOnly": false
+                      },
+                      "code_employee": {
+                        "readOnly": true
+                      },
+                      "name": {
+                        "readOnly": true
+                      },
+                      "workplace": {
+                        "readOnly": true
+                      },
+                      "identifier_document": {
+                        "readOnly": true
+                      },
+                      "company": {
+                        "readOnly": true
+                      },
+                      "department": {
+                        "readOnly": true
+                      },
+                      "sub_management": {
+                        "readOnly": true
+                      },
+                      "management_1": {
+                        "readOnly": true
+                      },
+                      "management_2": {
+                        "readOnly": true
+                      },
+                      "work_site": {
+                        "readOnly": true
+                      },
+                      "address": {
+                        "readOnly": true
+                      },
+                      "email": {
+                        "readOnly": true
+                      },
+                      "phone": {
+                        "readOnly": true
+                      },
+                      "vehicles": {
+                        "type": "array",
+                        "items": {
+                          "allOf": [
+                            {
+                              "$ref": "#/components/schemas/Vehicle"
+                            },
+                            {
+                              "type": "object",
+                              "properties": {
+                                "id": {
+                                  "readOnly": false
+                                }
+                              }
+                            }
+                          ]
+                        }
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          },
+          "vehicles_for_delete": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          "tags": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        }
+      },
+      "AssignmentById": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string",
+                "format": "uuid"
+              },
+              "assignment_date": {
+                "type": "string",
+                "format": "date-time"
+              },
+              "status": {
+                "type": "string",
+                "enum": ["ACTIVO", "INACTIVO"]
+              },
+              "employeee": {
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/Employee"
+                  },
+                  {
+                    "type": "object",
+                    "properties": {
+                      "vehicles": {
+                        "type": "array",
+                        "items": {
+                          "$ref": "#/components/schemas/Vehicle"
+                        }
+                      }
+                    }
+                  }
+                ]
+              },
+              "slot": {
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/Slot"
+                  },
+                  {
+                    "type": "object",
+                    "properties": {
+                      "location": {
+                        "$ref": "#/components/schemas/Location"
+                      }
+                    }
+                  }
+                ]
+              },
+              "schedule": {
+                "$ref": "#/components/schemas/Schedule"
+              },
+              "assignment_loan": {
+                "$ref": "#/components/schemas/AssignmentLoan"
+              },
+              "discount_note": {
+                "$ref": "#/components/schemas/DiscountNote"
+              }
+            }
+          }
+        }
+      },
+      "DeAssignment": {
+        "type": "object",
+        "properties": {
+          "reason": {
+            "type": "string"
+          },
+          "de_assignment_date": {
+            "type": "string",
+            "example": "2024-07-22T00:00:00.000Z"
+          }
+        }
       }
     }
   }

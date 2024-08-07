@@ -21,6 +21,7 @@ TODO:
 - [ ] verify if getLocationById return empty object
 - [ ] improve update slots when it is "OCUPADO" (technical debt)
 - [ ] improve update location in status if any slot is "OCUPADO" (technical debt)
+- [ ] add schedules in get by id
 - [ ] add lazy load for slots in finder all locations
 - [ ] add lazy load for slots in get by id finder
 - [x] can not create slot occupied
@@ -83,6 +84,7 @@ TODO:
 * [x] Finders
 
   - [x] finder all assignments
+    - [ ] add schedule
   - [x] assignment by id
     - [ ] add lazy load to get all assignments
   - [x] finder employee by code
