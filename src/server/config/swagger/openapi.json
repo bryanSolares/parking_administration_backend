@@ -1,0 +1,1626 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "Parking administrator",
+    "description": "Parking administrator backend",
+    "contact": {
+      "email": "solares.josue@outlook.com"
+    },
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "http://localhost:3500/api/v1"
+    }
+  ],
+  "tags": [
+    {
+      "name": "Health check",
+      "description": "Health check server and services"
+    },
+    {
+      "name": "Parking",
+      "description": "Parking management"
+    },
+    {
+      "name": "Assignment",
+      "description": "Assignments management"
+    },
+    {
+      "name": "Parameters",
+      "description": "Parameters of system"
+    }
+  ],
+  "paths": {
+    "/health": {
+      "get": {
+        "tags": ["Health check"],
+        "summary": "Health check to application and services",
+        "description": "Health check to application and services",
+        "operationId": "healthCheck",
+        "responses": {
+          "200": {
+            "description": "App is health",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "example": {
+                    "message": "ok"
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Server internal error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "example": {
+                    "message": "Server internal error"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/parking/location": {
+      "post": {
+        "tags": ["Parking"],
+        "summary": "Create a location",
+        "description": "Create a location with slots",
+        "operationId": "createLocation",
+        "requestBody": {
+          "description": "Data to create location and slots",
+          "content": {
+            "application/json": {
+              "schema": {
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/Location"
+                  },
+                  {
+                    "type": "object",
+                    "properties": {
+                      "slots": {
+                        "type": "array",
+                        "items": {
+                          "$ref": "#/components/schemas/Slot"
+                        }
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "example": {
+                    "message": "Location created"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request (Invalid format)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Server internal error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "example": {
+                    "message": "Server internal error"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "tags": ["Parking"],
+        "summary": "Get all locations and slots",
+        "description": "Get all locations and slots",
+        "operationId": "getAllLocations",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "limit",
+            "schema": {
+              "type": "number",
+              "example": 50
+            },
+            "required": true,
+            "description": "Number of elements to get"
+          },
+          {
+            "in": "query",
+            "name": "page",
+            "schema": {
+              "type": "number",
+              "example": 1
+            },
+            "required": true,
+            "description": "Number of page"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/Location"
+                      }
+                    },
+                    "pageCounter": {
+                      "type": "integer",
+                      "example": 1
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Server internal error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "example": {
+                    "message": "Server internal error"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/parking/location/{location_id}": {
+      "put": {
+        "tags": ["Parking"],
+        "summary": "Update location",
+        "description": "Update location",
+        "operationId": "updateLocation",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "location_id",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "required": true,
+            "description": "Location id to update"
+          }
+        ],
+        "requestBody": {
+          "description": "Data to update location and slots",
+          "content": {
+            "application/json": {
+              "schema": {
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/Location"
+                  },
+                  {
+                    "type": "object",
+                    "properties": {
+                      "slots": {
+                        "type": "array",
+                        "items": {
+                          "allOf": [
+                            {
+                              "$ref": "#/components/schemas/Slot"
+                            },
+                            {
+                              "type": "object",
+                              "properties": {
+                                "id": {
+                                  "type": "string",
+                                  "format": "uuid",
+                                  "readOnly": false
+                                }
+                              }
+                            }
+                          ]
+                        }
+                      },
+                      "slots_to_delete": {
+                        "type": "array",
+                        "items": {
+                          "type": "string",
+                          "format": "uuid"
+                        }
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "example": {
+                    "message": "Location updated"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request (Invalid format)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "example": {
+                    "message": "Location not found"
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Server internal error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "example": {
+                    "message": "Server internal error"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": ["Parking"],
+        "summary": "Delete location and slots",
+        "description": "Delete location and slots",
+        "operationId": "deleteLocation",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "location_id",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "required": true,
+            "description": "Location id to delete"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "example": {
+                    "message": "Location deleted"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request (Invalid format)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "example": {
+                    "message": "Location not found"
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Server internal error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "example": {
+                    "message": "Server internal error"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "tags": ["Parking"],
+        "summary": "Get location with slots by id",
+        "description": "Get location with slots by id",
+        "operationId": "getById",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "location_id",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "required": true,
+            "description": "Location id to delete"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "allOf": [
+                        {
+                          "$ref": "#/components/schemas/Location"
+                        },
+                        {
+                          "type": "object",
+                          "properties": {
+                            "slots": {
+                              "type": "array",
+                              "items": {
+                                "$ref": "#/components/schemas/Location"
+                              }
+                            }
+                          }
+                        }
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request (Invalid format)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "example": {
+                    "message": "Location not found"
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Server internal error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "example": {
+                    "message": "Server internal error"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/assignment/": {
+      "post": {
+        "tags": ["Assignment"],
+        "summary": "Create assignment",
+        "description": "Create assignment",
+        "operationId": "createAssignment",
+        "requestBody": {
+          "description": "Data to create assignment",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "allOf": [
+                  {
+                    "type": "object",
+                    "properties": {
+                      "slot_id": {
+                        "type": "string",
+                        "format": "uuid"
+                      },
+                      "employee": {
+                        "allOf": [
+                          {
+                            "$ref": "#/components/schemas/Employee"
+                          },
+                          {
+                            "type": "object",
+                            "properties": {
+                              "id": {
+                                "type": "string",
+                                "format": "uuid",
+                                "readOnly": false
+                              },
+                              "vehicles": {
+                                "allOf": [
+                                  {
+                                    "$ref": "#/components/schemas/Vehicle"
+                                  },
+                                  {
+                                    "type": "object",
+                                    "properties": {
+                                      "id": {
+                                        "type": "string",
+                                        "format": "uuid",
+                                        "readOnly": false
+                                      }
+                                    }
+                                  }
+                                ]
+                              }
+                            }
+                          }
+                        ]
+                      },
+                      "schedule": {
+                        "$ref": "#/components/schemas/Schedule"
+                      },
+                      "assignment_loan": {
+                        "allOf": [
+                          {
+                            "type": "object",
+                            "properties": {
+                              "start_date_assignment": {
+                                "type": "string",
+                                "example": "2024-07-15T00:00:00.000Z"
+                              },
+                              "end_date_assignment": {
+                                "type": "string",
+                                "example": "2024-07-16T00:00:00.000Z"
+                              },
+                              "employee": {
+                                "allOf": [
+                                  {
+                                    "$ref": "#/components/schemas/Employee"
+                                  },
+                                  {
+                                    "type": "object",
+                                    "properties": {
+                                      "id": {
+                                        "type": "string",
+                                        "format": "uuid",
+                                        "readOnly": false
+                                      },
+                                      "vehicles": {
+                                        "allOf": [
+                                          {
+                                            "$ref": "#/components/schemas/Vehicle"
+                                          },
+                                          {
+                                            "type": "object",
+                                            "properties": {
+                                              "id": {
+                                                "type": "string",
+                                                "format": "uuid",
+                                                "readOnly": false
+                                              }
+                                            }
+                                          }
+                                        ]
+                                      }
+                                    }
+                                  }
+                                ]
+                              }
+                            }
+                          }
+                        ]
+                      },
+                      "tags": {
+                        "type": "array",
+                        "items": {
+                          "type": "string",
+                          "format": "uuid"
+                        }
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Assignment created succesfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "example": {
+                    "message": "Assignment created"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request (Invalid format)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Slot not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "example": {
+                    "error": "Slot not found"
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Server internal error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "example": {
+                    "message": "Server internal error"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "tags": ["Assignment"],
+        "summary": "Get all assignments",
+        "description": "Get all assignments",
+        "operationId": "getAllAssignments",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "limit",
+            "schema": {
+              "type": "number",
+              "example": 50
+            },
+            "required": true,
+            "description": "Number of elements to get"
+          },
+          {
+            "in": "query",
+            "name": "page",
+            "schema": {
+              "type": "number",
+              "example": 1
+            },
+            "required": true,
+            "description": "Number of page"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Server internal error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "example": {
+                    "message": "Server internal error"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/assignment/{assignment_id}": {
+      "put": {
+        "tags": ["Assignment"],
+        "summary": "Update assignment",
+        "description": "Update assignment",
+        "operationId": "updateAssignment",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "assignment_id",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Assignment updated succesfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "example": {
+                    "message": "Assignment updated"
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Server internal error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "example": {
+                    "message": "Server internal error"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "tags": ["Assignment"],
+        "summary": "Get assignment by id",
+        "description": "Get assignment by id",
+        "operationId": "getAssignmentById",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "assignment_id",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Get assignment successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Server internal error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "example": {
+                    "message": "Server internal error"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/assignment/loan/{assignment_id}": {
+      "post": {
+        "tags": ["Assignment"],
+        "summary": "Create assignment loan",
+        "description": "Create assignment loan",
+        "operationId": "createAssignmentLoan",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "assignment_id",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Assignment loan create succesfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Server internal error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "example": {
+                    "message": "Server internal error"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/assignment/assignment-loan/{assignment_loan_id}": {
+      "delete": {
+        "tags": ["Assignment"],
+        "summary": "Delete assignment loan",
+        "description": "Delete assignment loan",
+        "operationId": "deleteAssignmentLoan",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "assignment_loan_id",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Assignment loan delete succesfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Server internal error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "example": {
+                    "message": "Server internal error"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/assignment/discount-note/{assignment_id}": {
+      "post": {
+        "tags": ["Assignment"],
+        "summary": "Create discount note",
+        "description": "Create discount note",
+        "operationId": "createDiscountNote",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "assignment_id",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Discount note succesfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Server internal error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "example": {
+                    "message": "Server internal error"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/assignment/discount-note/{discount_note_id}": {
+      "patch": {
+        "tags": ["Assignment"],
+        "summary": "Update discount note status",
+        "description": "Update discount note status",
+        "operationId": "updateDiscountNoteStatus",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "discount_note_id",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Discount note update succesfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Server internal error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "example": {
+                    "message": "Server internal error"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/assignment/de_assignment/{assignment_id}": {
+      "post": {
+        "tags": ["Assignment"],
+        "summary": "Create de-assignment",
+        "description": "Create de-assignment",
+        "operationId": "createDeAssignment",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "assignment_id",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "De-assignment create succesfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Server internal error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "example": {
+                    "message": "Server internal error"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/parameter/tag": {
+      "post": {
+        "tags": ["Parameters"],
+        "summary": "Create tag",
+        "description": "Create tag",
+        "operationId": "createTag",
+        "requestBody": {
+          "description": "Body to create tag",
+          "content": {
+            "application/json": {
+              "schema": {
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/Tag"
+                  }
+                ],
+                "required": ["name", "description", "status"],
+                "properties": {
+                  "id": {
+                    "readOnly": true
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "example": {
+                    "message": "Tag created successfully"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request (Invalid format)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Server internal error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "example": {
+                    "message": "Server internal error"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "tags": ["Parameters"],
+        "summary": "Get all tags",
+        "description": "Get all tags",
+        "operationId": "getAllTags",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "limit",
+            "schema": {
+              "type": "number"
+            },
+            "required": true
+          },
+          {
+            "in": "query",
+            "name": "page",
+            "schema": {
+              "type": "number"
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/Tag"
+                      }
+                    },
+                    "pageCounter": {
+                      "type": "integer",
+                      "example": 1
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Server internal error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "example": {
+                    "message": "Server internal error"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/parameteres/tag/{tag_id}": {
+      "put": {
+        "tags": ["Parameters"],
+        "summary": "Update tag",
+        "description": "Update tag",
+        "operationId": "udpateTag",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "tag_id",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "required": true
+          }
+        ],
+        "requestBody": {
+          "description": "Body to update tag",
+          "content": {
+            "application/json": {
+              "schema": {
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/Tag"
+                  }
+                ],
+                "required": ["name", "description", "status"],
+                "properties": {
+                  "id": {
+                    "readOnly": true
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "example": {
+                    "message": "Tag updated successfully"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request (Invalid format)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Server internal error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "example": {
+                    "message": "Server internal error"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "tags": ["Parameters"],
+        "summary": "Get tag by id",
+        "description": "Get tag by id",
+        "operationId": "getTagById",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "tag_id",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "$ref": "#/components/schemas/Tag"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request (Invalid format)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Server internal error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "example": {
+                    "message": "Server internal error"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": ["Parameters"],
+        "summary": "Delete tag",
+        "description": "Delete tag",
+        "operationId": "deleteTag",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "tag_id",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "example": {
+                    "message": "Tag deleted successfully"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request (Invalid format)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Server internal error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "example": {
+                    "message": "Server internal error"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Employee": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "example": "a1d8fec0-0c45-4f1b-a42c-5f2fad304c7d",
+            "readOnly": true
+          },
+          "code_employee": {
+            "type": "string",
+            "example": "examplecode"
+          },
+          "name": {
+            "type": "string",
+            "example": "John Doe"
+          },
+          "workplace": {
+            "type": "string",
+            "example": "Ltd"
+          },
+          "identifier_document": {
+            "type": "string",
+            "example": 1234432150101
+          },
+          "company": {
+            "type": "string",
+            "example": "Example Company"
+          },
+          "department": {
+            "type": "string",
+            "example": "IT"
+          },
+          "sub_management": {
+            "type": "string",
+            "example": "Software Development"
+          },
+          "management_1": {
+            "type": "string",
+            "example": "Operations"
+          },
+          "management_2": {
+            "type": "string",
+            "example": "Administration"
+          },
+          "work_site": {
+            "type": "string",
+            "example": "Main Office"
+          },
+          "address": {
+            "type": "string",
+            "example": "123 Main St"
+          },
+          "email": {
+            "type": "string",
+            "example": "example@domain.com"
+          },
+          "phone": {
+            "type": "string",
+            "example": "+(502) 45573001"
+          }
+        },
+        "required": [
+          "code_employee",
+          "name",
+          "workplace",
+          "identifier_document",
+          "company",
+          "department",
+          "sub_management",
+          "management_1",
+          "management_2",
+          "work_site",
+          "address",
+          "email",
+          "phone"
+        ]
+      },
+      "Vehicle": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "readOnly": true
+          },
+          "vehicle_badge": {
+            "type": "string",
+            "example": 1234567890
+          },
+          "color": {
+            "type": "string",
+            "example": "Red"
+          },
+          "brand": {
+            "type": "string",
+            "example": "Toyota"
+          },
+          "model": {
+            "type": "string",
+            "example": "Corolla"
+          },
+          "type": {
+            "type": "string",
+            "example": "CARRO",
+            "enum": ["CARRO", "MOTO", "CAMION"]
+          }
+        },
+        "required": ["vehicle_badge", "color", "brand", "model", "type"]
+      },
+      "Schedule": {
+        "type": "object",
+        "properties": {
+          "start_time_assignment": {
+            "type": "string",
+            "format": "time",
+            "example": "10:00"
+          },
+          "end_time_assignment": {
+            "type": "string",
+            "format": "time",
+            "example": "12:00"
+          }
+        },
+        "required": ["start_time_assignment", "end_time_assignment"]
+      },
+      "Slot": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "readOnly": true
+          },
+          "slot_number": {
+            "type": "string",
+            "example": "ABCD1234"
+          },
+          "slot_type": {
+            "type": "string",
+            "example": "MULTIPLE",
+            "enum": ["MULTIPLE", "SIMPLE"]
+          },
+          "limit_schedules": {
+            "type": "integer",
+            "example": 5,
+            "minimum": 1,
+            "maximum": 23
+          },
+          "status": {
+            "type": "string",
+            "example": "DISPONIBLE",
+            "enum": ["DISPONIBLE", "INACTIVO"]
+          },
+          "cost_type": {
+            "type": "string",
+            "example": "DESCUENTO",
+            "enum": ["DESCUENTO", "SIN_COSTO", "COMPLEMENTO"]
+          },
+          "vehicle_type": {
+            "type": "string",
+            "example": "CARRO",
+            "enum": ["CARRO", "MOTO", "CAMION"]
+          },
+          "cost": {
+            "type": "number",
+            "format": "float",
+            "example": 100,
+            "minimum": 1
+          }
+        },
+        "required": [
+          "slot_number",
+          "slot_type",
+          "limit_schedules",
+          "status",
+          "cost_type",
+          "vehicle_type",
+          "cost"
+        ]
+      },
+      "Location": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "readOnly": true
+          },
+          "name": {
+            "type": "string",
+            "example": "Random Company Name"
+          },
+          "address": {
+            "type": "string",
+            "example": "123 Random St"
+          },
+          "contact_reference": {
+            "type": "string",
+            "example": "John Doe"
+          },
+          "phone": {
+            "type": "string",
+            "example": "+(502) 45573001"
+          },
+          "email": {
+            "type": "string",
+            "example": "john.doe@example.com"
+          },
+          "comments": {
+            "type": "string",
+            "example": "Excellent"
+          },
+          "status": {
+            "type": "string",
+            "example": "ACTIVO",
+            "enum": ["ACTIVO", "INACTIVO"]
+          }
+        },
+        "required": [
+          "name",
+          "address",
+          "contact_reference",
+          "phone",
+          "email",
+          "comments",
+          "status"
+        ]
+      },
+      "Tag": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "name": {
+            "type": "string",
+            "example": "Gerencia"
+          },
+          "description": {
+            "type": "string",
+            "example": "Etiqueta para gerencia"
+          },
+          "status": {
+            "type": "string",
+            "example": "ACTIVO",
+            "enum": ["ACTIVO", "INACTIVO"]
+          }
+        }
+      },
+      "ErrorMessage": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "string"
+          },
+          "expected": {
+            "type": "string"
+          },
+          "received": {
+            "type": "string"
+          },
+          "path": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "message": {
+            "type": "string"
+          }
+        },
+        "required": ["code", "expected", "received", "path", "message"]
+      },
+      "ErrorResponse": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ErrorMessage"
+            }
+          }
+        },
+        "required": ["message"]
+      }
+    }
+  }
+}

@@ -9,8 +9,8 @@ import swaggerUI from 'swagger-ui-express';
 
 import { config } from '@config/logger/load-envs';
 import { logger } from '@config/logger/load-logger';
-import { config as swaggerDefinition } from '@config/swagger/config';
 import { sequelizeConnection } from '@config/database/sequelize';
+import swaggerDocs from '@config/swagger/openapi.json';
 import '@config/database/models/relations';
 
 import routes from '@routes/index';
@@ -38,7 +38,7 @@ export class Server {
     this.app.use(
       '/api/v1/docs/',
       swaggerUI.serve,
-      swaggerUI.setup(swaggerDefinition)
+      swaggerUI.setup(swaggerDocs)
     );
     this.app.use(routes);
   }

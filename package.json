@@ -9,7 +9,6 @@
     "pg": "^8.12.0",
     "pg-hstore": "^2.3.4",
     "sequelize": "^6.37.3",
-    "swagger-jsdoc": "^6.2.8",
     "swagger-ui-express": "^5.0.1",
     "uuid": "^10.0.0",
     "winston": "^3.13.0",
@@ -58,7 +57,7 @@
   "main": "",
   "name": "backend-parking",
   "scripts": {
-    "build": "yarn build:validate && yarn build:clean && yarn build:generate",
+    "build": "yarn build:validate && yarn build:clean && yarn build:generate && cp -r ./src/server/config/swagger ./build/server/config/swagger",
     "build:clean": "rimraf ./build; exit 0",
     "build:validate": "tsc --noEmit",
     "build:generate": "swc ./src -d build --strip-leading-paths",
