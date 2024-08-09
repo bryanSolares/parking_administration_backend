@@ -2,6 +2,7 @@ import { Router } from 'express';
 import locationRoutes from '@location-module-infrastructure/routes/location-routes';
 import assignmentRoutes from '@assignment-module-infrastructure/routes/assignment-routes';
 import tagRoutes from '@src/parameters/infrastructure/routes/tag.routes';
+import userRoutes from '@src/auth/infrastructure/routes/user.routes';
 
 const routes = Router();
 
@@ -24,5 +25,6 @@ routes.get('/api/v1/health', (req, res) => {
 routes.use('/api/v1/parking/', locationRoutes);
 routes.use('/api/v1/assignment', assignmentRoutes);
 routes.use('/api/v1/parameter/tag', tagRoutes);
+routes.use('/api/v1/parameter/users', userRoutes);
 
 export default routes;
