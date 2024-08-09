@@ -7,7 +7,7 @@ export class FinderById {
     const role = await this.roleRepository.getById(id);
 
     if (!role) {
-      throw new Error('User not found');
+      throw new Error('Role not found');
     }
 
     return role;
