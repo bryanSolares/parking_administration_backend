@@ -14,7 +14,7 @@ import { CreateDiscountNote } from '../src/assignment/application/user-cases/cre
 import { AssignmentFinder } from '../src/assignment/application/user-cases/assignment-finder';
 import { AssignmentFinderById } from '../src/assignment/application/user-cases/assignment-finder-by-id';
 import { DeleteAssignmentLoan } from '../src/assignment/application/user-cases/delete-assignment-loan';
-import { UpdateDiscountNote } from '../src/assignment/application/user-cases/update-discount-note';
+import { UpdateStatusDiscountNote } from '../src/assignment/application/user-cases/update-status-discount-note';
 import { UpdateAssignment } from '../src/assignment/application/user-cases/update-assignment';
 import { GetEmployeeByCode } from '../src/assignment/application/user-cases/get-employee-by-code-from-ws';
 
@@ -35,19 +35,19 @@ describe('ASSIGNMENT: Use Cases', () => {
       mockAssignmentDomainService,
       mockNotificationService
     );
-    const assignment = AssignmentMother.createAssignment()
+    const assignment = AssignmentMother.createAssignment({})
     await createAssignment.run(assignment);
     expect(mockAssignmentRepository.createAssignment).toHaveBeenCalledWith(assignment);
   });
 
   it('should create assignment loan', async () => {
-    const assignment = AssignmentMother.createAssignment()
-    const assignmentLoan = AssignmentMother.createAssignmentLoan()
-    mockAssignmentRepository.getAssignmentLoanActiveByIdAssignment.mockResolvedValueOnce(null);
+    const assignment = AssignmentMother.createAssignment({})
+    const assignmentLoan = AssignmentMother.createAssignmentLoan({})
     mockAssignmentRepository.getAssignmentById.mockResolvedValueOnce(assignment);
     const createAssignmentLoan = new CreateAssignmentLoan(
       mockAssignmentRepository,
-      mockNotificationService
+      mockNotificationService,
+      mockAssignmentDomainService
     );
 
     await createAssignmentLoan.run(assignmentLoan);
@@ -55,7 +55,7 @@ describe('ASSIGNMENT: Use Cases', () => {
   });
 
   it('should create de-assignment', async () => {
-    const assignment = AssignmentMother.createAssignment()
+    const assignment = AssignmentMother.createAssignment({})
     const deAssignment = AssignmentMother.createDeAssignment()
     mockAssignmentRepository.getAssignmentById.mockResolvedValueOnce(
       assignment
@@ -69,7 +69,7 @@ describe('ASSIGNMENT: Use Cases', () => {
   });
 
   it('should throw an errors if assignment not found or assignment already inactive to create de-assignment', async () => {
-    const assignment = AssignmentMother.createAssignment()
+    const assignment = AssignmentMother.createAssignment({})
     const deAssignment = AssignmentMother.createDeAssignment()
     const deAssignmentById = new CreateDeAssignment(
       mockAssignmentRepository,
@@ -87,14 +87,13 @@ describe('ASSIGNMENT: Use Cases', () => {
   });
 
   it('should create discount note', async () => {
-    const assignment = AssignmentMother.createAssignment()
     const slot = LocationMother.createSlot()
+    const assignment = AssignmentMother.createAssignment({slot: {...slot, cost_type: 'DESCUENTO'}, discount_note: undefined})
+
     mockAssignmentRepository.getAssignmentById.mockResolvedValueOnce(assignment);
     mockLocationRepository.getSlotById.mockResolvedValueOnce({...slot,  cost_type: 'DESCUENTO'});
-    mockAssignmentRepository.getDiscountNoteByIdAssignment.mockResolvedValueOnce(null);
     const createDiscountNote = new CreateDiscountNote(
       mockAssignmentRepository,
-      mockLocationRepository,
       mockNotificationService
     );
     await createDiscountNote.run(assignment.id);
@@ -104,7 +103,6 @@ describe('ASSIGNMENT: Use Cases', () => {
   it('should throw errors if assignment not exists, discount note already exists or slot is type SIN_COSTO', async () => {
     const createDiscountNote = new CreateDiscountNote(
       mockAssignmentRepository,
-      mockLocationRepository,
       mockNotificationService
     );
 
@@ -119,34 +117,25 @@ describe('ASSIGNMENT: Use Cases', () => {
   });
 
   it('should delete assignment loan', async () => {
-    const assignmentLoan = AssignmentMother.createAssignmentLoan()
-    mockAssignmentRepository.getAssignmentLoanActiveByIdAssignment.mockResolvedValueOnce(
-      assignmentLoan
-    );
+    const assignmentLoan = AssignmentMother.createAssignmentLoan({})
     const deleteAssignmentLoan = new DeleteAssignmentLoan(
       mockAssignmentRepository
     );
+    mockAssignmentRepository.getAssignmentLoanById.mockResolvedValueOnce(assignmentLoan);
     await deleteAssignmentLoan.run(assignmentLoan.assignment_id);
     expect(mockAssignmentRepository.deleteAssignmentLoan).toHaveBeenCalledWith(assignmentLoan.assignment_id);
   });
 
   it('should update discount note status', async () => {
-    const assignment = AssignmentMother.createAssignment()
-    const discountNote = AssignmentMother.createDiscountNote()
-    mockAssignmentRepository.getAssignmentById.mockResolvedValueOnce(
-      assignment
-    );
-
-    mockAssignmentRepository.getDiscountNoteByIdAssignment.mockResolvedValueOnce(
-      discountNote
-    );
-
-    await new UpdateDiscountNote(mockAssignmentRepository).run(assignment.id, 'APROBADO');
-    expect(mockAssignmentRepository.updateDiscountNote).toHaveBeenCalledWith(assignment.id, 'APROBADO');
+    const assignment = AssignmentMother.createAssignment({})
+    const discountNote = AssignmentMother.createDiscountNote({})
+    mockAssignmentRepository.getDiscountNoteById.mockResolvedValueOnce(discountNote);
+    await new UpdateStatusDiscountNote(mockAssignmentRepository).run(assignment.id, 'APROBADO');
+    expect(mockAssignmentRepository.updateStatusDiscountNote).toHaveBeenCalledWith(assignment.id, 'APROBADO');
   });
 
   it('should update an assignment', async () => {
-    const assignment = AssignmentMother.createAssignment()
+    const assignment = AssignmentMother.createAssignment({})
     mockAssignmentRepository.getAssignmentById.mockResolvedValueOnce(
       assignment
     );
@@ -159,7 +148,7 @@ describe('ASSIGNMENT: Use Cases', () => {
   });
 
   it('should find an assignment by id', async () => {
-    const assignment = AssignmentMother.createAssignment()
+    const assignment = AssignmentMother.createAssignment({})
     mockAssignmentRepository.getAssignmentById.mockResolvedValueOnce(
       assignment
     );

@@ -13,11 +13,31 @@ import { DiscountNoteEntity } from "../../src/assignment/core/entities/discount-
 
 export class AssignmentMother{
 
-  static createAssignment(): AssignmentEntity{
-    return new AssignmentEntity(uuid(), "abc-1", this.createEmployee(), this.createSchedule(), "ACTIVO", [], this.createAssignmentLoan(), new Date(), LocationMother.createSlot())
+  static createAssignment({
+    id = uuid(),
+    slot_id = 'abc',
+    employee = this.createEmployee(),
+    schedule =  this.createSchedule(),
+    status = "ACTIVO",
+    tags = [],
+    assignment_loan = this.createAssignmentLoan({}),
+    assignment_date = new Date(),
+    slot = LocationMother.createSlot(),
+    discount_note = undefined
+   }): AssignmentEntity{
+    return new AssignmentEntity(id, slot_id, employee, schedule, status, tags, assignment_loan, assignment_date, slot, discount_note);
   }
-  static createAssignmentLoan(): AssignmentLoadEntity{
-    return new AssignmentLoadEntity(uuid(), uuid(), this.createEmployee(), new Date(), new Date(), new Date(), "ACTIVO")
+  static createAssignmentLoan({
+    id = uuid(),
+    assignment_id = uuid(),
+    employee = this.createEmployee(),
+    start_date_assignment = new Date().toString(),
+    end_date_assignment = new Date().toString(),
+    assignment_date = new Date().toString(),
+    status = "ACTIVO"
+
+  }): AssignmentLoadEntity{
+    return new AssignmentLoadEntity(id, assignment_id, employee, new Date(start_date_assignment), new Date(end_date_assignment), new Date(assignment_date), status);
   }
 
   static createVehicle(): VehicleEntity{
@@ -38,7 +58,15 @@ export class AssignmentMother{
     return new DeAssignmentEntity(uuid(), uuid(), "Lorem", new Date(), false)
   }
 
-  static createDiscountNote(): DiscountNoteEntity{
-    return new DiscountNoteEntity(uuid(), uuid(), 1, 1, 1, new Date(), new Date(), "PENDIENTE", "PENDIENTE")
+  static createDiscountNote({
+    id = uuid(),
+    assignment_id = uuid(),
+    last_notice = new Date(),
+    next_notice = new Date(),
+    status_signature = "PENDIENTE",
+    status_dispatched = "PENDIENTE"
+
+  }): DiscountNoteEntity{
+    return new DiscountNoteEntity(id, assignment_id, 1, 1, 1, last_notice, next_notice, status_signature, status_dispatched)
   }
 }

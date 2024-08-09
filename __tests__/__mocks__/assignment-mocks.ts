@@ -13,17 +13,18 @@ export const mockAssignmentRepository: jest.Mocked<AssignmentRepository> = {
   createDiscountNote: jest.fn(),
   createDeAssignment: jest.fn(),
   updateAssignment: jest.fn(),
-  updateDiscountNote: jest.fn(),
+  updateStatusDiscountNote: jest.fn(),
   deleteAssignmentLoan: jest.fn(),
   upsertEmployee: jest.fn(),
   upsertSchedule: jest.fn(),
   upsertVehicles: jest.fn(),
   getAssignmentById: jest.fn(),
-  getDiscountNoteByIdAssignment: jest.fn(),
-  getAssignmentLoanActiveByIdAssignment: jest.fn(),
+  getAssignmentLoanById: jest.fn(),
+  getDiscountNoteById: jest.fn(),
   getAssignments: jest.fn(),
   canCreateMoreSchedulesInSlot: jest.fn(),
-  employeeHasAnActiveAssignment: jest.fn()
+  employeeHasAnActiveAssignment: jest.fn(),
+  getAssignmentLoanByIdAssignment: jest.fn()
 };
 
 export const mockNotificationRepository: jest.Mocked<NotificationMailRepository> = {
