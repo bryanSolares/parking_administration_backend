@@ -3,6 +3,7 @@ import locationRoutes from '@location-module-infrastructure/routes/location-rout
 import assignmentRoutes from '@assignment-module-infrastructure/routes/assignment-routes';
 import tagRoutes from '@src/parameters/infrastructure/routes/tag.routes';
 import userRoutes from '@src/auth/infrastructure/routes/user.routes';
+import roleRoutes from '@src/auth/infrastructure/routes/role.routes';
 
 const routes = Router();
 
@@ -26,5 +27,6 @@ routes.use('/api/v1/parking/', locationRoutes);
 routes.use('/api/v1/assignment', assignmentRoutes);
 routes.use('/api/v1/parameter/tag', tagRoutes);
 routes.use('/api/v1/parameter/users', userRoutes);
+routes.use('/api/v1/parameter/roles', roleRoutes);
 
 export default routes;

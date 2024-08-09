@@ -1,39 +1,34 @@
 export type RoleStatus = 'ACTIVO' | 'INACTIVO';
 
 export class RoleEntity {
+  readonly id: string;
   readonly name: string;
   readonly description: string;
   readonly status: RoleStatus;
-  readonly listAccess: Map<string, boolean>;
-  readonly id: string;
 
   constructor(
+    id: string,
     name: string,
     description: string,
-    status: RoleStatus,
-    listAccess: Map<string, boolean>,
-    id: string
+    status: RoleStatus
   ) {
+    this.id = id;
     this.name = name;
     this.description = description;
     this.status = status;
-    this.listAccess = listAccess;
-    this.id = id;
   }
 
   static fromPrimitives(plainData: {
+    id: string;
     name: string;
     description: string;
     status: RoleStatus;
-    listAccess: Map<string, boolean>;
-    id: string;
   }): RoleEntity {
     return new RoleEntity(
+      plainData.id,
       plainData.name,
       plainData.description,
-      plainData.status,
-      plainData.listAccess,
-      plainData.id
+      plainData.status
     );
   }
 
@@ -42,8 +37,7 @@ export class RoleEntity {
       id: this.id,
       name: this.name,
       description: this.description,
-      status: this.status,
-      listAccess: this.listAccess
+      status: this.status
     };
   }
 }
