@@ -1,4 +1,4 @@
-
+--postgresql
 create or replace function employee_has_an_active_assignment(emplo_id varchar)
  	returns bool
  as
@@ -23,3 +23,28 @@ create or replace function employee_has_an_active_assignment(emplo_id varchar)
  $$
  	language plpgsql;
 
+--mysql
+DELIMITER //
+
+CREATE FUNCTION employee_has_an_active_assignment(emplo_id VARCHAR(255))
+RETURNS BOOLEAN
+READS SQL DATA
+BEGIN
+    DECLARE hasAssignment BOOLEAN;
+
+    SELECT EXISTS (
+        SELECT 1
+        FROM assignment a
+        WHERE a.employee_id = emplo_id
+          AND a.status = 'ACTIVO'
+        UNION ALL
+        SELECT 1
+        FROM assignment_loan al
+        WHERE al.employee_id = emplo_id
+          AND al.status = 'ACTIVO'
+    ) INTO hasAssignment;
+
+    RETURN hasAssignment;
+END //
+
+DELIMITER ;

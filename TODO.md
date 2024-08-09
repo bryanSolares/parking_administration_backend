@@ -52,6 +52,7 @@ TODO:
   - [x] create api_key for employee
   - [ ] save or update key in database
   - [ ] get location data to email
+  - [ ] Do not create schedule if slot is type single
   - [ ] Does not create assignment if tags is empty
   - [x] can not create assignment if slot is "MULTIPLE" and request does not have schedule
   - [x] fix error duplicated employee

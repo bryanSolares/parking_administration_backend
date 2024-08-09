@@ -3,7 +3,7 @@ import { Sequelize } from 'sequelize';
 const isTestEnvironment = process.env.NODE_ENV === 'test';
 
 export const sequelize = new Sequelize({
-  dialect: isTestEnvironment ? 'sqlite' : 'postgres',
+  dialect: isTestEnvironment ? 'sqlite' : 'mysql',
   host: isTestEnvironment ? undefined : process.env.DB_HOST,
   username: isTestEnvironment ? undefined : process.env.DB_USER,
   password: isTestEnvironment ? undefined : process.env.DB_PASSWORD,

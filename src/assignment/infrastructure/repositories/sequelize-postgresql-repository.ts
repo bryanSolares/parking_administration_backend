@@ -387,24 +387,24 @@ export class SequelizeAssignmentRepository implements AssignmentRepository {
 
   async employeeHasAnActiveAssignment(employeeId: string): Promise<boolean> {
     const [resultFunctionHasAssignment]: {
-      employee_has_an_active_assignment: boolean;
+      [key: string]: boolean;
     }[] = await sequelize.query('select employee_has_an_active_assignment(?)', {
       replacements: [employeeId],
       type: QueryTypes.SELECT
     });
 
-    return resultFunctionHasAssignment.employee_has_an_active_assignment;
+    return Object.values(resultFunctionHasAssignment)[0];
   }
 
   async canCreateMoreSchedulesInSlot(slotId: string): Promise<boolean> {
     const [resultFunctionCanCreateMoreSchedulesInSlot]: {
-      can_create_more_schedules_in_slot: boolean;
+      [key: string]: boolean;
     }[] = await sequelize.query('select can_create_more_schedules_in_slot(?)', {
       replacements: [slotId],
       type: QueryTypes.SELECT
     });
 
-    return resultFunctionCanCreateMoreSchedulesInSlot.can_create_more_schedules_in_slot;
+    return Object.values(resultFunctionCanCreateMoreSchedulesInSlot)[0];
   }
 
   async updateAssignment(
