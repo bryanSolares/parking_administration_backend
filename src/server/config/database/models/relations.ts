@@ -84,10 +84,14 @@ DiscountNoteModel.belongsTo(AssignmentModel, {
 
 RoleModel.belongsToMany(ResourceModel, {
   through: RoleDetailModel,
-  foreignKey: 'role_id'
+  foreignKey: 'role_id',
+  onUpdate: 'CASCADE',
+  onDelete: 'CASCADE'
 });
 
 ResourceModel.belongsToMany(RoleModel, {
   through: RoleDetailModel,
-  foreignKey: 'resource_id'
+  foreignKey: 'resource_id',
+  onUpdate: 'CASCADE',
+  onDelete: 'CASCADE'
 });

@@ -61,15 +61,46 @@ export class MySQLSequelizeRoleRepository implements RoleRepository {
     name: string;
     description: string;
     status: 'ACTIVO' | 'INACTIVO';
+    listOfAccess: [];
   }): Promise<void> {
-    const roleEntity = RoleEntity.fromPrimitives({ ...data, resources: [] });
-    await RoleModel.update(
-      { ...roleEntity },
-      {
-        where: { id: data.id },
-        fields: ['name', 'description', 'status']
+    const transaction = await sequelize.transaction();
+    try {
+      const roleEntity = RoleEntity.fromPrimitives({ ...data, resources: [] });
+      await RoleModel.update(
+        { ...roleEntity },
+        {
+          where: { id: data.id },
+          fields: ['name', 'description', 'status'],
+          transaction
+        }
+      );
+
+      await Promise.all(
+        data.listOfAccess.map(
+          (resource: { resource: string; can_access: boolean }) => {
+            return RoleDetailModel.update(
+              {
+                can_access: resource.can_access
+              },
+              {
+                where: { role_id: data.id, resource_id: resource.resource },
+                fields: ['can_access'],
+                transaction
+              }
+            );
+          }
+        )
+      );
+
+      await transaction.commit();
+    } catch (error) {
+      await transaction.rollback();
+      if (error instanceof UniqueConstraintError) {
+        throw new Error('You cannot have a roles with the same resources');
       }
-    );
+
+      throw error;
+    }
   }
 
   async delete(id: string): Promise<void> {

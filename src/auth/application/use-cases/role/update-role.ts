@@ -8,6 +8,7 @@ export class UpdateRole {
     name: string;
     description: string;
     status: 'ACTIVO' | 'INACTIVO';
+    listOfAccess: [];
   }) {
     const role = await this.roleRepository.getById(data.id);
 

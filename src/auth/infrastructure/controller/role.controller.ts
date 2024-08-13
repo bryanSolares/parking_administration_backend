@@ -35,8 +35,9 @@ export class RoleController {
   async update(request: Request, response: Response) {
     const id = request.params.role_id;
     const data = request.body;
+    const listOfAccess = data.list_of_access;
     try {
-      await this.updateRoleUseCase.run({ ...data, id });
+      await this.updateRoleUseCase.run({ ...data, id, listOfAccess });
       response.status(200).json({ message: 'Role updated successfully' });
     } catch (error) {
       console.log(error);

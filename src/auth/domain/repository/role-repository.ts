@@ -13,6 +13,7 @@ export interface RoleRepository {
     name: string;
     description: string;
     status: 'ACTIVO' | 'INACTIVO';
+    listOfAccess: [];
   }): Promise<void>;
   delete(id: string): Promise<void>;
   getById(id: string): Promise<RoleEntity | null>;
