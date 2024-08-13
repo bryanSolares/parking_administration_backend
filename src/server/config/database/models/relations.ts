@@ -9,6 +9,10 @@ import { TagModel } from './tag.model';
 import { AssignmentTagDetailModel } from './assignment-tag-detail';
 import { DiscountNoteModel } from './discount-note.model';
 
+import { RoleModel } from './auth/role.model';
+import { RoleDetailModel } from './auth/role.detail.model';
+import { ResourceModel } from './auth/resource.model';
+
 LocationModel.hasMany(SlotModel, {
   foreignKey: 'location_id',
   onUpdate: 'CASCADE',
@@ -76,4 +80,14 @@ AssignmentModel.hasOne(DiscountNoteModel, {
 });
 DiscountNoteModel.belongsTo(AssignmentModel, {
   foreignKey: 'assignment_id'
+});
+
+RoleModel.belongsToMany(ResourceModel, {
+  through: RoleDetailModel,
+  foreignKey: 'role_id'
+});
+
+ResourceModel.belongsToMany(RoleModel, {
+  through: RoleDetailModel,
+  foreignKey: 'resource_id'
 });

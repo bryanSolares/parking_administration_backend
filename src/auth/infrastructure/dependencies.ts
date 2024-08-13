@@ -15,6 +15,7 @@ import { UpdateRole } from '@src/auth/application/use-cases/role/update-role';
 import { DeleteRole } from '@src/auth/application/use-cases/role/delete-role';
 import { FinderById as FinderByIdRole } from '@src/auth/application/use-cases/role/finder-by-id-role';
 import { FinderRole } from '@src/auth/application/use-cases/role/finder-role';
+import { FinderResource } from '@src/auth/application/use-cases/role/finder-resource';
 
 export const userRepository = new MySQLSequelizeUserRepository();
 export const roleRepository = new MySQLSequelizeRoleRepository();
@@ -30,6 +31,7 @@ const updateRole = new UpdateRole(roleRepository);
 const deleteRole = new DeleteRole(roleRepository);
 const finderByIdRole = new FinderByIdRole(roleRepository);
 const finderRole = new FinderRole(roleRepository);
+const finderResources = new FinderResource(roleRepository);
 
 const userController = new UserController(
   createUser,
@@ -44,7 +46,8 @@ const roleController = new RoleController(
   updateRole,
   deleteRole,
   finderByIdRole,
-  finderRole
+  finderRole,
+  finderResources
 );
 
 export { userController, roleController };

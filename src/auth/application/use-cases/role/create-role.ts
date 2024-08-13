@@ -7,6 +7,7 @@ export class CreateRole {
     name: string;
     description: string;
     status: 'ACTIVO' | 'INACTIVO';
+    listOfAccess: [];
   }) {
     await this.roleRepository.create(data);
   }

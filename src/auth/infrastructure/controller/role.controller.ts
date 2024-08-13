@@ -5,6 +5,7 @@ import { UpdateRole } from '@src/auth/application/use-cases/role/update-role';
 import { DeleteRole } from '@src/auth/application/use-cases/role/delete-role';
 import { FinderById } from '@src/auth/application/use-cases/role/finder-by-id-role';
 import { FinderRole } from '@src/auth/application/use-cases/role/finder-role';
+import { FinderResource } from '@src/auth/application/use-cases/role/finder-resource';
 
 export class RoleController {
   constructor(
@@ -12,13 +13,18 @@ export class RoleController {
     private readonly updateRoleUseCase: UpdateRole,
     private readonly deleteRoleUseCase: DeleteRole,
     private readonly finderByIdRoleCase: FinderById,
-    private readonly finderRoleCase: FinderRole
+    private readonly finderRoleCase: FinderRole,
+    private readonly finderResources: FinderResource
   ) {}
 
   async create(request: Request, response: Response) {
     const data = request.body;
+    const listOfAccess = data.list_of_access;
     try {
-      await this.createRoleUseCase.run(data);
+      await this.createRoleUseCase.run({
+        ...data,
+        listOfAccess
+      });
       response.status(201).json({ message: 'Role created successfully' });
     } catch (error) {
       console.log(error);
@@ -68,6 +74,16 @@ export class RoleController {
     } catch (error) {
       console.log(error);
       response.status(500).json({ error: 'Error to get all roles' });
+    }
+  }
+
+  async getAllResources(request: Request, response: Response) {
+    try {
+      const data = await this.finderResources.run();
+      response.status(200).json({ data });
+    } catch (error) {
+      console.log(error);
+      response.status(500).json({ error: 'Error to get all resources' });
     }
   }
 }

@@ -1,10 +1,12 @@
 import { RoleEntity } from '../entities/role-entity';
+import { ResourceEntity } from '../entities/resource-entity';
 
 export interface RoleRepository {
   create(user: {
     name: string;
     description: string;
     status: 'ACTIVO' | 'INACTIVO';
+    listOfAccess: [];
   }): Promise<void>;
   update(user: {
     id: string;
@@ -18,4 +20,5 @@ export interface RoleRepository {
     limit: number,
     page: number
   ): Promise<{ data: RoleEntity[]; pageCounter: number }>;
+  getResources(): Promise<ResourceEntity[]>;
 }

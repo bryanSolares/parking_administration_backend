@@ -25,6 +25,7 @@ routes
     validateRequest(idRoleSchema, 'params'),
     roleController.delete.bind(roleController)
   )
+  .get('/resources', roleController.getAllResources.bind(roleController))
   .get(
     '/:role_id',
     validateRequest(idRoleSchema, 'params'),

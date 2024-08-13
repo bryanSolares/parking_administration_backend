@@ -3,7 +3,13 @@ import { z } from 'zod';
 export const roleSchema = z.object({
   name: z.string(),
   description: z.string().optional(),
-  status: z.enum(['ACTIVO', 'INACTIVO'])
+  status: z.enum(['ACTIVO', 'INACTIVO']),
+  list_of_access: z.array(
+    z.object({
+      resource: z.string().uuid(),
+      can_access: z.boolean()
+    })
+  )
 });
 
 export const idRoleSchema = z.object({ role_id: z.string().uuid() });
