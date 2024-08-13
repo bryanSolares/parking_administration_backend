@@ -1,24 +1,24 @@
 services:
   database:
-    image: bitnami/postgresql
+    image: bitnami/mysql
     container_name: database
     restart: always
     environment:
-      POSTGRES_USER: ${DB_USER}
-      POSTGRES_PASSWORD: ${DB_PASSWORD}
-      POSTGRES_DB: ${DB_NAME}
+      MYSQL_ROOT_USER: ${DB_USER}
+      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD}
+      MYSQL_DATABASE: ${DB_NAME}
     ports:
-      - 5432:5432
+      - 3306:3306
     volumes:
-      - database:/bitnami/postgresql
-      - ./db/init.sql:/docker-entrypoint-initdb.d/init.sql
+      - database:/bitnami/mysql/data
+      - ./db/mysql.init.sql:/docker-entrypoint-initdb.d/init.sql
     networks:
       - public_network
 
   server:
     build: .
     container_name: server
-    image: backend-parking:0.1.0
+    image: backend-parking:0.2.0
     restart: always
     healthcheck:
       test: curl --fail http://localhost:3500/api/v1/health || exit 1

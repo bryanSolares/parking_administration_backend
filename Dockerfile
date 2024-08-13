@@ -12,4 +12,4 @@ COPY --from=builder /app/node_modules ./node_modules
 RUN yarn install --production --frozen-lockfile
 ENV NODE_ENV=production
 EXPOSE 3500
-CMD [ "node", "./server/app.js" ]
+CMD [ "node", "./app.js" ]
