@@ -13,7 +13,7 @@ export const userSchema = z.object({
         'Format phone number is +(5XX) XXXXXXXX, example: +(502) 45454545'
     })
     .optional(),
-  role: z.string().uuid().optional()
+  role: z.string().uuid()
 });
 
 export const idUserSchema = z.object({ user_id: z.string().uuid() });

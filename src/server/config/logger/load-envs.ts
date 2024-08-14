@@ -13,5 +13,10 @@ export const config = {
   MAIL_HOST: process.env.MAIL_HOST ?? 'smtp.gmail.com',
   MAIL_PORT: parseInt(process.env.MAIL_PORT ?? '465'),
   MAIL_USER: process.env.MAIL_USER,
-  MAIL_PASSWORD: process.env.MAIL_PASSWORD
+  MAIL_PASSWORD: process.env.MAIL_PASSWORD,
+  JWT: {
+    SECRET: process.env.JWT_SECRET ?? 'secret',
+    EXP: process.env.JWT_EXPIRATION ?? '2h',
+    EXP_REFRESH: process.env.JWT_REFRESH_EXP ?? '1d'
+  }
 };

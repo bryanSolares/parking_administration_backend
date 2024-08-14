@@ -4,6 +4,7 @@ import assignmentRoutes from '@assignment-module-infrastructure/routes/assignmen
 import tagRoutes from '@src/parameters/infrastructure/routes/tag.routes';
 import userRoutes from '@src/auth/infrastructure/routes/user.routes';
 import roleRoutes from '@src/auth/infrastructure/routes/role.routes';
+import authRoutes from '@src/auth/infrastructure/routes/auth.routes';
 
 const routes = Router();
 
@@ -28,5 +29,6 @@ routes.use('/api/v1/assignment', assignmentRoutes);
 routes.use('/api/v1/parameter/tag', tagRoutes);
 routes.use('/api/v1/parameter/users', userRoutes);
 routes.use('/api/v1/parameter/roles', roleRoutes);
+routes.use('/api/v1/auth', authRoutes);
 
 export default routes;
