@@ -44,19 +44,20 @@ export class Server {
   }
 
   public startServer(): Promise<void> {
-    return new Promise(resolve => {
-      this.server = this.app.listen(config.PORT, () => {
-        const { port, address } = this.server?.address() as AddressInfo;
-        logger().info(`Server running on port ${address}:${port}`);
-        sequelizeConnection()
-          .then(message => {
+    return new Promise((resolve, reject) => {
+      sequelizeConnection()
+        .then(message => {
+          this.server = this.app.listen(config.PORT, () => {
+            const { port, address } = this.server?.address() as AddressInfo;
+            logger().info(`Server running on port ${address}:${port}`);
             logger().info(message);
-          })
-          .catch(error => {
-            logger().error(error);
           });
-        resolve();
-      });
+          resolve();
+        })
+        .catch(error => {
+          logger().error(error);
+          reject(error);
+        });
     });
   }
 

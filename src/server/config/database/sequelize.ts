@@ -42,12 +42,12 @@ export const sequelizeConnection = () => {
       });
 
     //// TODO: Fix this
-    //if (isTestEnvironment) {
-    syncDatabase()
-      .then()
-      .catch(error => {
-        reject(error);
-      });
-    //}
+    if (isTestEnvironment) {
+      syncDatabase()
+        .then()
+        .catch(error => {
+          reject(error);
+        });
+    }
   });
 };
