@@ -4,11 +4,11 @@ import { MySQLSequelizeRoleRepository } from '@src/auth/infrastructure/repositor
 import { UserController } from '@src/auth/infrastructure/controller/user.controller';
 import { RoleController } from '@src/auth/infrastructure/controller/role.controller';
 
-import { CreateUser } from '@src/auth/application/use-cases/create-user';
-import { UpdateUser } from '@src/auth/application/use-cases/update-user';
-import { DeleteUser } from '@src/auth/application/use-cases/delete-user';
-import { FinderById as FinderByIdUser } from '@src/auth/application/use-cases/finder-by-id-user';
-import { FinderUser } from '@src/auth/application/use-cases/finder-user';
+import { CreateUser } from '@src/auth/application/use-cases/user/create-user';
+import { UpdateUser } from '@src/auth/application/use-cases/user/update-user';
+import { DeleteUser } from '@src/auth/application/use-cases/user/delete-user';
+import { FinderById as FinderByIdUser } from '@src/auth/application/use-cases/user/finder-by-id-user';
+import { FinderUser } from '@src/auth/application/use-cases/user/finder-user';
 
 import { CreateRole } from '@src/auth/application/use-cases/role/create-role';
 import { UpdateRole } from '@src/auth/application/use-cases/role/update-role';
