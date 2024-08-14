@@ -1,3 +1,4 @@
+import { RoleEntity } from '../entities/role-entity';
 import { UserEntity } from '../entities/user-entity';
 
 export interface UserRepository {
@@ -8,6 +9,7 @@ export interface UserRepository {
     password: string;
     status: 'ACTIVO' | 'INACTIVO';
     phone: string;
+    role: RoleEntity | string;
   }): Promise<void>;
   update(user: {
     name: string;
@@ -17,6 +19,7 @@ export interface UserRepository {
     status: 'ACTIVO' | 'INACTIVO';
     phone: string;
     id: string;
+    role: RoleEntity | string;
   }): Promise<void>;
   delete(id: string): Promise<void>;
   getById(id: string): Promise<UserEntity | null>;

@@ -12,6 +12,7 @@ import { DiscountNoteModel } from './discount-note.model';
 import { RoleModel } from './auth/role.model';
 import { RoleDetailModel } from './auth/role.detail.model';
 import { ResourceModel } from './auth/resource.model';
+import { UserModel } from './auth/user.model';
 
 LocationModel.hasMany(SlotModel, {
   foreignKey: 'location_id',
@@ -95,3 +96,10 @@ ResourceModel.belongsToMany(RoleModel, {
   onUpdate: 'CASCADE',
   onDelete: 'CASCADE'
 });
+
+RoleModel.hasMany(UserModel, {
+  foreignKey: 'role_id',
+  onUpdate: 'RESTRICT',
+  onDelete: 'RESTRICT'
+});
+UserModel.belongsTo(RoleModel, { foreignKey: 'role_id' });

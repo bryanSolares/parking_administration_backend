@@ -26,6 +26,13 @@ UserModel.init(
     password: {
       type: DataTypes.STRING
     },
+    role_id: {
+      type: DataTypes.STRING,
+      references: {
+        model: 'role',
+        key: 'id'
+      }
+    },
     status: {
       type: DataTypes.ENUM('ACTIVO', 'INACTIVO'),
       defaultValue: 'ACTIVO',

@@ -1,3 +1,5 @@
+import { RoleEntity } from './role-entity';
+
 export type UserStatus = 'ACTIVO' | 'INACTIVO';
 
 export class UserEntity {
@@ -8,7 +10,7 @@ export class UserEntity {
   readonly password: string;
   readonly status: UserStatus;
   readonly phone: string;
-  //readonly role: string;
+  readonly role: RoleEntity | string;
 
   constructor(
     id: string,
@@ -17,8 +19,8 @@ export class UserEntity {
     username: string,
     password: string,
     status: UserStatus,
-    phone: string
-    //role: string,
+    phone: string,
+    role: RoleEntity | string
   ) {
     this.id = id;
     this.name = name;
@@ -27,7 +29,7 @@ export class UserEntity {
     this.password = password;
     this.status = status;
     this.phone = phone;
-    //this.role = role;
+    this.role = role;
   }
 
   static fromPrimitives(plainData: {
@@ -38,7 +40,7 @@ export class UserEntity {
     password: string;
     status: UserStatus;
     phone: string;
-    //role: string;
+    role: RoleEntity | string;
   }): UserEntity {
     return new UserEntity(
       plainData.id,
@@ -47,8 +49,8 @@ export class UserEntity {
       plainData.username,
       plainData.password,
       plainData.status,
-      plainData.phone
-      //plainData.role,
+      plainData.phone,
+      plainData.role
     );
   }
 
@@ -60,8 +62,8 @@ export class UserEntity {
       username: this.username,
       password: this.password,
       status: this.status,
-      phone: this.phone
-      //role: this.role
+      phone: this.phone,
+      role: this.role
     };
   }
 }

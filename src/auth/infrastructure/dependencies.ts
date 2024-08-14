@@ -20,8 +20,8 @@ import { FinderResource } from '@src/auth/application/use-cases/role/finder-reso
 export const userRepository = new MySQLSequelizeUserRepository();
 export const roleRepository = new MySQLSequelizeRoleRepository();
 
-const createUser = new CreateUser(userRepository);
-const updateUser = new UpdateUser(userRepository);
+const createUser = new CreateUser(userRepository, roleRepository);
+const updateUser = new UpdateUser(userRepository, roleRepository);
 const deleteUser = new DeleteUser(userRepository);
 const finderById = new FinderByIdUser(userRepository);
 const finderUser = new FinderUser(userRepository);

@@ -3,6 +3,7 @@ import { UserEntity } from '@src/auth/domain/entities/user-entity';
 import { UserRepository } from '@src/auth/domain/repository/user-repository';
 
 import { UserModel } from '@config/database/models/auth/user.model';
+import { RoleModel } from '@src/server/config/database/models/auth/role.model';
 
 export class MySQLSequelizeUserRepository implements UserRepository {
   async create(user: {
@@ -12,9 +13,10 @@ export class MySQLSequelizeUserRepository implements UserRepository {
     password: string;
     status: 'ACTIVO' | 'INACTIVO';
     phone: string;
+    role: string;
   }): Promise<void> {
     const userEntity = UserEntity.fromPrimitives({ ...user, id: uuid() });
-    await UserModel.create({ ...userEntity });
+    await UserModel.create({ ...userEntity, role_id: userEntity.role });
   }
 
   async update(user: {
@@ -25,13 +27,22 @@ export class MySQLSequelizeUserRepository implements UserRepository {
     password: string;
     status: 'ACTIVO' | 'INACTIVO';
     phone: string;
+    role: string;
   }): Promise<void> {
     const userEntity = UserEntity.fromPrimitives(user);
     await UserModel.update(
-      { ...userEntity },
+      { ...userEntity, role_id: userEntity.role },
       {
         where: { id: user.id },
-        fields: ['name', 'email', 'username', 'password', 'status', 'phone']
+        fields: [
+          'name',
+          'email',
+          'username',
+          'password',
+          'status',
+          'phone',
+          'role_id'
+        ]
       }
     );
   }
@@ -45,11 +56,19 @@ export class MySQLSequelizeUserRepository implements UserRepository {
       where: { id },
       attributes: {
         exclude: ['password']
-      }
+      },
+      include: [
+        {
+          model: RoleModel,
+          as: 'role',
+          attributes: ['id', 'name', 'description', 'status']
+        }
+      ]
     });
-    return userDatabase
-      ? UserEntity.fromPrimitives(userDatabase?.get({ plain: true }))
-      : null;
+
+    if (!userDatabase) return null;
+
+    return UserEntity.fromPrimitives(userDatabase.get({ plain: true }));
   }
 
   async getAll(
@@ -60,7 +79,19 @@ export class MySQLSequelizeUserRepository implements UserRepository {
     const allPages = Math.ceil(usersCounter / limit);
     const offset = (page - 1) * limit;
 
-    const usersDatabase = await UserModel.findAll({ offset, limit });
+    const usersDatabase = await UserModel.findAll({
+      offset,
+      limit,
+      attributes: { exclude: ['password'] },
+      include: [
+        {
+          model: RoleModel,
+          as: 'role',
+          attributes: ['id', 'name', 'description', 'status'],
+          order: [['email', 'ASC']]
+        }
+      ]
+    });
 
     const users = usersDatabase.map(user =>
       UserEntity.fromPrimitives(user.get({ plain: true }))
