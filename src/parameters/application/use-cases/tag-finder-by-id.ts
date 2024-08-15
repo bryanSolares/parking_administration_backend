@@ -1,4 +1,5 @@
 import { TagRepository } from '@src/parameters/core/repositories/tag-repository';
+import { AppError } from '@src/server/config/err/AppError';
 
 export class TagFinderById {
   constructor(private readonly tagRepository: TagRepository) {}
@@ -7,7 +8,7 @@ export class TagFinderById {
     const tag = await this.tagRepository.getById(id);
 
     if (!tag) {
-      throw new Error('Tag not found');
+      throw new AppError('TAG_NOT_FOUND', 404, 'Tag not found', true);
     }
 
     return tag;
