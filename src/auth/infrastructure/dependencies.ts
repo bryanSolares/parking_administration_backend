@@ -13,6 +13,7 @@ import { FinderById as FinderByIdUser } from '@src/auth/application/use-cases/us
 import { FinderUser } from '@src/auth/application/use-cases/user/finder-user';
 
 import { LoginUseCase } from '@src/auth/application/use-cases/auth/login';
+import { RefreshTokenUseCase } from '@src/auth/application/use-cases/auth/refresh-token';
 
 import { CreateRole } from '@src/auth/application/use-cases/role/create-role';
 import { UpdateRole } from '@src/auth/application/use-cases/role/update-role';
@@ -32,6 +33,7 @@ const finderById = new FinderByIdUser(userRepository);
 const finderUser = new FinderUser(userRepository);
 
 const authUseCase = new LoginUseCase(authRepository);
+const refreshTokenUseCase = new RefreshTokenUseCase(authRepository);
 
 const createRole = new CreateRole(roleRepository);
 const updateRole = new UpdateRole(roleRepository);
@@ -57,6 +59,6 @@ const roleController = new RoleController(
   finderResources
 );
 
-const authController = new AuthController(authUseCase);
+const authController = new AuthController(authUseCase, refreshTokenUseCase);
 
 export { userController, roleController, authController };

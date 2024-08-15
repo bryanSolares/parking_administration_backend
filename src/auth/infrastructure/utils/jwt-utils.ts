@@ -1,6 +1,24 @@
 import jwt from 'jsonwebtoken';
 import { config } from '@config/logger/load-envs';
 
+interface JwtPayload {
+  user: string;
+  role: string;
+  resources: string[];
+  iat: number;
+  exp: number;
+  aud: string;
+}
+
+interface DecodedJwt {
+  header: {
+    alg: string;
+    typ: string;
+  };
+  payload: JwtPayload;
+  signature: string;
+}
+
 export const createToken = (payload: object) => {
   const token = jwt.sign(payload, config.JWT.SECRET, {
     expiresIn: config.JWT.EXP,
@@ -27,8 +45,15 @@ export const validateToken = (token: string) => {
   }
 };
 
-export const getPayload = (token: string) => {
-  return jwt.decode(token, {
-    json: true
-  });
+export const getPayload = (token: string): JwtPayload | null => {
+  const decoded = jwt.decode(token, {
+    json: true,
+    complete: true
+  }) as DecodedJwt | null;
+
+  if (decoded && decoded.payload) {
+    return decoded.payload;
+  }
+
+  return null;
 };

@@ -1,6 +1,7 @@
+import { RoleEntity } from '../entities/role-entity';
+import { UserEntity } from '../entities/user-entity';
+
 export interface AuthRepository {
-  login(user: {
-    username: string;
-    password: string;
-  }): Promise<{ token: string; refresh: string }>;
+  findUserByUsername(username: string): Promise<UserEntity | null>;
+  getRoleById(roleId: string): Promise<RoleEntity | null>;
 }
