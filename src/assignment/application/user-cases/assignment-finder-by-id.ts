@@ -1,6 +1,6 @@
 import { AssignmentRepository } from '@assignment-module-core/repositories/assignment-repository';
 import { AssignmentEntity } from '@assignment-module-core/entities/assignment-entity';
-import { AssignmentNotFoundError } from '@assignment-module-core/exceptions/assignment-not-found';
+import { AppError } from '@src/server/config/err/AppError';
 
 export class AssignmentFinderById {
   constructor(private readonly assignmentRepository: AssignmentRepository) {}
@@ -9,7 +9,12 @@ export class AssignmentFinderById {
     const assignment = await this.assignmentRepository.getAssignmentById(id);
 
     if (!assignment) {
-      throw new AssignmentNotFoundError('Assignment not found');
+      throw new AppError(
+        'ASSIGNMENT_NOT_FOUND',
+        404,
+        'Assignment not found',
+        true
+      );
     }
 
     return assignment;

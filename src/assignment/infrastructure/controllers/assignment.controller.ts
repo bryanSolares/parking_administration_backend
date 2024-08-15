@@ -1,4 +1,5 @@
 import { Request, Response } from 'express';
+import { NextFunction } from 'express';
 
 import { CreateAssignment } from '@src/assignment/application/user-cases/create-assignment';
 import { AssignmentFinder } from '@src/assignment/application/user-cases/assignment-finder';
@@ -10,10 +11,6 @@ import { UpdateAssignment } from '@src/assignment/application/user-cases/update-
 import { CreateAssignmentLoan } from '@src/assignment/application/user-cases/create-assignment-loan';
 import { UpdateStatusDiscountNote } from '@src/assignment/application/user-cases/update-status-discount-note';
 import { DeleteAssignmentLoan } from '@src/assignment/application/user-cases/delete-assignment-loan';
-
-import { AssignmentNotFoundError } from '@src/assignment/core/exceptions/assignment-not-found';
-import { PreviewDiscountNoteError } from '@src/assignment/core/exceptions/preview-discount-note';
-import { DeAssignmentReady } from '@src/assignment/core/exceptions/de-assignment-ready';
 
 export class AssignmentController {
   constructor(
@@ -29,7 +26,7 @@ export class AssignmentController {
     private readonly deleteAssignmentLoanUseCase: DeleteAssignmentLoan
   ) {}
 
-  async createAssignment(req: Request, res: Response) {
+  async createAssignment(req: Request, res: Response, next: NextFunction) {
     const assignment = req.body;
 
     try {
@@ -37,14 +34,11 @@ export class AssignmentController {
 
       res.status(201).json({ message: 'Assignment created' });
     } catch (error) {
-      console.log(error);
-      if (error instanceof Error) {
-        res.status(500).json({ error: error.message });
-      }
+      next(error);
     }
   }
 
-  async createAssignmentLoan(req: Request, res: Response) {
+  async createAssignmentLoan(req: Request, res: Response, next: NextFunction) {
     const assignment = req.body;
     const assignmentId = req.params.assignment_id;
     try {
@@ -54,34 +48,22 @@ export class AssignmentController {
       });
       res.status(201).json({ message: 'Assignment loan created' });
     } catch (error) {
-      if (error instanceof Error) {
-        res.status(500).json({ error: error.message });
-      }
+      next(error);
     }
   }
 
-  async createDiscountNote(req: Request, res: Response) {
+  async createDiscountNote(req: Request, res: Response, next: NextFunction) {
     const idAssignment = req.params.assignment_id;
 
     try {
       await this.createDiscountNoteUseCase.run(idAssignment);
       res.status(200).json({ message: 'Discount note created' });
     } catch (error) {
-      if (error instanceof AssignmentNotFoundError) {
-        return res.status(404).json({ message: error.message });
-      }
-
-      if (error instanceof PreviewDiscountNoteError) {
-        return res.status(400).json({ message: error.message });
-      }
-
-      if (error instanceof Error) {
-        res.status(500).json({ error: error.message });
-      }
+      next(error);
     }
   }
 
-  async assignmentFinderById(req: Request, res: Response) {
+  async assignmentFinderById(req: Request, res: Response, next: NextFunction) {
     const id = req.params.assignment_id;
 
     try {
@@ -92,17 +74,11 @@ export class AssignmentController {
 
       res.status(200).json(response);
     } catch (error) {
-      if (error instanceof AssignmentNotFoundError) {
-        return res.status(404).json({ message: error.message });
-      }
-
-      if (error instanceof Error) {
-        res.status(500).json({ error: error.message });
-      }
+      next(error);
     }
   }
 
-  async assignmentFinder(req: Request, res: Response) {
+  async assignmentFinder(req: Request, res: Response, next: NextFunction) {
     const { limit, page } = req.query;
 
     try {
@@ -117,12 +93,11 @@ export class AssignmentController {
 
       res.status(200).json(response);
     } catch (error) {
-      console.log(error);
-      res.status(500).send('Error get all assignments');
+      next(error);
     }
   }
 
-  async createDeAssignment(req: Request, res: Response) {
+  async createDeAssignment(req: Request, res: Response, next: NextFunction) {
     const assignmentId = req.params.assignment_id;
     const deAssignment = req.body;
 
@@ -130,18 +105,11 @@ export class AssignmentController {
       await this.deAssignmentByIdUseCase.run(assignmentId, deAssignment);
       res.status(201).json({ message: 'DeAssignment created' });
     } catch (error) {
-      if (error instanceof DeAssignmentReady) {
-        res.status(400).json({ message: error.message });
-        return;
-      }
-
-      if (error instanceof Error) {
-        res.status(500).json({ message: error.message });
-      }
+      next(error);
     }
   }
 
-  async employeeFinderByCode(req: Request, res: Response) {
+  async employeeFinderByCode(req: Request, res: Response, next: NextFunction) {
     const code = req.params.code;
 
     try {
@@ -152,13 +120,11 @@ export class AssignmentController {
 
       res.status(200).json(response);
     } catch (error) {
-      if (error instanceof Error) {
-        res.status(500).json({ error: error.message });
-      }
+      next(error);
     }
   }
 
-  async updateAssignment(req: Request, res: Response) {
+  async updateAssignment(req: Request, res: Response, next: NextFunction) {
     const assignmentId = req.params.assignment_id;
     const assignment = req.body;
     const vehiclesForDelete = req.body.vehicles_for_delete;
@@ -173,17 +139,15 @@ export class AssignmentController {
       );
       res.status(200).json({ message: 'Assignment updated' });
     } catch (error) {
-      if (error instanceof AssignmentNotFoundError) {
-        return res.status(404).json({ message: error.message });
-      }
-
-      if (error instanceof Error) {
-        res.status(500).json({ error: error.message });
-      }
+      next(error);
     }
   }
 
-  async updateStatusDiscountNode(req: Request, res: Response) {
+  async updateStatusDiscountNode(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) {
     const assignmentId = req.params.discount_note_id;
     const statusSignature = req.body.status;
 
@@ -191,29 +155,17 @@ export class AssignmentController {
       await this.updateDiscountNoteUseCase.run(assignmentId, statusSignature);
       res.status(200).json({ message: 'Discount note updated' });
     } catch (error) {
-      if (error instanceof AssignmentNotFoundError) {
-        return res.status(404).json({ message: error.message });
-      }
-
-      if (error instanceof Error) {
-        res.status(500).json({ error: error.message });
-      }
+      next(error);
     }
   }
 
-  async deleteAssignmentLoan(req: Request, res: Response) {
+  async deleteAssignmentLoan(req: Request, res: Response, next: NextFunction) {
     const assignmentId = req.params.assignment_loan_id;
     try {
       await this.deleteAssignmentLoanUseCase.run(assignmentId);
       res.status(200).json({ message: 'Assignment loan deleted' });
     } catch (error) {
-      if (error instanceof AssignmentNotFoundError) {
-        return res.status(404).json({ message: error.message });
-      }
-
-      if (error instanceof Error) {
-        res.status(500).json({ error: error.message });
-      }
+      next(error);
     }
   }
 }

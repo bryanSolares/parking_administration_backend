@@ -1,7 +1,6 @@
 import { AssignmentRepository } from '@assignment-module-core/repositories/assignment-repository';
 import { NotificationService } from '../services/notification-service';
-import { AssignmentNotFoundError } from '@assignment-module-core/exceptions/assignment-not-found';
-import { PreviewDiscountNoteError } from '@assignment-module-core/exceptions/preview-discount-note';
+import { AppError } from '@src/server/config/err/AppError';
 
 export class CreateDiscountNote {
   constructor(
@@ -14,19 +13,30 @@ export class CreateDiscountNote {
       await this.assignmentRepository.getAssignmentById(idAssignment);
 
     if (!assignment || assignment.status !== 'ACTIVO') {
-      throw new AssignmentNotFoundError(
-        'Assignment not found or status is not "ACTIVO"'
+      throw new AppError(
+        'ASSIGNMENT_NOT_FOUND',
+        404,
+        'Assignment not found or status is not "ACTIVO"',
+        true
       );
     }
 
     if (assignment.slot?.cost_type !== 'DESCUENTO') {
-      throw new Error(
-        'Cant create discount note for assignments type "COMPLEMENTO o SIN_COSTO"'
+      throw new AppError(
+        'CANT_CREATE_DISCOUNT_NOTE',
+        400,
+        'Cant create discount note for assignments type "COMPLEMENTO o SIN_COSTO"',
+        true
       );
     }
 
     if (assignment.discount_note) {
-      throw new PreviewDiscountNoteError('Discount note already exists');
+      throw new AppError(
+        'DISCOUNT_NOTE_ALREADY_EXISTS',
+        400,
+        'Discount note already exists',
+        true
+      );
     }
 
     await this.assignmentRepository.createDiscountNote(idAssignment);

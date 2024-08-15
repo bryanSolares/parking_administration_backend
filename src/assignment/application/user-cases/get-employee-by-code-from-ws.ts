@@ -1,6 +1,6 @@
 import { EmployeeRepositoryWebService } from '@assignment-module-core/repositories/employee-repository';
 import { EmployeeEntity } from '@assignment-module-core/entities/employee-entity';
-import { EmployeeNotFoundError } from '@assignment-module-core/exceptions/employee-not-found';
+import { AppError } from '@src/server/config/err/AppError';
 
 export class GetEmployeeByCode {
   constructor(private employeeRepository: EmployeeRepositoryWebService) {}
@@ -15,7 +15,7 @@ export class GetEmployeeByCode {
       await this.employeeRepository.getEmployeeByCodeFromDatabase(codeEmployee);
 
     if (!employeeWebService) {
-      throw new EmployeeNotFoundError('Employee not found');
+      throw new AppError('EMPLOYEE_NOT_FOUND', 404, 'Employee not found', true);
     }
 
     if (employeeDatabase) {

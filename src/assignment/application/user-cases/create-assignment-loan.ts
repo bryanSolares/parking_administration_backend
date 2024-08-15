@@ -1,8 +1,8 @@
 import { AssignmentRepository } from '@assignment-module-core/repositories/assignment-repository';
 import { AssignmentLoadEntity } from '@assignment-module-core/entities/assignment-load-entity';
-import { AssignmentNotFoundError } from '@assignment-module-core/exceptions/assignment-not-found';
 import { NotificationService } from '../services/notification-service';
 import { AssignmentDomainService } from '../services/assignment-domain-service';
+import { AppError } from '@src/server/config/err/AppError';
 
 export class CreateAssignmentLoan {
   constructor(
@@ -17,7 +17,12 @@ export class CreateAssignmentLoan {
     );
 
     if (!assignment) {
-      throw new AssignmentNotFoundError('Assignment not found');
+      throw new AppError(
+        'ASSIGNMENT_NOT_FOUND',
+        404,
+        'Assignment not found',
+        true
+      );
     }
 
     //TODO: validate assignment have loan previously

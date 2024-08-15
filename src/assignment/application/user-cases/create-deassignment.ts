@@ -1,8 +1,7 @@
 import { AssignmentRepository } from '@assignment-module-core/repositories/assignment-repository';
 import { NotificationService } from '../services/notification-service';
 import { DeAssignmentEntity } from '@assignment-module-core/entities/deassignment-entity';
-import { DeAssignmentReady } from '@assignment-module-core/exceptions/de-assignment-ready';
-import { AssignmentNotFoundError } from '@assignment-module-core/exceptions/assignment-not-found';
+import { AppError } from '@src/server/config/err/AppError';
 
 export class CreateDeAssignment {
   constructor(
@@ -18,11 +17,21 @@ export class CreateDeAssignment {
       await this.assignmentRepository.getAssignmentById(assignmentId);
 
     if (!assignment) {
-      throw new AssignmentNotFoundError('Assignment not found');
+      throw new AppError(
+        'ASSIGNMENT_NOT_FOUND',
+        404,
+        'Assignment not found',
+        true
+      );
     }
 
     if (assignment?.status === 'INACTIVO') {
-      throw new DeAssignmentReady('Assignment is already inactive');
+      throw new AppError(
+        'INACTIVE_ASSIGNMENT',
+        400,
+        'Assignment is already inactive',
+        true
+      );
     }
 
     await this.assignmentRepository.createDeAssignment(

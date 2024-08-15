@@ -1,4 +1,5 @@
 import { AssignmentRepository } from '@assignment-module-core/repositories/assignment-repository';
+import { AppError } from '@src/server/config/err/AppError';
 
 export class UpdateStatusDiscountNote {
   constructor(private readonly assignmentRepository: AssignmentRepository) {}
@@ -17,7 +18,12 @@ export class UpdateStatusDiscountNote {
         discountNote.status_signature
       )
     ) {
-      throw new Error('Discount note already signed, canceled or rejected');
+      throw new AppError(
+        'DISCOUNT_NOTE_ALREADY_SIGNED',
+        400,
+        'Discount note already signed, canceled or rejected',
+        true
+      );
     }
 
     await this.assignmentRepository.updateStatusDiscountNote(id, status);
