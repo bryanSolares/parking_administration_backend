@@ -1,11 +1,12 @@
 import { mockUserRepository } from "./__mocks__/user-mocks";
+import { mockRoleRepository } from "./__mocks__/role-mocks";
 import { UserMother } from "./mother/user-mother";
 
-import { CreateUser } from "../src/auth/application/use-cases/create-user";
-import { UpdateUser } from "../src/auth/application/use-cases/update-user";
-import { DeleteUser } from "../src/auth/application/use-cases/delete-user";
-import { FinderById } from "../src/auth/application/use-cases/finder-by-id-user";
-import { FinderUser } from "../src/auth/application/use-cases/finder-user";
+import { CreateUser } from "../src/auth/application/use-cases/user/create-user";
+import { UpdateUser } from "../src/auth/application/use-cases/user/update-user";
+import { DeleteUser } from "../src/auth/application/use-cases/user/delete-user";
+import { FinderById } from "../src/auth/application/use-cases/user/finder-by-id-user";
+import { FinderUser } from "../src/auth/application/use-cases/user/finder-user";
 
 describe('USER: Use Cases', () => {
 
@@ -15,14 +16,14 @@ describe('USER: Use Cases', () => {
 
   it('Should create a new user', async () => {
     const user = UserMother.createUser({});
-    const createUser = new CreateUser(mockUserRepository);
+    const createUser = new CreateUser(mockUserRepository, mockRoleRepository);
     await createUser.run(user);
     expect(mockUserRepository.create).toHaveBeenCalledWith(user);
   })
 
   it('Should update a user and throw an error if user not found', async () => {
     const user = UserMother.createUser({});
-    const updateUser = new UpdateUser(mockUserRepository);
+    const updateUser = new UpdateUser(mockUserRepository,mockRoleRepository);
     mockUserRepository.getById.mockResolvedValueOnce(user);
     await updateUser.run(user);
     expect(mockUserRepository.update).toHaveBeenCalledWith(user);

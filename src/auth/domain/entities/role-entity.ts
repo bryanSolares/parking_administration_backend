@@ -1,7 +1,7 @@
 import { ResourceEntity } from './resource-entity';
 
 export type RoleStatus = 'ACTIVO' | 'INACTIVO';
-type Resource = Pick<ResourceEntity, 'id' | 'slug' | 'description'> & {
+export type Resource = Pick<ResourceEntity, 'id' | 'slug' | 'description'> & {
   can_access: boolean;
 };
 

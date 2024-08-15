@@ -6,4 +6,5 @@ export const mockRoleRepository : jest.Mocked<RoleRepository> = {
    update: jest.fn(),
    getById: jest.fn().mockReturnValue({}),
    getAll: jest.fn().mockReturnValue([]),
+   getResources: jest.fn().mockReturnValue([])
 }

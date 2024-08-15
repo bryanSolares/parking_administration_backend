@@ -16,18 +16,20 @@ describe('ROLES: Use Cases', () => {
   it('Should create a new role', async () => {
     const role = RoleMother.createRole({});
     const createRole = new CreateRole(mockRoleRepository);
-    await createRole.run(role);
-    expect(mockRoleRepository.create).toHaveBeenCalledWith(role);
+    await createRole.run({...role, listOfAccess: []});
+    expect(mockRoleRepository.create).toHaveBeenCalledWith({...role, listOfAccess: []});
   })
 
   it('Should update a role and throw an error if role not found', async () => {
     const role = RoleMother.createRole({});
     const updateRole = new UpdateRole(mockRoleRepository);
     mockRoleRepository.getById.mockResolvedValueOnce(role);
-    await updateRole.run(role);
-    expect(mockRoleRepository.update).toHaveBeenCalledWith(role);
+    await updateRole.run({...role, listOfAccess: []});
+    expect(mockRoleRepository.update).toHaveBeenCalledWith({...role, listOfAccess: []});
+
+    mockRoleRepository.getResources.mockResolvedValueOnce([]);
     mockRoleRepository.getById.mockResolvedValueOnce(null);
-    await expect(updateRole.run(role)).rejects.toThrow('Role not found');
+    await expect(updateRole.run({...role, listOfAccess: []})).rejects.toThrow('Role not found');
   })
 
   it('Should delete a role and throw an error if role not found', async () => {

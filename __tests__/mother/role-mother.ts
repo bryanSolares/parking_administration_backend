@@ -1,6 +1,7 @@
 import { faker } from "@faker-js/faker";
-import { RoleEntity } from "../../src/auth/domain/entities/role-entity";
+import { Resource, RoleEntity } from "../../src/auth/domain/entities/role-entity";
 import { RoleStatus } from "../../src/auth/domain/entities/role-entity";
+import { ResourceEntity } from "../../src/auth/domain/entities/resource-entity";
 
 export class RoleMother{
   static createRole({
@@ -8,7 +9,16 @@ export class RoleMother{
     name = faker.person.fullName(),
     description = faker.lorem.sentence(),
     status = "ACTIVO" as RoleStatus,
+    resources = this.createResources()
   }): RoleEntity {
-    return new RoleEntity(id, name, description, status,);
+    return new RoleEntity(id, name, description, status, resources);
+  }
+
+  static createResourceEntity(): ResourceEntity {
+    return new ResourceEntity(faker.string.uuid(), faker.lorem.word(), faker.lorem.sentence())
+  }
+
+  static createResources(): Resource[] {
+    return [{...this.createResourceEntity(), can_access: true}, {...this.createResourceEntity(), can_access: true}]
   }
 }

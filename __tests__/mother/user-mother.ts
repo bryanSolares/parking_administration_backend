@@ -10,8 +10,9 @@ export class UserMother{
     username = faker.internet.userName(),
     password = faker.internet.password(),
     status = "ACTIVO" as UserStatus,
-    phone = faker.phone.number()
+    phone = faker.phone.number(),
+    role= ""
   }): UserEntity {
-    return new UserEntity(id, name, email, username, password, status, phone);
+    return new UserEntity(id, name, email, username, password, status, phone, role);
   }
 }
