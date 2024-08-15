@@ -1,4 +1,5 @@
 import { Request, Response } from 'express';
+import { NextFunction } from 'express';
 import { CreateUser } from '@src/auth/application/use-cases/user/create-user';
 import { UpdateUser } from '@src/auth/application/use-cases/user/update-user';
 import { DeleteUser } from '@src/auth/application/use-cases/user/delete-user';
@@ -14,59 +15,54 @@ export class UserController {
     private readonly finderUseCase: FinderUser
   ) {}
 
-  async create(request: Request, response: Response) {
-    const data = request.body;
+  async create(req: Request, res: Response, next: NextFunction) {
+    const data = req.body;
     try {
       await this.createUserUseCase.run(data);
-      response.status(201).json({ message: 'User created successfully' });
+      res.status(201).json({ message: 'User created successfully' });
     } catch (error) {
-      console.log(error);
-      response.status(500).json({ error: 'Error creating user' });
+      next(error);
     }
   }
 
-  async update(request: Request, response: Response) {
-    const id = request.params.user_id;
-    const data = request.body;
+  async update(req: Request, res: Response, next: NextFunction) {
+    const id = req.params.user_id;
+    const data = req.body;
     try {
       await this.updateUserUseCase.run({ ...data, id });
-      response.status(200).json({ message: 'User updated successfully' });
+      res.status(200).json({ message: 'User updated successfully' });
     } catch (error) {
-      console.log(error);
-      response.status(500).json({ error: 'Error creating user' });
+      next(error);
     }
   }
 
-  async delete(request: Request, response: Response) {
-    const id = request.params.user_id;
+  async delete(req: Request, res: Response, next: NextFunction) {
+    const id = req.params.user_id;
     try {
       await this.deleteUserUseCase.run(id);
-      response.status(200).json({ message: 'User deleted successfully' });
+      res.status(200).json({ message: 'User deleted successfully' });
     } catch (error) {
-      console.log(error);
-      response.status(500).json({ error: 'Error deleting user' });
+      next(error);
     }
   }
 
-  async getById(request: Request, response: Response) {
-    const id = request.params.user_id;
+  async getById(req: Request, res: Response, next: NextFunction) {
+    const id = req.params.user_id;
     try {
       const user = await this.finderByIdUseCase.run(id);
-      response.status(200).json({ data: user });
+      res.status(200).json({ data: user });
     } catch (error) {
-      console.log(error);
-      response.status(500).json({ error: 'Error to get user' });
+      next(error);
     }
   }
-  async getAll(request: Request, response: Response) {
-    const { limit, page } = request.query;
+  async getAll(req: Request, res: Response, next: NextFunction) {
+    const { limit, page } = req.query;
 
     try {
       const data = await this.finderUseCase.run(Number(limit), Number(page));
-      response.status(200).json(data);
+      res.status(200).json(data);
     } catch (error) {
-      console.log(error);
-      response.status(500).json({ error: 'Error to get all users' });
+      next(error);
     }
   }
 }

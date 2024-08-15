@@ -1,4 +1,5 @@
 import { UserRepository } from '@src/auth/domain/repository/user-repository';
+import { AppError } from '@src/server/config/err/AppError';
 
 export class DeleteUser {
   constructor(private readonly userRepository: UserRepository) {}
@@ -7,7 +8,7 @@ export class DeleteUser {
     const userDatabase = await this.userRepository.getById(id);
 
     if (!userDatabase) {
-      throw new Error('User not found');
+      throw new AppError('USER_NOT_FOUND', 404, 'User not found', true);
     }
 
     await this.userRepository.delete(id);

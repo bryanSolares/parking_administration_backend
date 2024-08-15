@@ -1,6 +1,7 @@
 import { RoleEntity } from '@src/auth/domain/entities/role-entity';
 import { RoleRepository } from '@src/auth/domain/repository/role-repository';
 import { UserRepository } from '@src/auth/domain/repository/user-repository';
+import { AppError } from '@src/server/config/err/AppError';
 
 export class CreateUser {
   constructor(
@@ -22,7 +23,7 @@ export class CreateUser {
     );
 
     if (!roleDatabase) {
-      throw new Error('Role not found');
+      throw new AppError('ROLE_NOT_FOUND', 404, 'Role not found', true);
     }
 
     await this.userRepository.create(user);

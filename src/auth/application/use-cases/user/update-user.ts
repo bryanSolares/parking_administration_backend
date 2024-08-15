@@ -1,6 +1,7 @@
 import { RoleEntity } from '@src/auth/domain/entities/role-entity';
 import { RoleRepository } from '@src/auth/domain/repository/role-repository';
 import { UserRepository } from '@src/auth/domain/repository/user-repository';
+import { AppError } from '@src/server/config/err/AppError';
 
 export class UpdateUser {
   constructor(
@@ -24,11 +25,11 @@ export class UpdateUser {
     );
 
     if (!userDatabase) {
-      throw new Error('User not found');
+      throw new AppError('USER_NOT_FOUND', 404, 'User not found', true);
     }
 
     if (!roleDatabase) {
-      throw new Error('Role not found');
+      throw new AppError('ROLE_NOT_FOUND', 404, 'Role not found', true);
     }
 
     await this.userRepository.update(user);
