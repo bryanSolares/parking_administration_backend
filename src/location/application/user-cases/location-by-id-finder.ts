@@ -1,6 +1,6 @@
 import { LocationRepository } from '@location-module-core/repositories/location-repository';
 import { LocationEntity } from '@location-module-core/entities/location-entity';
-import { LocationNotFoundError } from '@location-module-core/exceptions/location-not-found';
+import { AppError } from '@src/server/config/err/AppError';
 
 export class GetLocationByIdFinder {
   constructor(private readonly locationRepository: LocationRepository) {}
@@ -9,7 +9,7 @@ export class GetLocationByIdFinder {
     const location = await this.locationRepository.getLocationById(id);
 
     if (!location) {
-      throw new LocationNotFoundError('Location not found');
+      throw new AppError('LOCATION_NOT_FOUND', 404, 'Location not found', true);
     }
 
     return location;

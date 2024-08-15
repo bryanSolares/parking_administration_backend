@@ -1,4 +1,3 @@
-import { ForeignKeyConstraintError } from 'sequelize';
 import { Op } from 'sequelize';
 import { v4 as uuid } from 'uuid';
 
@@ -110,11 +109,7 @@ export class SequelizeLocationRepository implements LocationRepository {
           transaction
         });
       } catch (error) {
-        if (error instanceof ForeignKeyConstraintError) {
-          throw new Error(
-            'You can not delete slots with assignment or schedule'
-          );
-        }
+        await transaction.rollback();
         throw error;
       }
     }
@@ -125,17 +120,7 @@ export class SequelizeLocationRepository implements LocationRepository {
   }
 
   async deleteLocation(id: string): Promise<void> {
-    try {
-      await LocationModel.destroy({ where: { id } });
-      logger().info('Location deleted');
-    } catch (error) {
-      console.log(error);
-      if (error instanceof ForeignKeyConstraintError) {
-        throw new Error('Dont delete location with assignment or schedule');
-      }
-
-      throw error;
-    }
+    await LocationModel.destroy({ where: { id } });
   }
 
   async getLocationById(id: string): Promise<LocationEntity | null> {
