@@ -1,4 +1,5 @@
 import { RoleRepository } from '@src/auth/domain/repository/role-repository';
+import { AppError } from '@src/server/config/err/AppError';
 
 export class UpdateRole {
   constructor(private readonly roleRepository: RoleRepository) {}
@@ -21,7 +22,12 @@ export class UpdateRole {
     data.listOfAccess.forEach(
       (access: { resource: string; can_access: boolean }) => {
         if (!resourceIds.has(access.resource)) {
-          throw new Error(`Resource not found: ${access.resource}`);
+          throw new AppError(
+            'RESOURCE_NOT_FOUND',
+            400,
+            `Resource not found: ${access.resource}`,
+            true
+          );
         }
       }
     );

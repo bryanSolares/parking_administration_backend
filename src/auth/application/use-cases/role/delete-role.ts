@@ -1,4 +1,5 @@
 import { RoleRepository } from '@src/auth/domain/repository/role-repository';
+import { AppError } from '@src/server/config/err/AppError';
 
 export class DeleteRole {
   constructor(private readonly roleRepository: RoleRepository) {}
@@ -7,7 +8,7 @@ export class DeleteRole {
     const role = await this.roleRepository.getById(id);
 
     if (!role) {
-      throw new Error('Role not found');
+      throw new AppError('ROLE_NOT_FOUND', 404, 'Role not found', true);
     }
 
     await this.roleRepository.delete(id);
