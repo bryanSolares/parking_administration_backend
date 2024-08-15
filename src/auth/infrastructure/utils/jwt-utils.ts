@@ -3,10 +3,12 @@ import { config } from '@config/logger/load-envs';
 
 export const createToken = (payload: object) => {
   const token = jwt.sign(payload, config.JWT.SECRET, {
-    expiresIn: config.JWT.EXP
+    expiresIn: config.JWT.EXP,
+    audience: 'www.admin-parking.claro.com.gt'
   });
   const refreshToken = jwt.sign(payload, config.JWT.SECRET, {
-    expiresIn: config.JWT.EXP_REFRESH
+    expiresIn: config.JWT.EXP_REFRESH,
+    audience: 'www.admin-parking.claro.com.gt'
   });
 
   return {
@@ -15,9 +17,14 @@ export const createToken = (payload: object) => {
   };
 };
 
-export const validateToke = (token: string) => {
-  const secret = config.JWT.SECRET;
-  return jwt.verify(token, secret);
+export const validateToken = (token: string) => {
+  try {
+    jwt.verify(token, config.JWT.SECRET);
+    return true;
+  } catch (error) {
+    console.log(error);
+    return false;
+  }
 };
 
 export const getPayload = (token: string) => {

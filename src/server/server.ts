@@ -5,6 +5,7 @@ import express from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
 import morgan from 'morgan';
+import cookieParser from 'cookie-parser';
 import swaggerUI from 'swagger-ui-express';
 
 import { config } from '@config/logger/load-envs';
@@ -12,6 +13,8 @@ import { logger } from '@config/logger/load-logger';
 import { sequelizeConnection } from '@config/database/sequelize';
 import swaggerDocs from '@config/swagger/openapi.json';
 import '@config/database/models/relations';
+
+import { handleErrors } from '@server/middleware/handle-errors';
 
 import routes from '@routes/index';
 
@@ -28,6 +31,7 @@ export class Server {
   private loadMiddlewares() {
     this.app.use(helmet());
     this.app.use(cors({}));
+    this.app.use(cookieParser());
     this.app.use(express.json());
     this.app.use(express.urlencoded({ extended: false }));
     this.app.use(morgan(config.LOG_LEVEL));
@@ -41,6 +45,7 @@ export class Server {
       swaggerUI.setup(swaggerDocs)
     );
     this.app.use(routes);
+    this.app.use(handleErrors);
   }
 
   public startServer(): Promise<void> {
