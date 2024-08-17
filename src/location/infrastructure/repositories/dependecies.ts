@@ -1,13 +1,13 @@
-import { SequelizeLocationRepository } from './sequelize-postgresql-repository';
+import { SequelizeMYSQLLocationRepository } from './sequelize-mysql-repository';
 import { LocationController } from '../controllers/location.controller';
 
-import { CreateLocation } from '@location-module-application/user-cases/create-location';
-import { UpdateLocation } from '@location-module-application/user-cases/update-location';
-import { DeleteLocation } from '@location-module-application/user-cases/delete-location';
-import { GetLocationByIdFinder } from '@location-module-application/user-cases/location-by-id-finder';
-import { LocationFinder } from '@location-module-application/user-cases/location-finder';
+import { CreateLocation } from '@src/location/application/user-cases/create-location';
+import { UpdateLocation } from '@src/location/application/user-cases/update-location';
+import { DeleteLocation } from '@src/location/application/user-cases/delete-location';
+import { GetLocationByIdFinder } from '@src/location/application/user-cases/location-by-id-finder';
+import { LocationFinder } from '@src/location/application/user-cases/location-finder';
 
-const locationRepository = new SequelizeLocationRepository();
+const locationRepository = new SequelizeMYSQLLocationRepository();
 
 //Use cases
 const createLocation = new CreateLocation(locationRepository);

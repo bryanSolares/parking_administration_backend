@@ -3,9 +3,10 @@ import { z } from 'zod';
 export const locationCreateSchema = z.object({
   name: z.string(),
   address: z.string(),
-  contact_reference: z.string(),
+  contactReference: z.string(),
   phone: z.string().regex(/^\+\(50\d{1}\) \d{8}$/, {
-    message: 'Format to phone number is +(5XX) XXXXXXXX, example: +502 45454545'
+    message:
+      'Format to phone number is +(5XX) XXXXXXXX, example: +(502) 45454545'
   }),
   email: z.string().email(),
   comments: z.string(),
@@ -13,17 +14,17 @@ export const locationCreateSchema = z.object({
   slots: z
     .array(
       z.object({
-        slot_number: z.string(),
-        slot_type: z.enum(['SIMPLE', 'MULTIPLE']),
-        limit_schedules: z
+        slotNumber: z.string(),
+        slotType: z.enum(['SIMPLE', 'MULTIPLE']),
+        limitSchedules: z
           .number({
             message:
               'Limit schedule must be number and should be greater than 0 and less than 24'
           })
           .min(0)
           .max(24),
-        vehicle_type: z.enum(['CARRO', 'MOTO', 'CAMION']),
-        cost_type: z.enum(['SIN_COSTO', 'DESCUENTO', 'COMPLEMENTO']),
+        vehicleType: z.enum(['CARRO', 'MOTO', 'CAMION']),
+        costType: z.enum(['SIN_COSTO', 'DESCUENTO', 'COMPLEMENTO']),
         cost: z.number(),
         status: z.enum(['DISPONIBLE', 'INACTIVO'])
       })
@@ -38,9 +39,9 @@ export const locationUpdateParamsSchema = z.object({
 export const locationUpdateSchema = z.object({
   name: z.string(),
   address: z.string(),
-  contact_reference: z.string(),
+  contactReference: z.string(),
   phone: z.string().regex(/^\+\(50\d{1}\) \d{8}$/, {
-    message: 'Format phone number is +(5XX) XXXXXXXX, example: +502 45454545'
+    message: 'Format phone number is +(5XX) XXXXXXXX, example: +(502) 45454545'
   }),
   email: z.string().email(),
   comments: z.string(),
@@ -48,23 +49,23 @@ export const locationUpdateSchema = z.object({
   slots: z.array(
     z.object({
       id: z.string().uuid().optional(),
-      slot_number: z.string(),
-      slot_type: z.enum(['SIMPLE', 'MULTIPLE']),
-      limit_schedules: z
+      slotNumber: z.string(),
+      slotType: z.enum(['SIMPLE', 'MULTIPLE']),
+      limitSchedules: z
         .number({
           message:
             'Limit schedule must be number and should be greater than 1 and less than 24'
         })
         .min(1)
         .max(24),
-      vehicle_type: z.enum(['CARRO', 'MOTO', 'CAMION']),
-      cost_type: z.enum(['SIN_COSTO', 'DESCUENTO', 'COMPLEMENTO']),
+      vehicleType: z.enum(['CARRO', 'MOTO', 'CAMION']),
+      costType: z.enum(['SIN_COSTO', 'DESCUENTO', 'COMPLEMENTO']),
       cost: z.number(),
       status: z.enum(['DISPONIBLE', 'INACTIVO'])
     }),
     { message: 'Slots is required' }
   ),
-  slots_to_delete: z.array(z.string().uuid().optional())
+  slotsToDelete: z.array(z.string().uuid().optional())
 });
 
 export const locationDeleteParamsSchema = z.object({

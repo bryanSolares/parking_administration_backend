@@ -11,9 +11,15 @@ import { LocationRepository } from '@location-module-core/repositories/location-
 import { LocationFinderResult } from '@location-module-core/repositories/location-repository';
 
 import { LocationEntity } from '@location-module-core/entities/location-entity';
-import { SlotEntity } from '@location-module-core/entities/slot-entity';
+import {
+  CostType,
+  SlotEntity,
+  SlotStatus,
+  SlotType,
+  VehicleType
+} from '@location-module-core/entities/slot-entity';
 
-export class SequelizeLocationRepository implements LocationRepository {
+export class SequelizeMYSQLLocationRepository implements LocationRepository {
   private readonly fieldsToLocationAllowedToCreateOrUpdate = [
     'name',
     'address',
@@ -36,14 +42,16 @@ export class SequelizeLocationRepository implements LocationRepository {
     'status'
   ];
 
-  private readonly fieldsExcluded = ['updated_at', 'created_at'];
-
   async createLocation(location: LocationEntity): Promise<void> {
     const transaction = await sequelize.transaction();
 
     const locationId = uuid();
     await LocationModel.create(
-      { ...location, id: locationId },
+      {
+        ...location,
+        id: locationId,
+        contact_reference: location.contactReference
+      },
       {
         fields: ['id', ...this.fieldsToLocationAllowedToCreateOrUpdate],
         transaction
@@ -55,7 +63,12 @@ export class SequelizeLocationRepository implements LocationRepository {
         return {
           ...slot,
           id: uuid(),
-          location_id: locationId
+          location_id: locationId,
+          slot_number: slot.slotNumber,
+          slot_type: slot.slotType,
+          limit_schedules: slot.limitSchedules,
+          cost_type: slot.costType,
+          vehicle_type: slot.vehicleType
         };
       });
 
@@ -124,19 +137,18 @@ export class SequelizeLocationRepository implements LocationRepository {
   }
 
   async getLocationById(id: string): Promise<LocationEntity | null> {
-    const location = await LocationModel.findByPk(id, {
+    const locationDatabase = await LocationModel.findByPk(id, {
       include: {
-        model: SlotModel,
-        attributes: {
-          exclude: [...this.fieldsExcluded]
-        }
-      },
-      attributes: {
-        exclude: [...this.fieldsExcluded, 'latitude', 'longitude']
+        model: SlotModel
       }
     });
 
-    return location?.get({ plain: true }) as LocationEntity;
+    if (!locationDatabase) return null;
+
+    return this.transformData(
+      locationDatabase,
+      locationDatabase.get({ plain: true }).slots
+    );
   }
 
   async getLocations(
@@ -148,23 +160,49 @@ export class SequelizeLocationRepository implements LocationRepository {
     const offset = (page - 1) * limit;
 
     const locationsDatabase = await LocationModel.findAll({
-      attributes: {
-        exclude: ['updated_at', 'latitude', 'longitude']
-      },
-      order: [['created_at', 'DESC']],
+      order: [['name', 'ASC']],
       limit,
       offset
     });
 
-    const locationsData = locationsDatabase.map(location =>
-      LocationEntity.fromPrimitives(location.get({ plain: true }))
-    );
+    const locations = locationsDatabase.map(location => {
+      return this.transformData(location);
+    });
 
-    return { data: locationsData, pageCounter: allPages };
+    return { data: locations, pageCounter: allPages };
   }
 
   async getSlotById(id: string): Promise<SlotEntity | null> {
     const slotDatabase = await SlotModel.findByPk(id);
     return slotDatabase?.get({ plain: true }) as SlotEntity;
+  }
+
+  private transformData(
+    locationModel: LocationModel,
+    slots: {
+      id: string;
+      slot_number: string;
+      slot_type: SlotType;
+      limit_schedules: number;
+      cost_type: CostType;
+      cost: number;
+      vehicle_type: VehicleType;
+      status: SlotStatus;
+    }[] = []
+  ): LocationEntity {
+    return LocationEntity.fromPrimitives({
+      ...locationModel.get({ plain: true }),
+      contactReference: locationModel.get('contact_reference'),
+      slots: slots.map(slot =>
+        SlotEntity.fromPrimitives({
+          ...slot,
+          slotNumber: slot.slot_number,
+          slotType: slot.slot_type,
+          limitSchedules: slot.limit_schedules,
+          costType: slot.cost_type,
+          vehicleType: slot.vehicle_type
+        })
+      )
+    });
   }
 }

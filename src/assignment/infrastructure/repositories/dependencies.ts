@@ -2,7 +2,7 @@ import { SequelizeAssignmentRepository } from './sequelize-postgresql-repository
 import { WSEmployeeRepository } from './ws-employee.repository';
 import { AssignmentController } from '../controllers/assignment.controller';
 
-import { SequelizeLocationRepository } from '@location-module-infrastructure/repositories/sequelize-postgresql-repository';
+import { SequelizeMYSQLLocationRepository } from '@src/location/infrastructure/repositories/sequelize-mysql-repository';
 
 import { GetEmployeeByCode } from '@assignment-module-application/user-cases/get-employee-by-code-from-ws';
 import { CreateAssignment } from '@assignment-module-application/user-cases/create-assignment';
@@ -21,7 +21,7 @@ import { NotificationService } from '@assignment-module-application/services/not
 import { NodemailerNotificationRepository } from '../repositories/nodemailer-notification-repository';
 
 const sequelizeAssignmentRepository = new SequelizeAssignmentRepository();
-const sequelizeLocationRepository = new SequelizeLocationRepository();
+const sequelizeLocationRepository = new SequelizeMYSQLLocationRepository();
 const employeeRepository = new WSEmployeeRepository();
 
 const assignmentDomainService = new AssignmentDomainService(
