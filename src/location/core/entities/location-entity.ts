@@ -87,7 +87,7 @@ export class LocationEntity {
       email: this.email,
       comments: this.comments,
       status: this.status,
-      slots: this.slots
+      slots: this.slots.map(slot => slot.toPrimitives())
     };
   }
 }

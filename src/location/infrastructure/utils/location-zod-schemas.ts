@@ -65,7 +65,7 @@ export const locationUpdateSchema = z.object({
     }),
     { message: 'Slots is required' }
   ),
-  slotsToDelete: z.array(z.string().uuid().optional())
+  slotsToDelete: z.array(z.string().uuid()).optional()
 });
 
 export const locationDeleteParamsSchema = z.object({

@@ -1,3 +1,5 @@
+import { AppError } from '@src/server/config/err/AppError';
+
 export enum SlotStatus {
   ACTIVE = 'ACTIVO',
   INACTIVE = 'INACTIVO',
@@ -94,8 +96,11 @@ export class SlotEntity {
       data.slotType === SlotType.SIMPLE &&
       (data.limitSchedules > 1 || data.limitSchedules < 1)
     ) {
-      throw new Error(
-        `The number of schedules cannot be greater than 1 or less than 1 for ${SlotType.SIMPLE} type spaces.`
+      throw new AppError(
+        'ENTITY_VALIDATIONS',
+        400,
+        `The number of schedules cannot be greater than 1 or less than 1 for ${SlotType.SIMPLE} type spaces.`,
+        true
       );
     }
 
@@ -103,8 +108,11 @@ export class SlotEntity {
       data.slotType === SlotType.MULTIPLE &&
       (data.limitSchedules <= 1 || data.limitSchedules > 23)
     ) {
-      throw new Error(
-        'The number of schedules for a multiple space should be between 2 and 23.'
+      throw new AppError(
+        'ENTITY_VALIDATIONS',
+        400,
+        'The number of schedules for a multiple space should be between 2 and 23.',
+        true
       );
     }
 
@@ -113,8 +121,11 @@ export class SlotEntity {
         data.costType === CostType.COMPLEMENT) &&
       data.cost === 0
     ) {
-      throw new Error(
-        `You must assign a value of whether the type of space is ${CostType.DISCOUNT} or ${CostType.COMPLEMENT}.`
+      throw new AppError(
+        'ENTITY_VALIDATIONS',
+        400,
+        `You must assign a value of whether the type of space is ${CostType.DISCOUNT} or ${CostType.COMPLEMENT}.`,
+        true
       );
     }
 
@@ -122,8 +133,11 @@ export class SlotEntity {
       data.costType === CostType.NO_COST &&
       (data.cost > 0 || data.cost < 0)
     ) {
-      throw new Error(
-        `You cannot assign a cost value if the type is ${CostType.NO_COST}.`
+      throw new AppError(
+        'ENTITY_VALIDATIONS',
+        400,
+        `You cannot assign a cost value if the type is ${CostType.NO_COST}.`,
+        true
       );
     }
   }

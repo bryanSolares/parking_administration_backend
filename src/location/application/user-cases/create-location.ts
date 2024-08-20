@@ -34,8 +34,16 @@ export class CreateLocation {
     try {
       locationEntity = LocationEntity.fromPrimitives(data);
     } catch (error) {
-      const e = error as Error;
-      throw new AppError('VALIDATION_ENTITY', 400, e.message, true);
+      if (error instanceof AppError) {
+        throw error;
+      }
+
+      throw new AppError(
+        'UNKNOWN_ERROR',
+        500,
+        'Error not identified on create location use case',
+        false
+      );
     }
     await this.locationRepository.createLocation(locationEntity);
   }

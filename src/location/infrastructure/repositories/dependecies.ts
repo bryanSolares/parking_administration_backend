@@ -9,9 +9,16 @@ import { LocationFinder } from '@src/location/application/user-cases/location-fi
 
 const locationRepository = new SequelizeMYSQLLocationRepository();
 
+import { ValidationsUseCases } from '@location-module-application/user-cases/validations';
+
+const validationsUseCases = new ValidationsUseCases(locationRepository);
+
 //Use cases
 const createLocation = new CreateLocation(locationRepository);
-const updateLocation = new UpdateLocation(locationRepository);
+const updateLocation = new UpdateLocation(
+  locationRepository,
+  validationsUseCases
+);
 const deleteLocation = new DeleteLocation(locationRepository);
 const locationFinder = new LocationFinder(locationRepository);
 const locationFinderById = new GetLocationByIdFinder(locationRepository);

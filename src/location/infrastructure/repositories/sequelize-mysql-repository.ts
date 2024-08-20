@@ -1,4 +1,4 @@
-import { Op } from 'sequelize';
+import { Op, QueryTypes } from 'sequelize';
 import { v4 as uuid } from 'uuid';
 
 import { logger } from '@config/logger/load-logger';
@@ -36,8 +36,8 @@ export class SequelizeMYSQLLocationRepository implements LocationRepository {
     'slot_number',
     'slot_type',
     'limit_schedules',
-    'type_vehicle',
-    'type_cost',
+    'vehicle_type',
+    'cost_type',
     'cost',
     'status'
   ];
@@ -82,14 +82,15 @@ export class SequelizeMYSQLLocationRepository implements LocationRepository {
 
   async updateLocation(
     location: LocationEntity,
-    slotsToDelete: string[]
+    slotsToDelete: Set<string>
   ): Promise<void> {
     const transaction = await sequelize.transaction();
 
     // Update Location
     await LocationModel.update(
       {
-        ...location
+        ...location,
+        contact_reference: location.contactReference
       },
       {
         where: { id: location.id },
@@ -105,7 +106,12 @@ export class SequelizeMYSQLLocationRepository implements LocationRepository {
           {
             ...slot,
             id: !slot.id ? uuid() : slot.id,
-            location_id: location.id
+            location_id: location.id,
+            slot_number: slot.slotNumber,
+            slot_type: slot.slotType,
+            limit_schedules: slot.limitSchedules,
+            cost_type: slot.costType,
+            vehicle_type: slot.vehicleType
           },
           {
             fields: [...this.fieldsToSlotToCreateOrUpdate],
@@ -115,10 +121,13 @@ export class SequelizeMYSQLLocationRepository implements LocationRepository {
       })
     );
 
-    if (slotsToDelete.length > 0) {
+    if (slotsToDelete.size > 0) {
       try {
         await SlotModel.destroy({
-          where: { id: { [Op.in]: slotsToDelete }, location_id: location.id },
+          where: {
+            id: { [Op.in]: Array.from(slotsToDelete.values()) },
+            location_id: location.id
+          },
           transaction
         });
       } catch (error) {
@@ -175,6 +184,20 @@ export class SequelizeMYSQLLocationRepository implements LocationRepository {
   async getSlotById(id: string): Promise<SlotEntity | null> {
     const slotDatabase = await SlotModel.findByPk(id);
     return slotDatabase?.get({ plain: true }) as SlotEntity;
+  }
+
+  async executeBoolFunction(
+    functionName: 'location_has_active_assignment',
+    params: string[]
+  ): Promise<boolean> {
+    const [resultFunction]: {
+      [key: string]: boolean;
+    }[] = await sequelize.query(`select ${functionName}(?)`, {
+      replacements: params,
+      type: QueryTypes.SELECT
+    });
+
+    return Object.values(resultFunction)[0];
   }
 
   private transformData(
