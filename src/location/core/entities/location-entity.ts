@@ -1,45 +1,93 @@
-import { SlotEntity } from './slot-entity';
+import {
+  CostType,
+  SlotEntity,
+  SlotStatus,
+  SlotType,
+  VehicleType
+} from './slot-entity';
+
+export enum LocationStatus {
+  ACTIVE = 'ACTIVO',
+  INACTIVE = 'INACTIVO'
+}
 
 export class LocationEntity {
-  constructor(
-    public id: string,
-    public name: string,
-    public address: string,
-    public readonly slots: SlotEntity[],
-    public contact_reference?: string,
-    public phone?: string,
-    public email?: string,
-    public comments?: string,
-    public latitude?: number,
-    public longitude?: number,
-    public status?: string
-  ) {}
+  readonly id: string;
+  readonly name: string;
+  readonly address: string;
+  readonly contactReference: string;
+  readonly phone: string;
+  readonly email: string;
+  readonly comments: string;
+  readonly status: LocationStatus;
+  readonly slots: SlotEntity[];
 
-  static fromPrimitives(plainData: {
+  constructor(
+    id: string,
+    name: string,
+    address: string,
+    contactReference: string,
+    phone: string,
+    email: string,
+    comments: string,
+    status: LocationStatus,
+    slots: SlotEntity[]
+  ) {
+    this.id = id;
+    this.name = name;
+    this.address = address;
+    this.slots = slots;
+    this.contactReference = contactReference;
+    this.phone = phone;
+    this.email = email;
+    this.comments = comments;
+    this.status = status;
+  }
+
+  static fromPrimitives(primitiveData: {
     id: string;
     name: string;
     address: string;
-    slots: SlotEntity[];
-    contact_reference?: string;
-    phone?: string;
-    email?: string;
-    comments?: string;
-    latitude?: number;
-    longitude?: number;
-    status?: string;
+    contactReference: string;
+    phone: string;
+    email: string;
+    comments: string;
+    status: LocationStatus;
+    slots: {
+      id: string;
+      slotNumber: string;
+      slotType: SlotType;
+      limitSchedules: number;
+      costType: CostType;
+      cost: number;
+      vehicleType: VehicleType;
+      status: SlotStatus;
+    }[];
   }) {
     return new LocationEntity(
-      plainData.id,
-      plainData.name,
-      plainData.address,
-      plainData.slots,
-      plainData.contact_reference,
-      plainData.phone,
-      plainData.email,
-      plainData.comments,
-      plainData.latitude,
-      plainData.longitude,
-      plainData.status
+      primitiveData.id,
+      primitiveData.name,
+      primitiveData.address,
+      primitiveData.contactReference,
+      primitiveData.phone,
+      primitiveData.email,
+      primitiveData.comments,
+      primitiveData.status,
+      primitiveData.slots.map(slot => SlotEntity.fromPrimitives(slot))
     );
+  }
+
+  toPrimitives() {
+    return {
+      id: this.id,
+      name: this.name,
+      address: this.address,
+      contactReference: this.contactReference,
+      phone: this.phone,
+      email: this.email,
+      comments: this.comments,
+      status: this.status,
+      slots: this.slots.map(slot => slot.toPrimitives())
+    };
   }
 }

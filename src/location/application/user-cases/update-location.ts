@@ -1,25 +1,60 @@
 import { ForeignKeyConstraintError } from 'sequelize';
 import { LocationRepository } from '@location-module-core/repositories/location-repository';
-import { LocationEntity } from '@location-module-core/entities/location-entity';
+import {
+  LocationEntity,
+  LocationStatus
+} from '@location-module-core/entities/location-entity';
 import { AppError } from '@src/server/config/err/AppError';
+import { SlotType } from '@src/location/core/entities/slot-entity';
+import { SlotStatus } from '@src/location/core/entities/slot-entity';
+import { CostType } from '@src/location/core/entities/slot-entity';
+import { VehicleType } from '@src/location/core/entities/slot-entity';
+
+import { ValidationsUseCases } from './validations';
 
 export class UpdateLocation {
-  constructor(private readonly locationRepository: LocationRepository) {}
+  constructor(
+    private readonly locationRepository: LocationRepository,
+    private readonly validationsUseCases: ValidationsUseCases
+  ) {}
 
   public async run(
-    location: LocationEntity,
-    slotsToDelete: string[]
+    data: {
+      id: string;
+      name: string;
+      address: string;
+      contactReference: string;
+      phone: string;
+      email: string;
+      comments: string;
+      status: LocationStatus;
+      slots: {
+        id: string;
+        slotNumber: string;
+        slotType: SlotType;
+        limitSchedules: number;
+        status: SlotStatus;
+        costType: CostType;
+        vehicleType: VehicleType;
+        cost: number;
+      }[];
+    },
+    slotsToDelete: Set<string>
   ): Promise<void> {
-    const locationExists = await this.locationRepository.getLocationById(
-      location.id
-    );
-
-    if (!locationExists) {
-      throw new AppError('LOCATION_NOT_FOUND', 404, 'Location not found', true);
-    }
-
     try {
-      await this.locationRepository.updateLocation(location, slotsToDelete);
+      await this.validationsUseCases.validateIfCanUpdate({
+        locationId: data.id,
+        locationStatus: data.status,
+        slots: data.slots.filter(slot => slot.id),
+        slotsToDelete: new Set(slotsToDelete)
+      });
+
+      const locationEntity = LocationEntity.fromPrimitives(data);
+
+      await this.locationRepository.updateLocation(
+        locationEntity,
+        slotsToDelete
+      );
     } catch (error) {
       if (error instanceof ForeignKeyConstraintError) {
         throw new AppError(
@@ -30,7 +65,16 @@ export class UpdateLocation {
         );
       }
 
-      throw new AppError('UNEXPECTED_ERROR', 500, 'Unexpected error', false);
+      if (error instanceof AppError) {
+        throw error;
+      }
+
+      throw new AppError(
+        'UNKNOWN_ERROR',
+        500,
+        'Error not identified on update location use case',
+        false
+      );
     }
   }
 }

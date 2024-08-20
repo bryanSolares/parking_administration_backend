@@ -1,4 +1,4 @@
-import { Op } from 'sequelize';
+import { Op, QueryTypes } from 'sequelize';
 import { v4 as uuid } from 'uuid';
 
 import { logger } from '@config/logger/load-logger';
@@ -11,9 +11,15 @@ import { LocationRepository } from '@location-module-core/repositories/location-
 import { LocationFinderResult } from '@location-module-core/repositories/location-repository';
 
 import { LocationEntity } from '@location-module-core/entities/location-entity';
-import { SlotEntity } from '@location-module-core/entities/slot-entity';
+import {
+  CostType,
+  SlotEntity,
+  SlotStatus,
+  SlotType,
+  VehicleType
+} from '@location-module-core/entities/slot-entity';
 
-export class SequelizeLocationRepository implements LocationRepository {
+export class SequelizeMYSQLLocationRepository implements LocationRepository {
   private readonly fieldsToLocationAllowedToCreateOrUpdate = [
     'name',
     'address',
@@ -30,20 +36,22 @@ export class SequelizeLocationRepository implements LocationRepository {
     'slot_number',
     'slot_type',
     'limit_schedules',
-    'type_vehicle',
-    'type_cost',
+    'vehicle_type',
+    'cost_type',
     'cost',
     'status'
   ];
-
-  private readonly fieldsExcluded = ['updated_at', 'created_at'];
 
   async createLocation(location: LocationEntity): Promise<void> {
     const transaction = await sequelize.transaction();
 
     const locationId = uuid();
     await LocationModel.create(
-      { ...location, id: locationId },
+      {
+        ...location,
+        id: locationId,
+        contact_reference: location.contactReference
+      },
       {
         fields: ['id', ...this.fieldsToLocationAllowedToCreateOrUpdate],
         transaction
@@ -55,7 +63,12 @@ export class SequelizeLocationRepository implements LocationRepository {
         return {
           ...slot,
           id: uuid(),
-          location_id: locationId
+          location_id: locationId,
+          slot_number: slot.slotNumber,
+          slot_type: slot.slotType,
+          limit_schedules: slot.limitSchedules,
+          cost_type: slot.costType,
+          vehicle_type: slot.vehicleType
         };
       });
 
@@ -69,14 +82,15 @@ export class SequelizeLocationRepository implements LocationRepository {
 
   async updateLocation(
     location: LocationEntity,
-    slotsToDelete: string[]
+    slotsToDelete: Set<string>
   ): Promise<void> {
     const transaction = await sequelize.transaction();
 
     // Update Location
     await LocationModel.update(
       {
-        ...location
+        ...location,
+        contact_reference: location.contactReference
       },
       {
         where: { id: location.id },
@@ -92,7 +106,12 @@ export class SequelizeLocationRepository implements LocationRepository {
           {
             ...slot,
             id: !slot.id ? uuid() : slot.id,
-            location_id: location.id
+            location_id: location.id,
+            slot_number: slot.slotNumber,
+            slot_type: slot.slotType,
+            limit_schedules: slot.limitSchedules,
+            cost_type: slot.costType,
+            vehicle_type: slot.vehicleType
           },
           {
             fields: [...this.fieldsToSlotToCreateOrUpdate],
@@ -102,10 +121,13 @@ export class SequelizeLocationRepository implements LocationRepository {
       })
     );
 
-    if (slotsToDelete.length > 0) {
+    if (slotsToDelete.size > 0) {
       try {
         await SlotModel.destroy({
-          where: { id: { [Op.in]: slotsToDelete }, location_id: location.id },
+          where: {
+            id: { [Op.in]: Array.from(slotsToDelete.values()) },
+            location_id: location.id
+          },
           transaction
         });
       } catch (error) {
@@ -124,19 +146,18 @@ export class SequelizeLocationRepository implements LocationRepository {
   }
 
   async getLocationById(id: string): Promise<LocationEntity | null> {
-    const location = await LocationModel.findByPk(id, {
+    const locationDatabase = await LocationModel.findByPk(id, {
       include: {
-        model: SlotModel,
-        attributes: {
-          exclude: [...this.fieldsExcluded]
-        }
-      },
-      attributes: {
-        exclude: [...this.fieldsExcluded, 'latitude', 'longitude']
+        model: SlotModel
       }
     });
 
-    return location?.get({ plain: true }) as LocationEntity;
+    if (!locationDatabase) return null;
+
+    return this.transformData(
+      locationDatabase,
+      locationDatabase.get({ plain: true }).slots
+    );
   }
 
   async getLocations(
@@ -148,23 +169,75 @@ export class SequelizeLocationRepository implements LocationRepository {
     const offset = (page - 1) * limit;
 
     const locationsDatabase = await LocationModel.findAll({
-      attributes: {
-        exclude: ['updated_at', 'latitude', 'longitude']
-      },
-      order: [['created_at', 'DESC']],
+      order: [['name', 'ASC']],
       limit,
       offset
     });
 
-    const locationsData = locationsDatabase.map(location =>
-      LocationEntity.fromPrimitives(location.get({ plain: true }))
-    );
+    const locations = locationsDatabase.map(location => {
+      return this.transformData(location);
+    });
 
-    return { data: locationsData, pageCounter: allPages };
+    return { data: locations, pageCounter: allPages };
   }
 
   async getSlotById(id: string): Promise<SlotEntity | null> {
     const slotDatabase = await SlotModel.findByPk(id);
     return slotDatabase?.get({ plain: true }) as SlotEntity;
+  }
+
+  async executeFunction<TypeFunctionResult = boolean | number>(
+    functionName: 'location_has_active_assignment',
+    params: string[]
+  ): Promise<TypeFunctionResult> {
+    const [resultFunction]: {
+      [key: string]: boolean;
+    }[] = await sequelize.query(`select ${functionName}(?)`, {
+      replacements: params,
+      type: QueryTypes.SELECT
+    });
+
+    return Object.values(resultFunction)[0] as TypeFunctionResult;
+  }
+
+  async callProcedure<TypeProcedureResult>(
+    procedureName: string,
+    params: string[]
+  ): Promise<TypeProcedureResult> {
+    const [result] = await sequelize.query(`call ${procedureName}(?)`, {
+      replacements: params,
+      type: QueryTypes.SELECT
+    });
+
+    return Object.values(result) as TypeProcedureResult;
+  }
+
+  private transformData(
+    locationModel: LocationModel,
+    slots: {
+      id: string;
+      slot_number: string;
+      slot_type: SlotType;
+      limit_schedules: number;
+      cost_type: CostType;
+      cost: number;
+      vehicle_type: VehicleType;
+      status: SlotStatus;
+    }[] = []
+  ): LocationEntity {
+    return LocationEntity.fromPrimitives({
+      ...locationModel.get({ plain: true }),
+      contactReference: locationModel.get('contact_reference'),
+      slots: slots.map(slot =>
+        SlotEntity.fromPrimitives({
+          ...slot,
+          slotNumber: slot.slot_number,
+          slotType: slot.slot_type,
+          limitSchedules: slot.limit_schedules,
+          costType: slot.cost_type,
+          vehicleType: slot.vehicle_type
+        })
+      )
+    });
   }
 }

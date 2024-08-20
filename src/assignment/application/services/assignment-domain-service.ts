@@ -1,5 +1,7 @@
 import { AssignmentRepository } from '@assignment-module-core/repositories/assignment-repository';
 import { LocationRepository } from '@location-module-core/repositories/location-repository';
+import { LocationStatus } from '@src/location/core/entities/location-entity';
+import { SlotStatus, SlotType } from '@src/location/core/entities/slot-entity';
 import { AppError } from '@src/server/config/err/AppError';
 
 export class AssignmentDomainService {
@@ -10,7 +12,7 @@ export class AssignmentDomainService {
 
   async slotIsMultipleType(slotId: string): Promise<boolean> {
     const slot = await this.locationRepository.getSlotById(slotId);
-    return slot!.slot_type === 'MULTIPLE';
+    return slot!.slotType === SlotType.MULTIPLE;
   }
 
   async validateIfEmployeeHasAnActiveAssignment(
@@ -44,7 +46,7 @@ export class AssignmentDomainService {
   async verifyIfSlotCanHaveSchedules(slotId: string): Promise<void> {
     const slot = await this.locationRepository.getSlotById(slotId);
 
-    if (slot?.slot_type === 'single') {
+    if (slot?.slotType === SlotType.SIMPLE) {
       throw new AppError(
         'SLOT_CANT_HAVE_SCHEDULES',
         400,
@@ -61,15 +63,16 @@ export class AssignmentDomainService {
       throw new AppError('SLOT_NOT_FOUND', 404, 'Slot not found', true);
     }
 
-    if (slot.status === 'INACTIVO' || slot.status === 'OCUPADO') {
+    if (
+      slot.status === SlotStatus.INACTIVE ||
+      slot.status === SlotStatus.OCCUPIED
+    ) {
       throw new AppError('SLOT_NOT_AVAILABLE', 400, 'Slot not available', true);
     }
 
-    const location = await this.locationRepository.getLocationById(
-      slot?.location_id
-    );
+    const location = await this.locationRepository.getLocationById(slot?.id);
 
-    if (location?.status !== 'ACTIVO') {
+    if (location?.status !== LocationStatus.ACTIVE) {
       throw new AppError(
         'LOCATION_NOT_ACTIVE',
         400,

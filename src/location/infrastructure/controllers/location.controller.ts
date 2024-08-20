@@ -30,12 +30,15 @@ export class LocationController {
   async updateLocation(req: Request, res: Response, next: NextFunction) {
     const locationData = req.body;
     const locationId = req.params.id;
-    const slotsToDelete = req.body.slots_to_delete;
+    const slotsToDelete = req.body.slotsToDelete;
 
     locationData.id = locationId;
 
     try {
-      await this.updateLocationUseCase.run(locationData, slotsToDelete);
+      await this.updateLocationUseCase.run(
+        locationData,
+        new Set(slotsToDelete)
+      );
       res.status(200).send({ message: 'Location updated' });
     } catch (error) {
       next(error);
