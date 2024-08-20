@@ -186,10 +186,10 @@ export class SequelizeMYSQLLocationRepository implements LocationRepository {
     return slotDatabase?.get({ plain: true }) as SlotEntity;
   }
 
-  async executeBoolFunction(
+  async executeFunction<TypeFunctionResult = boolean | number>(
     functionName: 'location_has_active_assignment',
     params: string[]
-  ): Promise<boolean> {
+  ): Promise<TypeFunctionResult> {
     const [resultFunction]: {
       [key: string]: boolean;
     }[] = await sequelize.query(`select ${functionName}(?)`, {
@@ -197,7 +197,19 @@ export class SequelizeMYSQLLocationRepository implements LocationRepository {
       type: QueryTypes.SELECT
     });
 
-    return Object.values(resultFunction)[0];
+    return Object.values(resultFunction)[0] as TypeFunctionResult;
+  }
+
+  async callProcedure<TypeProcedureResult>(
+    procedureName: string,
+    params: string[]
+  ): Promise<TypeProcedureResult> {
+    const [result] = await sequelize.query(`call ${procedureName}(?)`, {
+      replacements: params,
+      type: QueryTypes.SELECT
+    });
+
+    return Object.values(result) as TypeProcedureResult;
   }
 
   private transformData(

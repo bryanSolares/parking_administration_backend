@@ -61,7 +61,7 @@ export const locationUpdateSchema = z.object({
       vehicleType: z.enum(['CARRO', 'MOTO', 'CAMION']),
       costType: z.enum(['SIN_COSTO', 'DESCUENTO', 'COMPLEMENTO']),
       cost: z.number(),
-      status: z.enum(['DISPONIBLE', 'INACTIVO'])
+      status: z.enum(['DISPONIBLE', 'INACTIVO', 'OCUPADO'])
     }),
     { message: 'Slots is required' }
   ),

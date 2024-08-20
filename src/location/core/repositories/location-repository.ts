@@ -8,6 +8,8 @@ export type LocationFinderResult = Promise<{
 
 export type FunctionNames = 'location_has_active_assignment';
 
+export type ProcedureNames = 'get_slot_schedules_by_location';
+
 export interface LocationRepository {
   createLocation(location: LocationEntity): Promise<void>;
   updateLocation(
@@ -21,8 +23,12 @@ export interface LocationRepository {
     page: number
   ): Promise<LocationFinderResult | null>;
   getSlotById(id: string): Promise<SlotEntity | null>;
-  executeBoolFunction(
+  executeFunction<TypeFunctionResult = boolean | number>(
     functionName: FunctionNames,
     params: string[]
-  ): Promise<boolean>;
+  ): Promise<TypeFunctionResult>;
+  callProcedure<TypeProcedureResult>(
+    procedureName: ProcedureNames,
+    params: string[]
+  ): Promise<TypeProcedureResult>;
 }

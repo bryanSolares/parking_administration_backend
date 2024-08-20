@@ -5,12 +5,11 @@ import {
   LocationStatus
 } from '@location-module-core/entities/location-entity';
 import { AppError } from '@src/server/config/err/AppError';
-import {
-  SlotType,
-  SlotStatus,
-  CostType,
-  VehicleType
-} from '@src/location/core/entities/slot-entity';
+import { SlotType } from '@src/location/core/entities/slot-entity';
+import { SlotStatus } from '@src/location/core/entities/slot-entity';
+import { CostType } from '@src/location/core/entities/slot-entity';
+import { VehicleType } from '@src/location/core/entities/slot-entity';
+
 import { ValidationsUseCases } from './validations';
 
 export class UpdateLocation {
