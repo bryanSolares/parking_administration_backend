@@ -1,71 +1,210 @@
 import { mockLocationRepository } from "./__mocks__/location-mocks";
-
 import { CreateLocation } from '../src/location/application/user-cases/create-location';
-import { UpdateLocation } from '../src/location/application/user-cases/update-location';
-import { DeleteLocation } from '../src/location/application/user-cases/delete-location';
-import { GetLocationByIdFinder } from '../src/location/application/user-cases/location-by-id-finder';
-import { LocationFinder } from '../src/location/application/user-cases/location-finder';
-
-import { LocationEntity } from '../src/location/core/entities/location-entity';
+import { CostType, SlotStatus, VehicleType } from "../src/location/core/entities/slot-entity";
+import { SlotType } from "../src/location/core/entities/slot-entity";
 import { LocationMother } from './mother/location-mother';
+import { UpdateLocation } from '../src/location/application/user-cases/update-location';
+import { ValidationsUseCases } from "../src/location/application/user-cases/validations";
+import { LocationEntity, LocationStatus } from "../src/location/core/entities/location-entity";
 
 describe('LOCATION: Use Cases', () => {
 
+  let createLocationUseCase: CreateLocation;
+  let updateLocationUseCase: UpdateLocation;
+  let locationData: any;
+  let slotsData: any[];
+  let validations: ValidationsUseCases;
 
-  beforeEach(() => {
+  const setupTest = () => {
     jest.clearAllMocks();
+    locationData = LocationMother.createLocationPrimitive();
+    slotsData = [LocationMother.createSlotPrimitive()];
+    createLocationUseCase = new CreateLocation(mockLocationRepository);
+    validations = new ValidationsUseCases(mockLocationRepository);
+    updateLocationUseCase = new UpdateLocation(mockLocationRepository, validations);
+  };
+
+  const runCreateLocationTest = async (data: any, expectedErrorMessage?: string) => {
+    if (expectedErrorMessage) {
+      await expect(createLocationUseCase.run(data)).rejects.toThrow(expectedErrorMessage);
+    } else {
+      await createLocationUseCase.run(data);
+      expect(mockLocationRepository.createLocation).toHaveBeenCalledWith(data);
+    }
+  };
+
+  const runUpdateLocationTest = async (data: any, slotsToDelete: Set<string>, expectedErrorMessage?: string) => {
+    if (expectedErrorMessage) {
+      await expect(updateLocationUseCase.run(data, slotsToDelete)).rejects.toThrow(expectedErrorMessage);
+    } else {
+      await updateLocationUseCase.run(data, slotsToDelete);
+      expect(mockLocationRepository.updateLocation).toHaveBeenCalledWith(data, slotsToDelete);
+    }
+  };
+
+  describe('USE_CASE: Create Location', () => {
+
+    beforeEach(() => setupTest());
+
+    it.each([
+      { slotType: SlotType.SIMPLE, limitSchedules: 1 },
+      { slotType: SlotType.MULTIPLE, limitSchedules: 2 }
+    ])('should create a new location TYPE $slotType', async ({ slotType, limitSchedules }) => {
+      slotsData[0].slotType = slotType;
+      slotsData[0].limitSchedules = limitSchedules;
+      await runCreateLocationTest({ ...locationData, slots: slotsData });
+    });
+
+    it('should create a new location TYPE COST COMPLEMENT and DESCUENTO', async () => {
+      slotsData[0].costType = CostType.COMPLEMENT;
+      slotsData[0].cost = 10;
+      await runCreateLocationTest({ ...locationData, slots: slotsData });
+
+      slotsData[0].costType = CostType.DISCOUNT;
+      slotsData[0].cost = 20;
+      await runCreateLocationTest({ ...locationData, slots: slotsData });
+    });
+
+    it.each([
+      { slotType: SlotType.SIMPLE, limitSchedules: 2, errorMessage: 'The number of schedules cannot be greater than 1 or less than 1 for SIMPLE type spaces.' },
+      { slotType: SlotType.SIMPLE, limitSchedules: -1, errorMessage: 'The number of schedules cannot be greater than 1 or less than 1 for SIMPLE type spaces.' },
+      { slotType: SlotType.MULTIPLE, limitSchedules: 1, errorMessage: 'The number of schedules for a multiple space should be between 2 and 23.' },
+      { slotType: SlotType.MULTIPLE, limitSchedules: 24, errorMessage: 'The number of schedules for a multiple space should be between 2 and 23.' }
+    ])('should throw an error for invalid $slotType and limitSchedules $limitSchedules', async ({ slotType, limitSchedules, errorMessage }) => {
+      slotsData[0].slotType = slotType;
+      slotsData[0].limitSchedules = limitSchedules;
+      await runCreateLocationTest({ ...locationData, slots: slotsData }, errorMessage);
+    });
+
+    it.each([
+      { costType: CostType.COMPLEMENT, cost: 0, errorMessage: 'You must assign a value of whether the type of space is DESCUENTO or COMPLEMENTO.' },
+      { costType: CostType.DISCOUNT, cost: 0, errorMessage: 'You must assign a value of whether the type of space is DESCUENTO or COMPLEMENTO.' },
+      { costType: CostType.NO_COST, cost: 1, errorMessage: 'You cannot assign a cost value if the type is SIN_COSTO.' },
+      { costType: CostType.NO_COST, cost: -1, errorMessage: 'You cannot assign a cost value if the type is SIN_COSTO.' }
+    ])('should throw an error for invalid $costType and cost $cost', async ({ costType, cost, errorMessage }) => {
+      slotsData[0].costType = costType;
+      slotsData[0].cost = cost;
+      await runCreateLocationTest({ ...locationData, slots: slotsData }, errorMessage);
+    });
+
   });
 
-  it('should create a new location', async () => {
-    const location = LocationMother.createLocation()
-    const createLocation = new CreateLocation(mockLocationRepository);
-    await createLocation.run(location);
-    expect(mockLocationRepository.createLocation).toHaveBeenCalledWith(
-      expect.any(LocationEntity)
-    );
-  });
+  describe('USE_CASE: Update Location', () => {
 
-  it('should update a location and throw an error if location not found', async () => {
-    const location = LocationMother.createLocation()
-    mockLocationRepository.getLocationById.mockResolvedValueOnce(location);
-    const updateLocation = new UpdateLocation(mockLocationRepository);
-    await updateLocation.run(location, []);
-    expect(mockLocationRepository.updateLocation).toHaveBeenCalledWith(
-      location,
-      []
-    );
+    beforeEach(() => setupTest());
 
-    mockLocationRepository.getLocationById.mockResolvedValueOnce(null);
-    await expect(updateLocation.run(location, [])).rejects.toThrow();
-  });
+     it('should update a location', async () => {
+      const data = { ...locationData, slots: slotsData };
+      const locationEntity = LocationEntity.fromPrimitives(data);
+      const slotsToDelete: Set<string> = new Set();
+      mockLocationRepository.getLocationById.mockResolvedValueOnce(locationEntity);
+      await runUpdateLocationTest(data, slotsToDelete);
+    });
 
-  it('should delete a location and throw an error if location not found', async () => {
-    const location = LocationMother.createLocation()
-    mockLocationRepository.getLocationById.mockResolvedValueOnce(location);
+     it('should update number of schedules assigned to a slot', async () => {
+      const requestData = { ...locationData, slots: slotsData };
+      const requestSlotsToDelete: Set<string> = new Set();
+      requestData.slots[0].status = SlotStatus.OCCUPIED;
+      requestData.slots[0].slotType = SlotType.MULTIPLE;
+      requestData.slots[0].limitSchedules = 3;
 
-    const deleteLocation = new DeleteLocation(mockLocationRepository);
-    await deleteLocation.run(location.id);
+      const slots = [{ ...requestData.slots[0], status: SlotStatus.OCCUPIED }];
+      mockLocationRepository.getLocationById.mockResolvedValueOnce(LocationEntity.fromPrimitives({ ...requestData, slots }));
+      mockLocationRepository.callProcedure.mockResolvedValueOnce([{ slot_id: slots[0].id, current_number_of_schedules_used: 1, limit_schedules: 5 }]);
+      await runUpdateLocationTest(requestData, requestSlotsToDelete);
+    });
 
-    expect(mockLocationRepository.deleteLocation).toHaveBeenCalledWith(location.id);
+    it('should throw an error if location does not exist', async () => {
+      const data = { ...locationData, slots: slotsData };
+      const slotsToDelete: Set<string> = new Set();
+      mockLocationRepository.getLocationById.mockResolvedValueOnce(null);
+      await runUpdateLocationTest(data, slotsToDelete, 'Location not found');
+    });
 
-    mockLocationRepository.getLocationById.mockResolvedValueOnce(null);
-    await expect(deleteLocation.run(location.id)).rejects.toThrow();
-  });
+    it('should throw an error when trying to inactivate a location if any slot is occupied', async () => {
+      const data = { ...locationData, slots: slotsData, status: LocationStatus.INACTIVE };
+      const slotsToDelete: Set<string> = new Set();
+      const locationEntity = LocationEntity.fromPrimitives({ ...data, status: LocationStatus.ACTIVE });
+      mockLocationRepository.getLocationById.mockResolvedValueOnce(locationEntity);
+      mockLocationRepository.executeFunction.mockResolvedValueOnce(true);
+      await runUpdateLocationTest(data, slotsToDelete, 'You cannot inactivate a location with active assignments');
+    });
 
-  it('should find a location by id and throw an error if location not found', async () => {
-    const location = LocationMother.createLocation()
-    mockLocationRepository.getLocationById.mockResolvedValueOnce(location);
-    const findById = new GetLocationByIdFinder(mockLocationRepository);
-    await findById.run(location.id);
-    expect(mockLocationRepository.getLocationById).toHaveBeenCalledWith(location.id);
+     it('should throw an error if any slot to update or delete does not belong to the location', async () => {
+      const data = { ...locationData, slots: slotsData };
+      const slotsToDelete: Set<string> = new Set();
+      mockLocationRepository.getLocationById.mockResolvedValueOnce(LocationEntity.fromPrimitives({ ...data, slots: [LocationMother.createSlotPrimitive()] }));
+      await runUpdateLocationTest(data, slotsToDelete, `You cannot update slot with id ${data.slots[0].id} because it does not belong to location`);
 
-    mockLocationRepository.getLocationById.mockResolvedValueOnce(null);
-    await expect(findById.run(location.id)).rejects.toThrow();
-  });
+      const idSlotToDelete = 'abc';
+      slotsToDelete.add(idSlotToDelete);
+      mockLocationRepository.getLocationById.mockResolvedValueOnce(LocationEntity.fromPrimitives(data));
+      await runUpdateLocationTest(data, slotsToDelete, `You cannot delete slot with id ${idSlotToDelete} because it does not belong to location`);
+    });
 
-  it('should find all locations', async () => {
-    const getAllLocations = new LocationFinder(mockLocationRepository);
-    await getAllLocations.run(1, 1);
-    expect(mockLocationRepository.getLocations).toHaveBeenCalled();
-  });
+    it('throw an error to trying update SLOT_TYPE of a slot if it is occupied', async () => {
+      const data = { ...locationData, slots: slotsData };
+      const slotsToDelete: Set<string> = new Set();
+      data.slots[0].status = SlotStatus.OCCUPIED;
+      data.slots[0].slotType = SlotType.SIMPLE;
+      data.slots[0].limitSchedules = 1;
+
+      const slots = [{...data.slots[0], status: SlotStatus.ACTIVE}]
+      slots[0].status = SlotStatus.OCCUPIED;
+      slots[0].slotType = SlotType.MULTIPLE;
+      slots[0].limitSchedules = 2;
+      mockLocationRepository.getLocationById.mockResolvedValueOnce(LocationEntity.fromPrimitives({...data, slots }));
+      await runUpdateLocationTest(data, slotsToDelete, 'You cannot update properties slotType, vehicleType, costType, status, cost if it is occupied');
+    })
+
+     it('throw an error to trying update VEHICLE_TYPE of a slot if it is occupied', async () => {
+      const data = { ...locationData, slots: slotsData };
+      const slotsToDelete: Set<string> = new Set();
+      data.slots[0].status = SlotStatus.OCCUPIED;
+      data.slots[0].vehicleType = VehicleType.CAR;
+
+      const slots = [{...data.slots[0], status: SlotStatus.ACTIVE}]
+      slots[0].status = SlotStatus.OCCUPIED;
+      slots[0].vehicleType = VehicleType.CYCLE;
+      mockLocationRepository.getLocationById.mockResolvedValueOnce(LocationEntity.fromPrimitives({...data, slots }));
+      await runUpdateLocationTest(data, slotsToDelete, 'You cannot update properties slotType, vehicleType, costType, status, cost if it is occupied');
+    })
+
+    it('throw an error to trying update COST_TYPE of a slot if it is occupied', async () => {
+      const data = { ...locationData, slots: slotsData };
+      const slotsToDelete: Set<string> = new Set();
+      data.slots[0].costType = CostType.COMPLEMENT;
+      data.slots[0].cost = 100;
+
+      const slots = [{...data.slots[0], status: SlotStatus.OCCUPIED}]
+      slots[0].costType = CostType.NO_COST;
+      slots[0].cost = 0;
+      mockLocationRepository.getLocationById.mockResolvedValueOnce(LocationEntity.fromPrimitives({...data, slots }));
+      await runUpdateLocationTest(data, slotsToDelete, 'You cannot update properties slotType, vehicleType, costType, status, cost if it is occupied');
+    })
+
+    it('throw and error if trying to update STATUS of a slot if it is occupied', async () => {
+      const data = { ...locationData, slots: slotsData };
+      const slotsToDelete: Set<string> = new Set();
+      data.slots[0].status = SlotStatus.OCCUPIED;
+
+      const slots = [{...data.slots[0], status: SlotStatus.ACTIVE}]
+      mockLocationRepository.getLocationById.mockResolvedValueOnce(LocationEntity.fromPrimitives({...data, slots }));
+      await runUpdateLocationTest(data, slotsToDelete, 'You cannot update properties slotType, vehicleType, costType, status, cost if it is occupied');
+    })
+
+    it('throw an error if to try update limited schedules out of number of schedules assigned', async () => {
+      const data = { ...locationData, slots: slotsData };
+      const slotsToDelete: Set<string> = new Set();
+      data.slots[0].status = SlotStatus.OCCUPIED;
+      data.slots[0].slotType = SlotType.MULTIPLE;
+      data.slots[0].limitSchedules = 3;
+
+      const slots = [{...data.slots[0], status: SlotStatus.OCCUPIED}]
+      mockLocationRepository.getLocationById.mockResolvedValueOnce(LocationEntity.fromPrimitives({...data, slots }));
+      mockLocationRepository.callProcedure.mockResolvedValueOnce([{slot_id: slots[0].id, current_number_of_schedules_used: 4, limit_schedules: 5}])
+      await runUpdateLocationTest(data, slotsToDelete, `Number of schedules in slot ${slots[0].id} cannot be less than the number of schedules already assigned`);
+    })
+
+  })
 });

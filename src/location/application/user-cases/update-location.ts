@@ -42,14 +42,14 @@ export class UpdateLocation {
     slotsToDelete: Set<string>
   ): Promise<void> {
     try {
+      const locationEntity = LocationEntity.fromPrimitives(data);
+
       await this.validationsUseCases.validateIfCanUpdate({
         locationId: data.id,
         locationStatus: data.status,
         slots: data.slots.filter(slot => slot.id),
         slotsToDelete: new Set(slotsToDelete)
       });
-
-      const locationEntity = LocationEntity.fromPrimitives(data);
 
       await this.locationRepository.updateLocation(
         locationEntity,
@@ -68,7 +68,7 @@ export class UpdateLocation {
       if (error instanceof AppError) {
         throw error;
       }
-
+      console.log(error);
       throw new AppError(
         'UNKNOWN_ERROR',
         500,

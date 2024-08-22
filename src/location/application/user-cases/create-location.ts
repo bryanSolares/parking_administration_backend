@@ -30,9 +30,9 @@ export class CreateLocation {
       cost: number;
     }[];
   }): Promise<void> {
-    let locationEntity: LocationEntity;
     try {
-      locationEntity = LocationEntity.fromPrimitives(data);
+      const locationEntity = LocationEntity.fromPrimitives(data);
+      await this.locationRepository.createLocation(locationEntity);
     } catch (error) {
       if (error instanceof AppError) {
         throw error;
@@ -45,6 +45,5 @@ export class CreateLocation {
         false
       );
     }
-    await this.locationRepository.createLocation(locationEntity);
   }
 }

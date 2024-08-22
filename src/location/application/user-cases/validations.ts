@@ -223,7 +223,7 @@ export class ValidationsUseCases {
         throw new AppError(
           'CANT_UPDATE_SLOT_SCHEDULES',
           400,
-          `Number of schedules in slot ${slotRequest.id} cannot be greater than the number of schedules already assigned`,
+          `Number of schedules in slot ${slotRequest.id} cannot be less than the number of schedules already assigned`,
           true
         );
       }
