@@ -8,12 +8,12 @@ export class DiscountNoteModel extends Model {}
 DiscountNoteModel.init(
   {
     id: {
-      type: DataTypes.STRING,
+      type: DataTypes.UUID,
       primaryKey: true,
       unique: true
     },
     assignment_id: {
-      type: DataTypes.STRING,
+      type: DataTypes.UUID,
       allowNull: false
     },
     status_signature: {

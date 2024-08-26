@@ -10,19 +10,19 @@ export const locationCreateSchema = z.object({
   }),
   email: z.string().email(),
   comments: z.string(),
+  numberOfIdentifier: z.string().optional(),
   status: z.enum(['ACTIVO', 'INACTIVO']),
   slots: z
     .array(
       z.object({
         slotNumber: z.string(),
         slotType: z.enum(['SIMPLE', 'MULTIPLE']),
-        limitSchedules: z
+        limitOfAssignments: z
           .number({
             message:
-              'Limit schedule must be number and should be greater than 0 and less than 24'
+              'Limit schedule must be number and should be greater than 0'
           })
-          .min(0)
-          .max(24),
+          .min(0),
         vehicleType: z.enum(['CARRO', 'MOTO', 'CAMION']),
         costType: z.enum(['SIN_COSTO', 'DESCUENTO', 'COMPLEMENTO']),
         cost: z.number(),
@@ -45,19 +45,19 @@ export const locationUpdateSchema = z.object({
   }),
   email: z.string().email(),
   comments: z.string(),
+  numberOfIdentifier: z.string().optional(),
   status: z.enum(['ACTIVO', 'INACTIVO']),
   slots: z.array(
     z.object({
       id: z.string().uuid().optional(),
       slotNumber: z.string(),
       slotType: z.enum(['SIMPLE', 'MULTIPLE']),
-      limitSchedules: z
+      limitOfAssignments: z
         .number({
           message:
             'Limit schedule must be number and should be greater than 1 and less than 24'
         })
-        .min(1)
-        .max(24),
+        .min(1),
       vehicleType: z.enum(['CARRO', 'MOTO', 'CAMION']),
       costType: z.enum(['SIN_COSTO', 'DESCUENTO', 'COMPLEMENTO']),
       cost: z.number(),

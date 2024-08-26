@@ -6,22 +6,22 @@ export class AssignmentModel extends Model {}
 AssignmentModel.init(
   {
     id: {
-      type: DataTypes.STRING,
+      type: DataTypes.UUID,
       primaryKey: true,
       unique: true
     },
     slot_id: {
-      type: DataTypes.STRING
+      type: DataTypes.UUID
     },
     employee_id: {
-      type: DataTypes.STRING
+      type: DataTypes.UUID
     },
     assignment_date: {
       type: DataTypes.DATE,
       defaultValue: DataTypes.NOW
     },
     schedule_id: {
-      type: DataTypes.STRING,
+      type: DataTypes.UUID,
       allowNull: true
     },
     status: {

@@ -19,6 +19,7 @@ export class LocationEntity {
   readonly phone: string;
   readonly email: string;
   readonly comments: string;
+  readonly numberOfIdentifier: string;
   readonly status: LocationStatus;
   readonly slots: SlotEntity[];
 
@@ -30,6 +31,7 @@ export class LocationEntity {
     phone: string,
     email: string,
     comments: string,
+    numberOfIdentifier: string,
     status: LocationStatus,
     slots: SlotEntity[]
   ) {
@@ -41,7 +43,9 @@ export class LocationEntity {
     this.phone = phone;
     this.email = email;
     this.comments = comments;
+    this.numberOfIdentifier = numberOfIdentifier;
     this.status = status;
+    this.slots = slots;
   }
 
   static fromPrimitives(primitiveData: {
@@ -52,12 +56,13 @@ export class LocationEntity {
     phone: string;
     email: string;
     comments: string;
+    numberOfIdentifier: string;
     status: LocationStatus;
     slots: {
       id: string;
       slotNumber: string;
       slotType: SlotType;
-      limitSchedules: number;
+      limitOfAssignments: number;
       costType: CostType;
       cost: number;
       vehicleType: VehicleType;
@@ -72,8 +77,11 @@ export class LocationEntity {
       primitiveData.phone,
       primitiveData.email,
       primitiveData.comments,
+      primitiveData.numberOfIdentifier,
       primitiveData.status,
-      primitiveData.slots.map(slot => SlotEntity.fromPrimitives(slot))
+      primitiveData.slots
+        ? primitiveData.slots.map(slot => SlotEntity.fromPrimitives(slot))
+        : []
     );
   }
 
@@ -86,6 +94,7 @@ export class LocationEntity {
       phone: this.phone,
       email: this.email,
       comments: this.comments,
+      numberOfIdentifier: this.numberOfIdentifier,
       status: this.status,
       slots: this.slots.map(slot => slot.toPrimitives())
     };

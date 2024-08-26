@@ -18,12 +18,13 @@ export class CreateLocation {
     phone: string;
     email: string;
     comments: string;
+    numberOfIdentifier: string;
     status: LocationStatus;
     slots: {
       id: string;
       slotNumber: string;
       slotType: SlotType;
-      limitSchedules: number;
+      limitOfAssignments: number;
       status: SlotStatus;
       costType: CostType;
       vehicleType: VehicleType;

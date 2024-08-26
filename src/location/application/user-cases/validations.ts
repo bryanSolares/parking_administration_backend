@@ -20,12 +20,12 @@ export class ValidationsUseCases {
       vehicleType: VehicleType;
       costType: CostType;
       status: SlotStatus;
-      limitSchedules: number;
+      limitOfAssignments: number;
       cost: number;
     }[];
     slotsToDelete: Set<string>;
   }): Promise<void> {
-    const [location, locationHasActiveAssignment, schedulesOfSlots] =
+    const [location, locationHasActiveAssignment, activeAssignmentForLocation] =
       await this.loadData(dataRequest.locationId);
 
     this.validateLocationExists(location);
@@ -44,7 +44,7 @@ export class ValidationsUseCases {
 
     this.validateOccupiedSlots(dataRequest.slots, location!.slots);
 
-    this.validateSlotSchedules(dataRequest.slots, schedulesOfSlots);
+    this.validateSlotSchedules(dataRequest.slots, activeAssignmentForLocation);
   }
 
   private async loadData(locationId: string) {
@@ -58,10 +58,10 @@ export class ValidationsUseCases {
         {
           slot_id: string;
           location_id: string;
-          current_number_of_schedules_used: number;
-          limit_schedules: number;
+          current_number_of_assignments: number;
+          limit_of_assignments: number;
         }[]
-      >('get_slot_schedules_by_location', [locationId])
+      >('get_active_assignments_by_location', [locationId])
     ]);
   }
 
@@ -97,7 +97,7 @@ export class ValidationsUseCases {
       vehicleType: VehicleType;
       costType: CostType;
       status: SlotStatus;
-      limitSchedules: number;
+      limitOfAssignments: number;
       cost: number;
     }[],
     slotsToDelete: Set<string>,
@@ -135,7 +135,7 @@ export class ValidationsUseCases {
       vehicleType: VehicleType;
       costType: CostType;
       status: SlotStatus;
-      limitSchedules: number;
+      limitOfAssignments: number;
       cost: number;
     }[],
     locationSlots: SlotEntity[]
@@ -184,13 +184,13 @@ export class ValidationsUseCases {
       vehicleType: VehicleType;
       costType: CostType;
       status: SlotStatus;
-      limitSchedules: number;
+      limitOfAssignments: number;
       cost: number;
     }[],
     schedulesOfSlots: {
       slot_id: string;
-      current_number_of_schedules_used: number;
-      limit_schedules: number;
+      current_number_of_assignments: number;
+      limit_of_assignments: number;
     }[]
   ): void {
     if (schedulesOfSlots.length === 0) return;
@@ -204,8 +204,8 @@ export class ValidationsUseCases {
         string,
         {
           slot_id: string;
-          current_number_of_schedules_used: number;
-          limit_schedules: number;
+          current_number_of_assignments: number;
+          limit_of_assignments: number;
         }
       >
     );
@@ -217,8 +217,8 @@ export class ValidationsUseCases {
     slotsOccupiedDataRequest.forEach(slotRequest => {
       const scheduleDataSlotDatabase = scheduleDataMap[slotRequest.id];
       if (
-        slotRequest.limitSchedules <
-        scheduleDataSlotDatabase.current_number_of_schedules_used
+        slotRequest.limitOfAssignments <
+        scheduleDataSlotDatabase.current_number_of_assignments
       ) {
         throw new AppError(
           'CANT_UPDATE_SLOT_SCHEDULES',

@@ -1,6 +1,7 @@
 import { AssignmentRepository } from '@assignment-module-core/repositories/assignment-repository';
 import { NotificationService } from '../services/notification-service';
 import { AppError } from '@src/server/config/err/AppError';
+import { CostType } from '@src/location/core/entities/slot-entity';
 
 export class CreateDiscountNote {
   constructor(
@@ -21,7 +22,7 @@ export class CreateDiscountNote {
       );
     }
 
-    if (assignment.slot?.cost_type !== 'DESCUENTO') {
+    if (assignment.slot?.costType !== CostType.DISCOUNT) {
       throw new AppError(
         'CANT_CREATE_DISCOUNT_NOTE',
         400,

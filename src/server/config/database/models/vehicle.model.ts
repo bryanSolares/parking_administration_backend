@@ -6,12 +6,12 @@ export class VehicleModel extends Model {}
 VehicleModel.init(
   {
     id: {
-      type: DataTypes.STRING,
+      type: DataTypes.UUID,
       primaryKey: true,
       unique: true
     },
     employee_id: {
-      type: DataTypes.STRING,
+      type: DataTypes.UUID,
       allowNull: false
     },
     vehicle_badge: {

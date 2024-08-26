@@ -6,12 +6,12 @@ export class ScheduleModel extends Model {}
 ScheduleModel.init(
   {
     id: {
-      type: DataTypes.STRING,
+      type: DataTypes.UUID,
       primaryKey: true,
       unique: true
     },
     slot_id: {
-      type: DataTypes.STRING,
+      type: DataTypes.UUID,
       allowNull: false
     },
     start_time_assignment: {

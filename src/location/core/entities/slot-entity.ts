@@ -24,7 +24,7 @@ export class SlotEntity {
   readonly id: string;
   readonly slotNumber: string;
   readonly slotType: SlotType;
-  readonly limitSchedules: number;
+  readonly limitOfAssignments: number;
   readonly costType: CostType;
   readonly cost: number;
   readonly vehicleType: VehicleType;
@@ -34,17 +34,17 @@ export class SlotEntity {
     id: string,
     slotNumber: string,
     slotType: SlotType,
-    limitSchedules: number,
+    limitOfAssignments: number,
     costType: CostType,
     cost: number,
     vehicleType: VehicleType,
     status: SlotStatus
   ) {
-    this.validateData({ slotType, limitSchedules, costType, cost });
+    this.validateData({ slotType, limitOfAssignments, costType, cost });
     this.id = id;
     this.slotNumber = slotNumber;
     this.slotType = slotType;
-    this.limitSchedules = limitSchedules;
+    this.limitOfAssignments = limitOfAssignments;
     this.costType = costType;
     this.cost = cost;
     this.vehicleType = vehicleType;
@@ -55,7 +55,7 @@ export class SlotEntity {
     id: string;
     slotNumber: string;
     slotType: SlotType;
-    limitSchedules: number;
+    limitOfAssignments: number;
     costType: CostType;
     cost: number;
     vehicleType: VehicleType;
@@ -65,7 +65,7 @@ export class SlotEntity {
       plainData.id,
       plainData.slotNumber,
       plainData.slotType,
-      plainData.limitSchedules,
+      plainData.limitOfAssignments,
       plainData.costType,
       plainData.cost,
       plainData.vehicleType,
@@ -78,7 +78,7 @@ export class SlotEntity {
       id: this.id,
       slotNumber: this.slotNumber,
       slotType: this.slotType,
-      limitSchedules: this.limitSchedules,
+      limitOfAssignments: this.limitOfAssignments,
       costType: this.costType,
       cost: this.cost,
       vehicleType: this.vehicleType,
@@ -88,13 +88,13 @@ export class SlotEntity {
 
   private validateData(data: {
     slotType: SlotType;
-    limitSchedules: number;
+    limitOfAssignments: number;
     costType: CostType;
     cost: number;
   }) {
     if (
       data.slotType === SlotType.SIMPLE &&
-      (data.limitSchedules > 1 || data.limitSchedules < 1)
+      (data.limitOfAssignments > 1 || data.limitOfAssignments < 1)
     ) {
       throw new AppError(
         'ENTITY_VALIDATIONS',
@@ -104,14 +104,11 @@ export class SlotEntity {
       );
     }
 
-    if (
-      data.slotType === SlotType.MULTIPLE &&
-      (data.limitSchedules <= 1 || data.limitSchedules > 23)
-    ) {
+    if (data.slotType === SlotType.MULTIPLE && data.limitOfAssignments <= 1) {
       throw new AppError(
         'ENTITY_VALIDATIONS',
         400,
-        'The number of schedules for a multiple space should be between 2 and 23.',
+        'The number of schedules for a multiple space should be greater than 1.',
         true
       );
     }
