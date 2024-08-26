@@ -9,13 +9,13 @@ export class LocationMother{
       id: string = uuid(),
       slotNumber: string = faker.lorem.slug({min: 1, max: 10}),
       slotType: SlotType = SlotType.SIMPLE,
-      limitSchedules: number = 1,
+      limitOfAssignments: number = 1,
       costType: CostType = CostType.NO_COST,
       cost: number = 0,
       vehicleType: VehicleType = VehicleType.CAR,
       status: SlotStatus = SlotStatus.ACTIVE
     ): SlotEntity{
-    return new SlotEntity(id, slotNumber, slotType, limitSchedules, costType, cost, vehicleType, status);
+    return new SlotEntity(id, slotNumber, slotType, limitOfAssignments, costType, cost, vehicleType, status);
   }
 
 
@@ -27,17 +27,18 @@ export class LocationMother{
     phone: string = "+(502) 45456595",
     email: string = faker.internet.email(),
     comments: string = faker.lorem.sentence(),
+    numberOfIdentifier: string = faker.lorem.slug({min: 1, max: 20}),
     status: LocationStatus = LocationStatus.ACTIVE,
     slots: SlotEntity[]
   ): LocationEntity{
-    return new LocationEntity(id, name, address, contactReference, phone, email, comments, status, slots);
+    return new LocationEntity(id, name, address, contactReference, phone, email, comments, numberOfIdentifier, status, slots);
   }
 
   static createSlotPrimitive(
     id: string = uuid(),
     slotNumber: string = faker.lorem.slug({min: 1, max: 10}),
     slotType: SlotType = SlotType.SIMPLE,
-    limitSchedules: number = 1,
+    limitOfAssignments: number = 1,
     costType: CostType = CostType.NO_COST,
     cost: number = 0,
     vehicleType: VehicleType = VehicleType.CAR,
@@ -47,7 +48,7 @@ export class LocationMother{
       id,
       slotNumber,
       slotType,
-      limitSchedules,
+      limitOfAssignments,
       costType,
       cost,
       vehicleType,
@@ -63,6 +64,7 @@ export class LocationMother{
     phone: string = "+(502) 45456595",
     email: string = faker.internet.email(),
     comments: string = faker.lorem.sentence(),
+    numberOfIdentifier: string = faker.lorem.slug({min: 1, max: 20}),
     status: LocationStatus = LocationStatus.ACTIVE
   ){
     return {
@@ -73,6 +75,7 @@ export class LocationMother{
       phone,
       email,
       comments,
+      numberOfIdentifier,
       status
     }
   }

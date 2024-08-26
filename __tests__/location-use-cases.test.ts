@@ -47,15 +47,15 @@ describe('LOCATION: Use Cases', () => {
     beforeEach(() => setupTest());
 
     it.each([
-      { slotType: SlotType.SIMPLE, limitSchedules: 1 },
-      { slotType: SlotType.MULTIPLE, limitSchedules: 2 }
-    ])('should create a new location TYPE $slotType', async ({ slotType, limitSchedules }) => {
+      { slotType: SlotType.SIMPLE, limitOfAssignments: 1 },
+      { slotType: SlotType.MULTIPLE, limitOfAssignments: 2 }
+    ])('should create a new location TYPE $slotType', async ({ slotType, limitOfAssignments }) => {
       slotsData[0].slotType = slotType;
-      slotsData[0].limitSchedules = limitSchedules;
+      slotsData[0].limitOfAssignments = limitOfAssignments;
       await runCreateLocationTest({ ...locationData, slots: slotsData });
     });
 
-    it('should create a new location TYPE COST COMPLEMENT and DESCUENTO', async () => {
+    it('should create a new location with TYPE_COST, COMPLEMENT or DISCOUNT', async () => {
       slotsData[0].costType = CostType.COMPLEMENT;
       slotsData[0].cost = 10;
       await runCreateLocationTest({ ...locationData, slots: slotsData });
@@ -66,13 +66,12 @@ describe('LOCATION: Use Cases', () => {
     });
 
     it.each([
-      { slotType: SlotType.SIMPLE, limitSchedules: 2, errorMessage: 'The number of schedules cannot be greater than 1 or less than 1 for SIMPLE type spaces.' },
-      { slotType: SlotType.SIMPLE, limitSchedules: -1, errorMessage: 'The number of schedules cannot be greater than 1 or less than 1 for SIMPLE type spaces.' },
-      { slotType: SlotType.MULTIPLE, limitSchedules: 1, errorMessage: 'The number of schedules for a multiple space should be between 2 and 23.' },
-      { slotType: SlotType.MULTIPLE, limitSchedules: 24, errorMessage: 'The number of schedules for a multiple space should be between 2 and 23.' }
-    ])('should throw an error for invalid $slotType and limitSchedules $limitSchedules', async ({ slotType, limitSchedules, errorMessage }) => {
+      { slotType: SlotType.SIMPLE, limitOfAssignments: 2, errorMessage: 'The number of schedules cannot be greater than 1 or less than 1 for SIMPLE type spaces.' },
+      { slotType: SlotType.SIMPLE, limitOfAssignments: -1, errorMessage: 'The number of schedules cannot be greater than 1 or less than 1 for SIMPLE type spaces.' },
+      { slotType: SlotType.MULTIPLE, limitOfAssignments: 1, errorMessage: 'The number of schedules for a multiple space should be greater than 1.' },
+    ])('throw an error if SLOT_TYPE is $slotType and limitOfAssignments is $limitOfAssignments', async ({ slotType, limitOfAssignments, errorMessage }) => {
       slotsData[0].slotType = slotType;
-      slotsData[0].limitSchedules = limitSchedules;
+      slotsData[0].limitOfAssignments = limitOfAssignments;
       await runCreateLocationTest({ ...locationData, slots: slotsData }, errorMessage);
     });
 
@@ -81,7 +80,7 @@ describe('LOCATION: Use Cases', () => {
       { costType: CostType.DISCOUNT, cost: 0, errorMessage: 'You must assign a value of whether the type of space is DESCUENTO or COMPLEMENTO.' },
       { costType: CostType.NO_COST, cost: 1, errorMessage: 'You cannot assign a cost value if the type is SIN_COSTO.' },
       { costType: CostType.NO_COST, cost: -1, errorMessage: 'You cannot assign a cost value if the type is SIN_COSTO.' }
-    ])('should throw an error for invalid $costType and cost $cost', async ({ costType, cost, errorMessage }) => {
+    ])('throw an error if COST_TYPE is $costType and cost is $cost', async ({ costType, cost, errorMessage }) => {
       slotsData[0].costType = costType;
       slotsData[0].cost = cost;
       await runCreateLocationTest({ ...locationData, slots: slotsData }, errorMessage);
@@ -106,11 +105,11 @@ describe('LOCATION: Use Cases', () => {
       const requestSlotsToDelete: Set<string> = new Set();
       requestData.slots[0].status = SlotStatus.OCCUPIED;
       requestData.slots[0].slotType = SlotType.MULTIPLE;
-      requestData.slots[0].limitSchedules = 3;
+      requestData.slots[0].limitOfAssignments = 3;
 
       const slots = [{ ...requestData.slots[0], status: SlotStatus.OCCUPIED }];
       mockLocationRepository.getLocationById.mockResolvedValueOnce(LocationEntity.fromPrimitives({ ...requestData, slots }));
-      mockLocationRepository.callProcedure.mockResolvedValueOnce([{ slot_id: slots[0].id, current_number_of_schedules_used: 1, limit_schedules: 5 }]);
+      mockLocationRepository.callProcedure.mockResolvedValueOnce([{ slot_id: slots[0].id, current_number_of_assignments: 1, limit_of_assignments: 5 }]);
       await runUpdateLocationTest(requestData, requestSlotsToDelete);
     });
 
@@ -147,12 +146,12 @@ describe('LOCATION: Use Cases', () => {
       const slotsToDelete: Set<string> = new Set();
       data.slots[0].status = SlotStatus.OCCUPIED;
       data.slots[0].slotType = SlotType.SIMPLE;
-      data.slots[0].limitSchedules = 1;
+      data.slots[0].limitOfAssignments = 1;
 
       const slots = [{...data.slots[0], status: SlotStatus.ACTIVE}]
       slots[0].status = SlotStatus.OCCUPIED;
       slots[0].slotType = SlotType.MULTIPLE;
-      slots[0].limitSchedules = 2;
+      slots[0].limitOfAssignments = 2;
       mockLocationRepository.getLocationById.mockResolvedValueOnce(LocationEntity.fromPrimitives({...data, slots }));
       await runUpdateLocationTest(data, slotsToDelete, 'You cannot update properties slotType, vehicleType, costType, status, cost if it is occupied');
     })
@@ -198,11 +197,11 @@ describe('LOCATION: Use Cases', () => {
       const slotsToDelete: Set<string> = new Set();
       data.slots[0].status = SlotStatus.OCCUPIED;
       data.slots[0].slotType = SlotType.MULTIPLE;
-      data.slots[0].limitSchedules = 3;
+      data.slots[0].limitOfAssignments = 3;
 
       const slots = [{...data.slots[0], status: SlotStatus.OCCUPIED}]
       mockLocationRepository.getLocationById.mockResolvedValueOnce(LocationEntity.fromPrimitives({...data, slots }));
-      mockLocationRepository.callProcedure.mockResolvedValueOnce([{slot_id: slots[0].id, current_number_of_schedules_used: 4, limit_schedules: 5}])
+      mockLocationRepository.callProcedure.mockResolvedValueOnce([{slot_id: slots[0].id, current_number_of_assignments: 4, limit_of_assignments: 5}])
       await runUpdateLocationTest(data, slotsToDelete, `Number of schedules in slot ${slots[0].id} cannot be less than the number of schedules already assigned`);
     })
 
