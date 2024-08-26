@@ -7,7 +7,7 @@ export class TagModel extends Model {}
 TagModel.init(
   {
     id: {
-      type: DataTypes.STRING,
+      type: DataTypes.UUID,
       primaryKey: true,
       unique: true
     },

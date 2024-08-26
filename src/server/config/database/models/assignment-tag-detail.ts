@@ -7,11 +7,11 @@ export class AssignmentTagDetailModel extends Model {}
 AssignmentTagDetailModel.init(
   {
     id: {
-      type: DataTypes.STRING,
+      type: DataTypes.UUID,
       primaryKey: true
     },
     assignment_id: {
-      type: DataTypes.STRING,
+      type: DataTypes.UUID,
       allowNull: false,
       references: {
         model: 'assignment',
@@ -19,7 +19,7 @@ AssignmentTagDetailModel.init(
       }
     },
     tag_id: {
-      type: DataTypes.STRING,
+      type: DataTypes.UUID,
       allowNull: false,
       references: {
         model: 'tag',

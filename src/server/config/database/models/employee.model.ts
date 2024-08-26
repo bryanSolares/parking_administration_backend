@@ -6,7 +6,7 @@ export class EmployeeModel extends Model {}
 EmployeeModel.init(
   {
     id: {
-      type: DataTypes.STRING,
+      type: DataTypes.UUID,
       primaryKey: true,
       unique: true
     },
