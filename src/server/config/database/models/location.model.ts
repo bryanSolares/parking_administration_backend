@@ -7,7 +7,7 @@ export class LocationModel extends Model {}
 LocationModel.init(
   {
     id: {
-      type: DataTypes.STRING,
+      type: DataTypes.UUID,
       primaryKey: true,
       unique: true
     },
@@ -19,7 +19,7 @@ LocationModel.init(
       type: DataTypes.STRING,
       allowNull: false
     },
-    contact_reference: {
+    contactReference: {
       type: DataTypes.STRING
     },
     phone: {
@@ -31,13 +31,9 @@ LocationModel.init(
     comments: {
       type: DataTypes.STRING
     },
-    latitude: {
-      type: DataTypes.FLOAT,
-      defaultValue: 0
-    },
-    longitude: {
-      type: DataTypes.FLOAT,
-      defaultValue: 0
+    numberOfIdentifier: {
+      type: DataTypes.STRING,
+      allowNull: false
     },
     status: {
       type: DataTypes.ENUM('ACTIVO', 'INACTIVO'),
@@ -49,6 +45,7 @@ LocationModel.init(
     modelName: 'location',
     tableName: 'location',
     updatedAt: 'updated_at',
-    createdAt: 'created_at'
+    createdAt: 'created_at',
+    underscored: true
   }
 );

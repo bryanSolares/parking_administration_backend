@@ -1,4 +1,5 @@
 import { Op, QueryTypes } from 'sequelize';
+import { Transaction } from 'sequelize';
 import { v4 as uuid } from 'uuid';
 
 import { logger } from '@config/logger/load-logger';
@@ -11,134 +12,109 @@ import { LocationRepository } from '@location-module-core/repositories/location-
 import { LocationFinderResult } from '@location-module-core/repositories/location-repository';
 
 import { LocationEntity } from '@location-module-core/entities/location-entity';
-import {
-  CostType,
-  SlotEntity,
-  SlotStatus,
-  SlotType,
-  VehicleType
-} from '@location-module-core/entities/slot-entity';
+import { SlotEntity } from '@location-module-core/entities/slot-entity';
 
 export class SequelizeMYSQLLocationRepository implements LocationRepository {
-  private readonly fieldsToLocationAllowedToCreateOrUpdate = [
-    'name',
-    'address',
-    'contact_reference',
-    'phone',
-    'email',
-    'comments',
-    'status'
-  ];
-
-  private readonly fieldsToSlotToCreateOrUpdate = [
-    'id',
-    'location_id',
-    'slot_number',
-    'slot_type',
-    'limit_schedules',
-    'vehicle_type',
-    'cost_type',
-    'cost',
-    'status'
-  ];
-
   async createLocation(location: LocationEntity): Promise<void> {
-    const transaction = await sequelize.transaction();
+    let transaction: Transaction | null = null;
+    try {
+      transaction = await sequelize.transaction();
 
-    const locationId = uuid();
-    await LocationModel.create(
-      {
-        ...location,
-        id: locationId,
-        contact_reference: location.contactReference
-      },
-      {
-        fields: ['id', ...this.fieldsToLocationAllowedToCreateOrUpdate],
-        transaction
+      const locationId = uuid();
+      await LocationModel.create(
+        {
+          ...location,
+          id: locationId
+        },
+        { transaction }
+      );
+
+      if (location.slots) {
+        await SlotModel.bulkCreate(
+          location.slots.map(slot => ({ ...slot, id: uuid(), locationId })),
+          { transaction }
+        );
       }
-    );
 
-    if (location.slots) {
-      const slots = location.slots.map(slot => {
-        return {
-          ...slot,
-          id: uuid(),
-          location_id: locationId,
-          slot_number: slot.slotNumber,
-          slot_type: slot.slotType,
-          limit_schedules: slot.limitSchedules,
-          cost_type: slot.costType,
-          vehicle_type: slot.vehicleType
-        };
-      });
-
-      await SlotModel.bulkCreate(slots, { transaction });
+      await transaction.commit();
+      logger().info('Location created');
+    } catch (error) {
+      await transaction?.rollback();
+      throw error;
     }
-
-    await transaction.commit();
-
-    logger().info('Location created');
   }
 
   async updateLocation(
     location: LocationEntity,
     slotsToDelete: Set<string>
   ): Promise<void> {
-    const transaction = await sequelize.transaction();
-
-    // Update Location
-    await LocationModel.update(
-      {
-        ...location,
-        contact_reference: location.contactReference
-      },
-      {
+    let transaction: Transaction | null = null;
+    try {
+      transaction = await sequelize.transaction();
+      // Update Location
+      await LocationModel.update(location, {
         where: { id: location.id },
         transaction,
-        fields: [...this.fieldsToLocationAllowedToCreateOrUpdate]
-      }
-    );
+        fields: [
+          'name',
+          'address',
+          'contactReference',
+          'phone',
+          'email',
+          'comments',
+          'numberOfIdentifier',
+          'status'
+        ]
+      });
 
-    // Upsert Slots
-    await Promise.all(
-      location.slots.map(async slot => {
-        await SlotModel.upsert(
-          {
-            ...slot,
-            id: !slot.id ? uuid() : slot.id,
-            location_id: location.id,
-            slot_number: slot.slotNumber,
-            slot_type: slot.slotType,
-            limit_schedules: slot.limitSchedules,
-            cost_type: slot.costType,
-            vehicle_type: slot.vehicleType
-          },
-          {
-            fields: [...this.fieldsToSlotToCreateOrUpdate],
+      // Upsert Slots
+      await Promise.all(
+        location.slots.map(async slot => {
+          await SlotModel.upsert(
+            {
+              ...slot,
+              id: !slot.id ? uuid() : slot.id,
+              locationId: location.id
+            },
+            {
+              fields: [
+                'id',
+                'locationId',
+                'slotNumber',
+                'slotType',
+                'limitOfAssignments',
+                'vehicleType',
+                'costType',
+                'cost',
+                'status'
+              ],
+              transaction
+            }
+          );
+        })
+      );
+
+      if (slotsToDelete.size > 0) {
+        try {
+          await SlotModel.destroy({
+            where: {
+              id: { [Op.in]: Array.from(slotsToDelete.values()) },
+              location_id: location.id
+            },
             transaction
-          }
-        );
-      })
-    );
-
-    if (slotsToDelete.size > 0) {
-      try {
-        await SlotModel.destroy({
-          where: {
-            id: { [Op.in]: Array.from(slotsToDelete.values()) },
-            location_id: location.id
-          },
-          transaction
-        });
-      } catch (error) {
-        await transaction.rollback();
-        throw error;
+          });
+        } catch (error) {
+          await transaction.rollback();
+          throw error;
+        }
       }
+
+      await transaction.commit();
+      logger().info('Location updated');
+    } catch (error) {
+      await transaction?.rollback();
+      throw error;
     }
-
-    await transaction.commit();
-
-    logger().info('Location updated');
   }
 
   async deleteLocation(id: string): Promise<void> {
@@ -154,10 +130,9 @@ export class SequelizeMYSQLLocationRepository implements LocationRepository {
 
     if (!locationDatabase) return null;
 
-    return this.transformData(
-      locationDatabase,
-      locationDatabase.get({ plain: true }).slots
-    );
+    return LocationEntity.fromPrimitives({
+      ...locationDatabase.get({ plain: true })
+    });
   }
 
   async getLocations(
@@ -174,9 +149,9 @@ export class SequelizeMYSQLLocationRepository implements LocationRepository {
       offset
     });
 
-    const locations = locationsDatabase.map(location => {
-      return this.transformData(location);
-    });
+    const locations = locationsDatabase.map(location =>
+      LocationEntity.fromPrimitives(location.get({ plain: true }))
+    );
 
     return { data: locations, pageCounter: allPages };
   }
@@ -210,34 +185,5 @@ export class SequelizeMYSQLLocationRepository implements LocationRepository {
     });
 
     return Object.values(result) as TypeProcedureResult;
-  }
-
-  private transformData(
-    locationModel: LocationModel,
-    slots: {
-      id: string;
-      slot_number: string;
-      slot_type: SlotType;
-      limit_schedules: number;
-      cost_type: CostType;
-      cost: number;
-      vehicle_type: VehicleType;
-      status: SlotStatus;
-    }[] = []
-  ): LocationEntity {
-    return LocationEntity.fromPrimitives({
-      ...locationModel.get({ plain: true }),
-      contactReference: locationModel.get('contact_reference'),
-      slots: slots.map(slot =>
-        SlotEntity.fromPrimitives({
-          ...slot,
-          slotNumber: slot.slot_number,
-          slotType: slot.slot_type,
-          limitSchedules: slot.limit_schedules,
-          costType: slot.cost_type,
-          vehicleType: slot.vehicle_type
-        })
-      )
-    });
   }
 }

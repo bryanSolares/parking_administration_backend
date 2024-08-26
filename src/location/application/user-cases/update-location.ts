@@ -1,9 +1,7 @@
 import { ForeignKeyConstraintError } from 'sequelize';
 import { LocationRepository } from '@location-module-core/repositories/location-repository';
-import {
-  LocationEntity,
-  LocationStatus
-} from '@location-module-core/entities/location-entity';
+import { LocationEntity } from '@location-module-core/entities/location-entity';
+import { LocationStatus } from '@location-module-core/entities/location-entity';
 import { AppError } from '@src/server/config/err/AppError';
 import { SlotType } from '@src/location/core/entities/slot-entity';
 import { SlotStatus } from '@src/location/core/entities/slot-entity';
@@ -27,12 +25,13 @@ export class UpdateLocation {
       phone: string;
       email: string;
       comments: string;
+      numberOfIdentifier: string;
       status: LocationStatus;
       slots: {
         id: string;
         slotNumber: string;
         slotType: SlotType;
-        limitSchedules: number;
+        limitOfAssignments: number;
         status: SlotStatus;
         costType: CostType;
         vehicleType: VehicleType;
@@ -68,6 +67,8 @@ export class UpdateLocation {
       if (error instanceof AppError) {
         throw error;
       }
+
+      console.log(error);
 
       throw new AppError(
         'UNKNOWN_ERROR',

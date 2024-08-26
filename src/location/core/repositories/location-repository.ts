@@ -8,7 +8,7 @@ export type LocationFinderResult = Promise<{
 
 export type FunctionNames = 'location_has_active_assignment';
 
-export type ProcedureNames = 'get_slot_schedules_by_location';
+export type ProcedureNames = 'get_active_assignments_by_location';
 
 export interface LocationRepository {
   createLocation(location: LocationEntity): Promise<void>;

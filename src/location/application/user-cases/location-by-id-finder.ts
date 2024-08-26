@@ -6,12 +6,31 @@ export class GetLocationByIdFinder {
   constructor(private readonly locationRepository: LocationRepository) {}
 
   public async run(id: string): Promise<LocationEntity> {
-    const location = await this.locationRepository.getLocationById(id);
+    try {
+      const location = await this.locationRepository.getLocationById(id);
 
-    if (!location) {
-      throw new AppError('LOCATION_NOT_FOUND', 404, 'Location not found', true);
+      if (!location) {
+        throw new AppError(
+          'LOCATION_NOT_FOUND',
+          404,
+          'Location not found',
+          true
+        );
+      }
+      return location;
+    } catch (error) {
+      if (error instanceof AppError) {
+        throw error;
+      }
+
+      console.log(error);
+
+      throw new AppError(
+        'UNKNOWN_ERROR',
+        500,
+        'Error not identified on location by id finder use case',
+        false
+      );
     }
-
-    return location;
   }
 }

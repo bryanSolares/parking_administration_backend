@@ -7,36 +7,36 @@ export class SlotModel extends Model {}
 SlotModel.init(
   {
     id: {
-      type: DataTypes.STRING,
+      type: DataTypes.UUID,
       primaryKey: true,
       unique: true
     },
-    location_id: {
-      type: DataTypes.STRING,
+    locationId: {
+      type: DataTypes.UUID,
       allowNull: false,
       references: {
         model: 'location',
         key: 'id'
       }
     },
-    slot_number: {
+    slotNumber: {
       type: DataTypes.STRING,
       allowNull: false
     },
-    slot_type: {
+    slotType: {
       type: DataTypes.ENUM('SIMPLE', 'MULTIPLE'),
       defaultValue: 'SIMPLE'
     },
-    limit_schedules: {
+    limitOfAssignments: {
       type: DataTypes.INTEGER,
       defaultValue: 1,
       allowNull: false
     },
-    vehicle_type: {
+    vehicleType: {
       type: DataTypes.ENUM('CARRO', 'MOTO', 'CAMION'),
       defaultValue: 'CARRO'
     },
-    cost_type: {
+    costType: {
       type: DataTypes.ENUM('SIN_COSTO', 'DESCUENTO', 'COMPLEMENTO'),
       defaultValue: 'SIN_COSTO'
     },
@@ -54,6 +54,7 @@ SlotModel.init(
     modelName: 'slot',
     tableName: 'slot',
     updatedAt: 'updated_at',
-    createdAt: 'created_at'
+    createdAt: 'created_at',
+    underscored: true
   }
 );

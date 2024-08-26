@@ -18,21 +18,22 @@ export class CreateLocation {
     phone: string;
     email: string;
     comments: string;
+    numberOfIdentifier: string;
     status: LocationStatus;
     slots: {
       id: string;
       slotNumber: string;
       slotType: SlotType;
-      limitSchedules: number;
+      limitOfAssignments: number;
       status: SlotStatus;
       costType: CostType;
       vehicleType: VehicleType;
       cost: number;
     }[];
   }): Promise<void> {
-    let locationEntity: LocationEntity;
     try {
-      locationEntity = LocationEntity.fromPrimitives(data);
+      const locationEntity = LocationEntity.fromPrimitives(data);
+      await this.locationRepository.createLocation(locationEntity);
     } catch (error) {
       if (error instanceof AppError) {
         throw error;
@@ -45,6 +46,5 @@ export class CreateLocation {
         false
       );
     }
-    await this.locationRepository.createLocation(locationEntity);
   }
 }
