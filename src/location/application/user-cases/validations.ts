@@ -44,7 +44,10 @@ export class ValidationsUseCases {
 
     this.validateOccupiedSlots(dataRequest.slots, location!.slots);
 
-    this.validateSlotSchedules(dataRequest.slots, activeAssignmentForLocation);
+    this.validateIfChangeMaxNumberOfAssignments(
+      dataRequest.slots,
+      activeAssignmentForLocation
+    );
   }
 
   private async loadData(locationId: string) {
@@ -177,7 +180,7 @@ export class ValidationsUseCases {
     });
   }
 
-  private validateSlotSchedules(
+  private validateIfChangeMaxNumberOfAssignments(
     slotsRequest: {
       id: string;
       slotType: SlotType;
