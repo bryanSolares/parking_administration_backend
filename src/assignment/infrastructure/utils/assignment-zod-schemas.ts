@@ -2,25 +2,25 @@ import { z } from 'zod';
 
 const employeeSchema = z.object({
   id: z.string().uuid().optional(),
-  code_employee: z.string(),
+  employeeCode: z.string(),
   name: z.string(),
   workplace: z.string(),
-  identifier_document: z.string(),
+  identifierDocument: z.string(),
   company: z.string(),
   department: z.string(),
-  sub_management: z.string(),
-  management_1: z.string(),
-  management_2: z.string(),
-  work_site: z.string(),
+  subManagement: z.string(),
+  management1: z.string(),
+  management2: z.string(),
+  workSite: z.string(),
   address: z.string(),
   email: z.string().email(),
   phone: z.string().regex(/^\+\(50\d{1}\) \d{8}$/, {
-    message: 'Format phone number is +5XX XXXX-XXXX, example: +502 45454545'
+    message: 'Format phone number is +(5XX) XXXXXXXX, example: +(502) 45454545'
   }),
   vehicles: z.array(
     z.object({
       id: z.string().uuid().optional(),
-      vehicle_badge: z.string(),
+      vehicleBadge: z.string(),
       color: z.string(),
       brand: z.string(),
       model: z.string(),
@@ -39,17 +39,16 @@ const scheduleSchema = z.object({
 });
 
 export const assignmentCreateSchema = z.object({
-  slot_id: z.string().uuid(),
-  employee: employeeSchema,
-  schedule: scheduleSchema.optional(),
-  assignment_loan: z
-    .object({
-      start_date_assignment: z.string().date('YYYY-MM-DD'),
-      end_date_assignment: z.string().date('YYYY-MM-DD'),
-      employee: employeeSchema
-    })
-    .optional(),
-  tags: z.array(z.string().uuid())
+  slotId: z.string().uuid(),
+  employee: employeeSchema
+  // assignment_loan: z
+  //   .object({
+  //     start_date_assignment: z.string().date('YYYY-MM-DD'),
+  //     end_date_assignment: z.string().date('YYYY-MM-DD'),
+  //     employee: employeeSchema
+  //   })
+  //   .optional(),
+  // tags: z.array(z.string().uuid())
 });
 
 export const assignmentUpdateSchema = z.object({

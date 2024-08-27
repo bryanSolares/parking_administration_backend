@@ -1,10 +1,10 @@
-import { SequelizeAssignmentRepository } from './sequelize-postgresql-repository';
-import { WSEmployeeRepository } from './ws-employee.repository';
+import { SequelizeAssignmentRepository } from './sequelize-mysql-repository';
+//import { WSEmployeeRepository } from './ws-employee.repository';
 import { AssignmentController } from '../controllers/assignment.controller';
 
 import { SequelizeMYSQLLocationRepository } from '@src/location/infrastructure/repositories/sequelize-mysql-repository';
 
-import { GetEmployeeByCode } from '@assignment-module-application/user-cases/get-employee-by-code-from-ws';
+//import { GetEmployeeByCode } from '@assignment-module-application/user-cases/get-employee-by-code-from-ws';
 import { CreateAssignment } from '@assignment-module-application/user-cases/create-assignment';
 import { AssignmentFinder } from '@assignment-module-application/user-cases/assignment-finder';
 import { AssignmentFinderById } from '@assignment-module-application/user-cases/assignment-finder-by-id';
@@ -22,7 +22,7 @@ import { NodemailerNotificationRepository } from '../repositories/nodemailer-not
 
 const sequelizeAssignmentRepository = new SequelizeAssignmentRepository();
 const sequelizeLocationRepository = new SequelizeMYSQLLocationRepository();
-const employeeRepository = new WSEmployeeRepository();
+//const employeeRepository = new WSEmployeeRepository();
 
 const assignmentDomainService = new AssignmentDomainService(
   sequelizeAssignmentRepository,
@@ -36,30 +36,31 @@ const notificationService = new NotificationService(
 );
 
 //Use cases
-const employeeFinderByCode = new GetEmployeeByCode(employeeRepository);
+//const employeeFinderByCode = new GetEmployeeByCode(employeeRepository);
 const createAssignment = new CreateAssignment(
   sequelizeAssignmentRepository,
-  assignmentDomainService,
-  notificationService
+  sequelizeLocationRepository
+
+  //assignmentDomainService,
+  //notificationService
 );
 const assignmentFinder = new AssignmentFinder(sequelizeAssignmentRepository);
 const assignmentFinderById = new AssignmentFinderById(
   sequelizeAssignmentRepository
 );
-const deAssignmentById = new CreateDeAssignment(
-  sequelizeAssignmentRepository,
-  notificationService
-);
-const createDiscountNote = new CreateDiscountNote(
-  sequelizeAssignmentRepository,
-  notificationService
-);
+const deAssignmentById = new CreateDeAssignment();
+//sequelizeAssignmentRepository,
+//notificationService
+const createDiscountNote = new CreateDiscountNote();
+//sequelizeAssignmentRepository,
+//notificationService
 const createAssignmentLoan = new CreateAssignmentLoan(
   sequelizeAssignmentRepository,
   notificationService,
   assignmentDomainService
 );
-const updateAssignment = new UpdateAssignment(sequelizeAssignmentRepository);
+const updateAssignment = new UpdateAssignment();
+//sequelizeAssignmentRepository
 const updateDiscountNote = new UpdateStatusDiscountNote(
   sequelizeAssignmentRepository
 );
@@ -74,7 +75,7 @@ const assignmentController = new AssignmentController(
   assignmentFinderById,
   assignmentFinder,
   deAssignmentById,
-  employeeFinderByCode,
+  //employeeFinderByCode,
   updateAssignment,
   createAssignmentLoan,
   updateDiscountNote,

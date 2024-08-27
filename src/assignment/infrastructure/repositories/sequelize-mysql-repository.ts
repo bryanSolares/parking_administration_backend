@@ -1,4 +1,4 @@
-import { Op } from 'sequelize';
+//import { Op } from 'sequelize';
 import { sequelize } from '@config/database/sequelize';
 import { QueryTypes } from 'sequelize';
 import { Transaction } from 'sequelize';
@@ -24,9 +24,75 @@ import { SlotModel } from '@config/database/models/slot.model';
 import { LocationModel } from '@config/database/models/location.model';
 import { DeAssignmentModel } from '@config/database/models/de-assignment.model';
 import { DiscountNoteModel } from '@config/database/models/discount-note.model';
-import { AssignmentTagDetailModel } from '@src/server/config/database/models/assignment-tag-detail';
+//import { AssignmentTagDetailModel } from '@src/server/config/database/models/assignment-tag-detail';
 
 export class SequelizeAssignmentRepository implements AssignmentRepository {
+  async createAssignment(assignment: AssignmentEntity): Promise<void> {
+    const ownerData = assignment.employee;
+    const vehiclesOwnerData = assignment.employee.vehicles;
+
+    // const scheduleData = assignment.schedule;
+    // const tags = assignment.tags;
+    // const loanAssignmentData = assignment.assignment_loan;
+    // const guestData = assignment.assignment_loan?.employee;
+    // const vehiclesGuestData = assignment.assignment_loan?.employee.vehicles;
+    // let scheduleIdSaved;
+
+    const transaction = await sequelize.transaction();
+    //Save employee
+    const ownerIdSaved = await this.upsertEmployee(ownerData, transaction);
+    //Save vehicles
+    await this.upsertVehicles(vehiclesOwnerData, ownerIdSaved, transaction);
+    // //Save Schedule
+    // if (scheduleData) {
+    //   scheduleIdSaved = await this.upsertSchedule(
+    //     scheduleData,
+    //     assignment.slot_id,
+    //     transaction
+    //   );
+    // }
+    // //Save assignment
+    await AssignmentModel.create(
+      {
+        ...assignment,
+        slotId: assignment.slot.id,
+        employeeId: ownerIdSaved
+      },
+      { transaction }
+    );
+
+    // if (loanAssignmentData && guestData && vehiclesGuestData) {
+    //   const guestIdSaved = await this.upsertEmployee(guestData, transaction);
+    //   //Save vehicles
+    //   await this.upsertVehicles(vehiclesGuestData, guestIdSaved, transaction);
+    //   //Save Assignment Loan
+    //   await AssignmentLoanModel.create(
+    //     {
+    //       ...loanAssignmentData,
+    //       id: uuid(),
+    //       employee_id: guestIdSaved,
+    //       assignment_id: assignmentSaved.getDataValue('id')
+    //     },
+    //     { transaction }
+    //   );
+    // }
+    await SlotModel.update(
+      { status: 'OCUPADO' },
+      { where: { id: assignment.slot.id }, transaction }
+    );
+
+    // await AssignmentTagDetailModel.bulkCreate(
+    //   tags.map(tag => ({
+    //     id: uuid(),
+    //     tag_id: tag,
+    //     assignment_id: assignmentSaved.getDataValue('id')
+    //   })),
+    //   { transaction }
+    // );
+
+    await transaction.commit();
+  }
+
   async getDiscountNoteById(id: string): Promise<DiscountNoteEntity | null> {
     const discountNote = await DiscountNoteModel.findOne({
       where: { id }
@@ -211,82 +277,6 @@ export class SequelizeAssignmentRepository implements AssignmentRepository {
     return assignment?.get({ plain: true }) as AssignmentEntity;
   }
 
-  async createAssignment(assignment: AssignmentEntity): Promise<void> {
-    const ownerData = assignment.employee;
-    const vehiclesOwnerData = assignment.employee.vehicles;
-    const scheduleData = assignment.schedule;
-    const tags = assignment.tags;
-
-    const loanAssignmentData = assignment.assignment_loan;
-    const guestData = assignment.assignment_loan?.employee;
-    const vehiclesGuestData = assignment.assignment_loan?.employee.vehicles;
-
-    let scheduleIdSaved;
-
-    const transaction = await sequelize.transaction();
-
-    //Save employee
-    const ownerIdSaved = await this.upsertEmployee(ownerData, transaction);
-
-    //Save vehicles
-    await this.upsertVehicles(vehiclesOwnerData, ownerIdSaved, transaction);
-
-    //Save Schedule
-    if (scheduleData) {
-      scheduleIdSaved = await this.upsertSchedule(
-        scheduleData,
-        assignment.slot_id,
-        transaction
-      );
-    }
-
-    //Save assignment
-    const assignmentSaved = await AssignmentModel.create(
-      {
-        ...assignment,
-        id: uuid(),
-        slot_id: assignment.slot_id,
-        employee_id: ownerIdSaved,
-        schedule_id: scheduleIdSaved
-      },
-      { transaction }
-    );
-
-    if (loanAssignmentData && guestData && vehiclesGuestData) {
-      const guestIdSaved = await this.upsertEmployee(guestData, transaction);
-
-      //Save vehicles
-      await this.upsertVehicles(vehiclesGuestData, guestIdSaved, transaction);
-
-      //Save Assignment Loan
-      await AssignmentLoanModel.create(
-        {
-          ...loanAssignmentData,
-          id: uuid(),
-          employee_id: guestIdSaved,
-          assignment_id: assignmentSaved.getDataValue('id')
-        },
-        { transaction }
-      );
-    }
-
-    await SlotModel.update(
-      { status: 'OCUPADO' },
-      { where: { id: assignment.slot_id }, transaction }
-    );
-
-    await AssignmentTagDetailModel.bulkCreate(
-      tags.map(tag => ({
-        id: uuid(),
-        tag_id: tag,
-        assignment_id: assignmentSaved.getDataValue('id')
-      })),
-      { transaction }
-    );
-
-    await transaction.commit();
-  }
-
   async createAssignmentLoan(
     assignmentLoan: AssignmentLoadEntity
   ): Promise<void> {
@@ -323,7 +313,7 @@ export class SequelizeAssignmentRepository implements AssignmentRepository {
     const [employeeDatabase] = await EmployeeModel.upsert(
       {
         ...employee,
-        id: employee.id ? employee.id : uuid()
+        id: employee.id
       },
       {
         fields: [
@@ -359,7 +349,7 @@ export class SequelizeAssignmentRepository implements AssignmentRepository {
         await VehicleModel.upsert(
           {
             ...vehicle,
-            id: vehicle.id ? vehicle.id : uuid(),
+            id: vehicle.id,
             employee_id: ownerVehicle
           },
           { transaction }
@@ -407,92 +397,82 @@ export class SequelizeAssignmentRepository implements AssignmentRepository {
     return Object.values(resultFunctionCanCreateMoreSchedulesInSlot)[0];
   }
 
-  async updateAssignment(
-    assignment: AssignmentEntity,
-    vehicleIdsForDelete: string[]
-  ): Promise<void> {
-    const ownerData = assignment.employee;
-    const guestData = assignment.assignment_loan?.employee;
-    const vehiclesOwnerData = assignment.employee.vehicles;
-    const vehiclesGuestData = assignment.assignment_loan?.employee.vehicles;
-    const scheduleData = assignment.schedule;
-    const assignmentLoanData = assignment.assignment_loan;
-    const tags = assignment.tags;
-
-    const transaction = await sequelize.transaction();
-
-    if (vehicleIdsForDelete.length > 0) {
-      await VehicleModel.destroy({
-        where: {
-          id: {
-            [Op.in]: vehicleIdsForDelete
-          },
-          employee_id: {
-            [Op.in]: [ownerData.id, guestData?.id]
-          }
-        },
-        transaction
-      });
-    }
-
-    //update vehicles owner
-    await this.upsertVehicles(vehiclesOwnerData, ownerData.id, transaction);
-
-    //update schedule
-    if (scheduleData.id) {
-      await ScheduleModel.update(
-        {
-          start_time_assignment: scheduleData.start_time_assignment,
-          end_time_assignment: scheduleData.end_time_assignment
-        },
-        {
-          where: {
-            id: scheduleData.id
-          },
-          transaction
-        }
-      );
-    }
-
-    if (guestData && vehiclesGuestData) {
-      //Upsert vehicles guest
-      await this.upsertVehicles(guestData.vehicles, guestData.id, transaction);
-    }
-
-    if (assignmentLoanData) {
-      await AssignmentLoanModel.update(
-        {
-          start_date_assignment: assignmentLoanData.start_date_assignment,
-          end_date_assignment: assignmentLoanData.end_date_assignment
-        },
-        {
-          where: {
-            assignment_id: assignment.id
-          },
-          transaction
-        }
-      );
-    }
-
-    if (tags.length > 0) {
-      await AssignmentTagDetailModel.destroy({
-        where: {
-          assignment_id: assignment.id
-        },
-        transaction
-      });
-
-      await AssignmentTagDetailModel.bulkCreate(
-        tags.map(tag => ({
-          id: uuid(),
-          assignment_id: assignment.id,
-          tag_id: tag
-        })),
-        { transaction }
-      );
-    }
-
-    await transaction.commit();
+  async updateAssignment() //assignment: AssignmentEntity,
+  //vehicleIdsForDelete: string[]
+  : Promise<void> {
+    // const ownerData = assignment.employee;
+    // const guestData = assignment.assignment_loan?.employee;
+    // const vehiclesOwnerData = assignment.employee.vehicles;
+    // const vehiclesGuestData = assignment.assignment_loan?.employee.vehicles;
+    // const scheduleData = assignment.schedule;
+    // const assignmentLoanData = assignment.assignment_loan;
+    // const tags = assignment.tags;
+    // const transaction = await sequelize.transaction();
+    // if (vehicleIdsForDelete.length > 0) {
+    //   await VehicleModel.destroy({
+    //     where: {
+    //       id: {
+    //         [Op.in]: vehicleIdsForDelete
+    //       },
+    //       employee_id: {
+    //         [Op.in]: [ownerData.id, guestData?.id]
+    //       }
+    //     },
+    //     transaction
+    //   });
+    // }
+    // //update vehicles owner
+    // await this.upsertVehicles(vehiclesOwnerData, ownerData.id, transaction);
+    // //update schedule
+    // if (scheduleData.id) {
+    //   await ScheduleModel.update(
+    //     {
+    //       start_time_assignment: scheduleData.start_time_assignment,
+    //       end_time_assignment: scheduleData.end_time_assignment
+    //     },
+    //     {
+    //       where: {
+    //         id: scheduleData.id
+    //       },
+    //       transaction
+    //     }
+    //   );
+    // }
+    // if (guestData && vehiclesGuestData) {
+    //   //Upsert vehicles guest
+    //   await this.upsertVehicles(guestData.vehicles, guestData.id, transaction);
+    // }
+    // if (assignmentLoanData) {
+    //   await AssignmentLoanModel.update(
+    //     {
+    //       start_date_assignment: assignmentLoanData.start_date_assignment,
+    //       end_date_assignment: assignmentLoanData.end_date_assignment
+    //     },
+    //     {
+    //       where: {
+    //         assignment_id: assignment.id
+    //       },
+    //       transaction
+    //     }
+    //   );
+    // }
+    // if (tags.length > 0) {
+    //   await AssignmentTagDetailModel.destroy({
+    //     where: {
+    //       assignment_id: assignment.id
+    //     },
+    //     transaction
+    //   });
+    //   await AssignmentTagDetailModel.bulkCreate(
+    //     tags.map(tag => ({
+    //       id: uuid(),
+    //       assignment_id: assignment.id,
+    //       tag_id: tag
+    //     })),
+    //     { transaction }
+    //   );
+    // }
+    // await transaction.commit();
   }
 
   async getAssignmentLoanById(

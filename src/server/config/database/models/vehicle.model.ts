@@ -10,11 +10,15 @@ VehicleModel.init(
       primaryKey: true,
       unique: true
     },
-    employee_id: {
+    employeeId: {
       type: DataTypes.UUID,
-      allowNull: false
+      allowNull: false,
+      references: {
+        model: 'employee',
+        key: 'id'
+      }
     },
-    vehicle_badge: {
+    vehicleBadge: {
       type: DataTypes.STRING,
       allowNull: false
     },
@@ -35,6 +39,7 @@ VehicleModel.init(
   },
   {
     sequelize,
+    underscored: true,
     modelName: 'vehicle',
     tableName: 'vehicle',
     createdAt: 'created_at',

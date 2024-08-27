@@ -167,7 +167,11 @@ export class SequelizeMYSQLLocationRepository implements LocationRepository {
 
   async getSlotById(id: string): Promise<SlotEntity | null> {
     const slotDatabase = await SlotModel.findByPk(id);
-    return slotDatabase?.get({ plain: true }) as SlotEntity;
+
+    if (!slotDatabase) return null;
+
+    return SlotEntity.fromPrimitives(slotDatabase.get({ plain: true }));
+    //return slotDatabase?.get({ plain: true }) as SlotEntity;
   }
 
   async executeFunction<TypeFunctionResult = boolean | number>(

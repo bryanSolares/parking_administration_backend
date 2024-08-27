@@ -10,19 +10,18 @@ EmployeeModel.init(
       primaryKey: true,
       unique: true
     },
-    code_employee: {
+    employeeCode: {
       type: DataTypes.STRING,
       allowNull: false,
       unique: true
     },
     name: {
-      type: DataTypes.STRING,
-      allowNull: false
+      type: DataTypes.STRING
     },
     workplace: {
       type: DataTypes.STRING
     },
-    identifier_document: {
+    identifierDocument: {
       type: DataTypes.STRING
     },
     company: {
@@ -31,16 +30,16 @@ EmployeeModel.init(
     department: {
       type: DataTypes.STRING
     },
-    sub_management: {
+    subManagement: {
       type: DataTypes.STRING
     },
-    management_1: {
+    management1: {
       type: DataTypes.STRING
     },
-    management_2: {
+    management2: {
       type: DataTypes.STRING
     },
-    work_site: {
+    workSite: {
       type: DataTypes.STRING
     },
     address: {
@@ -52,10 +51,10 @@ EmployeeModel.init(
     phone: {
       type: DataTypes.STRING
     },
-    access_token: {
+    accessToken: {
       type: DataTypes.STRING
     },
-    access_token_status: {
+    accessTokenStatus: {
       type: DataTypes.ENUM,
       values: ['ACTIVO', 'INACTIVO'],
       defaultValue: 'INACTIVO'
@@ -63,6 +62,7 @@ EmployeeModel.init(
   },
   {
     sequelize,
+    underscored: true,
     modelName: 'employee',
     tableName: 'employee',
     createdAt: 'created_at',

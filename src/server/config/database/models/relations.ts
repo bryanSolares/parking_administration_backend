@@ -35,12 +35,12 @@ SlotModel.hasOne(AssignmentModel, {
 });
 AssignmentModel.belongsTo(SlotModel, { foreignKey: 'slot_id' });
 
-ScheduleModel.hasOne(AssignmentModel, {
-  foreignKey: 'schedule_id',
-  onUpdate: 'RESTRICT',
-  onDelete: 'RESTRICT'
-});
-AssignmentModel.belongsTo(ScheduleModel, { foreignKey: 'schedule_id' });
+// ScheduleModel.hasOne(AssignmentModel, {
+//   foreignKey: 'schedule_id',
+//   onUpdate: 'RESTRICT',
+//   onDelete: 'RESTRICT'
+// });
+// AssignmentModel.belongsTo(ScheduleModel, { foreignKey: 'schedule_id' });
 
 AssignmentModel.hasOne(AssignmentLoanModel, {
   foreignKey: 'assignment_id',
