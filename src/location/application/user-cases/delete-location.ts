@@ -6,13 +6,18 @@ export class DeleteLocation {
   constructor(private readonly locationRepository: LocationRepository) {}
 
   public async run(id: string): Promise<void> {
-    const locationexists = await this.locationRepository.getLocationById(id);
-
-    if (!locationexists?.id) {
-      throw new AppError('LOCATION_NOT_FOUND', 404, 'Location not found', true);
-    }
-
     try {
+      const location = await this.locationRepository.getLocationById(id);
+
+      if (!location) {
+        throw new AppError(
+          'LOCATION_NOT_FOUND',
+          404,
+          'Location not found',
+          true
+        );
+      }
+
       await this.locationRepository.deleteLocation(id);
     } catch (error) {
       if (error instanceof ForeignKeyConstraintError) {
@@ -22,6 +27,10 @@ export class DeleteLocation {
           'You can not delete slots with assignment or schedule',
           true
         );
+      }
+
+      if (error instanceof AppError) {
+        throw error;
       }
 
       throw new AppError('UNEXPECTED_ERROR', 500, 'Unexpected error', false);

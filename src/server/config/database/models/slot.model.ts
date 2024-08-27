@@ -51,10 +51,12 @@ SlotModel.init(
   },
   {
     sequelize,
+    paranoid: true,
     modelName: 'slot',
     tableName: 'slot',
     updatedAt: 'updated_at',
     createdAt: 'created_at',
+    deletedAt: 'deleted_at',
     underscored: true
   }
 );

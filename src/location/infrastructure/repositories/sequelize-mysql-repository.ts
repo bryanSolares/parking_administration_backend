@@ -118,7 +118,16 @@ export class SequelizeMYSQLLocationRepository implements LocationRepository {
   }
 
   async deleteLocation(id: string): Promise<void> {
-    await LocationModel.destroy({ where: { id } });
+    let transaction: Transaction | null = null;
+    try {
+      transaction = await sequelize.transaction();
+      await LocationModel.destroy({ where: { id } });
+      await SlotModel.destroy({ where: { locationId: id }, transaction });
+      await transaction.commit();
+    } catch (error) {
+      await transaction?.rollback();
+      throw error;
+    }
   }
 
   async getLocationById(id: string): Promise<LocationEntity | null> {
