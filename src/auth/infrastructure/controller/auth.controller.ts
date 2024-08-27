@@ -38,9 +38,7 @@ export class AuthController {
       const { token, refreshToken } = createToken(payload);
 
       this.setAuthCookies(response, token, refreshToken);
-      response
-        .status(200)
-        .json({ message: 'Welcome!', token, refresh_token: refreshToken });
+      response.status(200).json({ message: 'Welcome!' });
     } catch (error) {
       next(error);
     }
@@ -64,9 +62,7 @@ export class AuthController {
 
       this.setAuthCookies(response, tokens.token, tokens.refreshToken);
       response.status(200).json({
-        message: 'Success!',
-        token: tokens.token,
-        refresh_token: tokens.refreshToken
+        message: 'Success!'
       });
     } catch (error) {
       next(error);

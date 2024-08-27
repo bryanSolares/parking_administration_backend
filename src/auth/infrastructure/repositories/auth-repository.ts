@@ -8,7 +8,9 @@ export class AuthJWTRepository implements AuthRepository {
   constructor(private readonly roleRepository: RoleRepository) {}
 
   async findUserByUsername(username: string): Promise<UserEntity | null> {
-    const userDatabase = await UserModel.findOne({ where: { username } });
+    const userDatabase = await UserModel.findOne({
+      where: { username, status: 'ACTIVO' }
+    });
     if (!userDatabase) return null;
     return UserEntity.fromPrimitives({
       ...userDatabase.get({ plain: true }),
