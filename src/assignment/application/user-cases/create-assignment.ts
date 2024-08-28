@@ -5,20 +5,17 @@ import { v4 as uuid } from 'uuid';
 import { AssignmentRepository } from '@assignment-module-core/repositories/assignment-repository';
 import { AssignmentEntity } from '@assignment-module-core/entities/assignment-entity';
 import { AssignmentStatus } from '@assignment-module-core/entities/assignment-entity';
-//import { AssignmentDomainService } from '../services/assignment-domain-service';
-//import { NotificationService } from '../services/notification-service';
 
 import { VehicleType } from '@src/location/core/entities/slot-entity';
 import { EmployeeEntity } from '@src/assignment/core/entities/employee-entity';
 import { LocationRepository } from '@src/location/core/repositories/location-repository';
-import { AppError } from '@src/server/config/err/AppError';
+import { Validations } from './validations';
 
 export class CreateAssignment {
   constructor(
     private readonly assignmentRepository: AssignmentRepository,
-    private readonly locationRepository: LocationRepository
-    //private readonly assignmentDomainService: AssignmentDomainService,
-    //private readonly notificationService: NotificationService
+    private readonly locationRepository: LocationRepository,
+    private readonly validations: Validations
   ) {}
 
   async run(data: {
@@ -50,11 +47,10 @@ export class CreateAssignment {
   }): Promise<void> {
     const slot = await this.locationRepository.getSlotById(data.slotId);
 
-    //TODO: Validations
-
-    if (!slot) {
-      throw new AppError('SLOT_NOT_FOUND', 400, 'Slot not found', true);
-    }
+    await this.validations.validateIfCanCreate({
+      slot,
+      employee: { ...data.employee }
+    });
 
     const employeeId = uuid();
     const assignmentId = uuid();
@@ -73,48 +69,13 @@ export class CreateAssignment {
 
     const assignment = new AssignmentEntity(
       assignmentId,
-      slot,
+      slot!,
       employee,
       AssignmentStatus.CREATED
     );
 
     await this.assignmentRepository.createAssignment(assignment);
 
-    // const owner = assignment.employee;
-    // const guest = assignment.assignment_loan?.employee;
-    // const scheduleAssignment = assignment.schedule;
-    // await this.assignmentDomainService.verifyIfSlotExistsAndIsAvailable(
-    //   assignment.slot_id
-    // );
-    // if (
-    //   !scheduleAssignment &&
-    //   (await this.assignmentDomainService.slotIsMultipleType(
-    //     assignment.slot_id
-    //   ))
-    // ) {
-    //   throw new Error(
-    //     'You should provide a schedule if the slot is multiple type'
-    //   );
-    // }
-    // if (scheduleAssignment) {
-    //   await this.assignmentDomainService.verifyIfSlotCanHaveSchedules(
-    //     assignment.slot_id
-    //   );
-    //   await this.assignmentDomainService.canCreateMoreSchedulesInSlot(
-    //     assignment.slot_id
-    //   );
-    // }
-    // if (owner.id) {
-    //   await this.assignmentDomainService.validateIfEmployeeHasAnActiveAssignment(
-    //     owner.id
-    //   );
-    // }
-    // if (guest?.id) {
-    //   await this.assignmentDomainService.validateIfEmployeeHasAnActiveAssignment(
-    //     guest.id
-    //   );
-    // }
-    // await this.assignmentRepository.createAssignment(assignment);
     // //Generate token for owner
     // const secret = crypto.randomBytes(32).toString('hex');
     // //TODO: Insert token in database

@@ -6,6 +6,8 @@ import { v4 as uuid } from 'uuid';
 
 import { AssignmentEntity } from '@assignment-module-core/entities/assignment-entity';
 import { AssignmentRepository } from '@assignment-module-core/repositories/assignment-repository';
+import { ListOfFunctions } from '@assignment-module-core/repositories/assignment-repository';
+import { ReturnType } from '@assignment-module-core/repositories/assignment-repository';
 import { AssignmentFinderResult } from '@assignment-module-core/repositories/assignment-repository';
 
 import { DiscountNoteEntity } from '@assignment-module-core/entities/discount-note-entity';
@@ -91,6 +93,21 @@ export class SequelizeAssignmentRepository implements AssignmentRepository {
     // );
 
     await transaction.commit();
+  }
+
+  async executeFunction(
+    functionName: ListOfFunctions,
+    parameters: string[]
+  ): Promise<ReturnType> {
+    const [result]: { [key: string]: ReturnType }[] = await sequelize.query(
+      `select ${functionName}(?)`,
+      {
+        replacements: parameters,
+        type: QueryTypes.SELECT
+      }
+    );
+
+    return Object.values(result)[0];
   }
 
   async getDiscountNoteById(id: string): Promise<DiscountNoteEntity | null> {

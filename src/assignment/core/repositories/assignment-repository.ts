@@ -11,6 +11,15 @@ export type AssignmentFinderResult = Promise<{
   data: AssignmentEntity[];
 }>;
 
+export type ReturnType = {
+  [key: string]: boolean;
+};
+
+export enum ListOfFunctions {
+  FN_VERIFY_IF_CAN_CREATE_MORE_ASSIGNMENTS = 'can_create_more_assignments_in_slot',
+  FN_EMPLOYEE_HAS_AN_ACTIVE_ASSIGNMENT = 'employee_has_an_active_assignment'
+}
+
 export interface AssignmentRepository {
   createAssignment(assignment: AssignmentEntity): Promise<void>;
   createAssignmentLoan(assignmentLoan: AssignmentLoadEntity): Promise<void>;
@@ -48,4 +57,9 @@ export interface AssignmentRepository {
     status: string
   ): Promise<void>;
   deleteAssignmentLoan(assignmentLoanId: string): Promise<void>;
+
+  executeFunction(
+    functionName: ListOfFunctions,
+    parameters: string[]
+  ): Promise<ReturnType>;
 }

@@ -4,7 +4,7 @@ import { NextFunction } from 'express';
 import { CreateAssignment } from '@src/assignment/application/user-cases/create-assignment';
 import { AssignmentFinder } from '@src/assignment/application/user-cases/assignment-finder';
 import { AssignmentFinderById } from '@src/assignment/application/user-cases/assignment-finder-by-id';
-import { CreateDiscountNote } from '@src/assignment/application/user-cases/create-discount-note';
+//import { CreateDiscountNote } from '@src/assignment/application/user-cases/create-discount-note';
 import { CreateDeAssignment } from '@src/assignment/application/user-cases/create-deassignment';
 //import { GetEmployeeByCode } from '@src/assignment/application/user-cases/get-employee-by-code-from-ws';
 import { UpdateAssignment } from '@src/assignment/application/user-cases/update-assignment';
@@ -15,7 +15,7 @@ import { DeleteAssignmentLoan } from '@src/assignment/application/user-cases/del
 export class AssignmentController {
   constructor(
     private readonly createAssignmentUseCase: CreateAssignment,
-    private readonly createDiscountNoteUseCase: CreateDiscountNote,
+    //private readonly createDiscountNoteUseCase: CreateDiscountNote,
     private readonly assignmentFinderByIdUseCase: AssignmentFinderById,
     private readonly assignmentFinderUseCase: AssignmentFinder,
     private readonly deAssignmentByIdUseCase: CreateDeAssignment,

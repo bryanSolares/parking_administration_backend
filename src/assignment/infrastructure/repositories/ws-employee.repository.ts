@@ -1,4 +1,4 @@
-import { EmployeeRepositoryWebService } from '@assignment-module-core/repositories/employee-repository';
+import { EmployeeRepository } from '@assignment-module-core/repositories/employee-repository';
 
 import { EmployeeEntity } from '@assignment-module-core/entities/employee-entity';
 
@@ -7,7 +7,7 @@ import { EmployeeEntity } from '@assignment-module-core/entities/employee-entity
 import { EmployeeModel } from '@config/database/models/employee.model';
 import { VehicleModel } from '@config/database/models/vehicle.model';
 
-export class WSEmployeeRepository implements EmployeeRepositoryWebService {
+export class SequelizeEmployeeRepository implements EmployeeRepository {
   async getEmployeeByCodefromWebService() //  codeEmployee: string
   : Promise<EmployeeEntity | null> {
     // let dataEmployeeWebService;
@@ -70,23 +70,20 @@ export class WSEmployeeRepository implements EmployeeRepositoryWebService {
 
   async getEmployeeByCodeFromDatabase(
     codeEmployee: string
-  ): Promise<EmployeeEntity> {
-    console.log(codeEmployee);
-
+  ): Promise<EmployeeEntity | null> {
     const employeeDatabase = await EmployeeModel.findOne({
       where: {
-        code_employee: codeEmployee
+        employee_code: codeEmployee
       },
       include: [
         {
-          model: VehicleModel,
-          attributes: {
-            exclude: ['updated_at', 'created_at']
-          }
+          model: VehicleModel
         }
       ]
     });
 
-    return employeeDatabase?.get({ plain: true }) as EmployeeEntity;
+    if (!employeeDatabase) return null;
+
+    return EmployeeEntity.fromPrimitive(employeeDatabase.get({ plain: true }));
   }
 }

@@ -36,7 +36,7 @@ BEGIN
         SELECT 1
         FROM assignment a
         WHERE a.employee_id = emplo_id
-          AND a.status = 'ACTIVO'
+          AND a.status in ('CREADO', 'EN_PROGRESO', 'ACTIVO')
         UNION ALL
         SELECT 1
         FROM assignment_loan al
@@ -48,3 +48,4 @@ BEGIN
 END //
 
 DELIMITER ;
+
