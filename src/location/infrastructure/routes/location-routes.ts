@@ -38,6 +38,14 @@ routes
     '/location/:id',
     validateRequest(locationDeleteParamsSchema, 'params'),
     locationController.deleteLocation.bind(locationController)
+  )
+  .get(
+    '/location/stats/overview',
+    locationController.overviewParkingData.bind(locationController)
+  )
+  .get(
+    '/location/stats/trend',
+    locationController.trendParkingData.bind(locationController)
   );
 
 export default routes;

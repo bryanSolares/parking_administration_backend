@@ -1,3 +1,7 @@
+/* eslint-disable  @typescript-eslint/no-unsafe-call */
+/* eslint-disable  @typescript-eslint/no-unsafe-enum-comparison */
+/* eslint-disable  @typescript-eslint/no-unused-vars */
+
 import { Op, QueryTypes } from 'sequelize';
 import { Transaction } from 'sequelize';
 import { v4 as uuid } from 'uuid';
@@ -8,11 +12,19 @@ import { sequelize } from '@config/database/sequelize';
 import { LocationModel } from '@config/database/models/location.model';
 import { SlotModel } from '@config/database/models/slot.model';
 
-import { LocationRepository } from '@location-module-core/repositories/location-repository';
+import {
+  LocationRepository,
+  OverviewDataResult,
+  TrendDataResult
+} from '@location-module-core/repositories/location-repository';
 import { LocationFinderResult } from '@location-module-core/repositories/location-repository';
 
 import { LocationEntity } from '@location-module-core/entities/location-entity';
-import { SlotEntity } from '@location-module-core/entities/slot-entity';
+import {
+  SlotEntity,
+  SlotStatus
+} from '@location-module-core/entities/slot-entity';
+import { ParkingTrendsModel } from '@src/server/config/database/models/parking/parking-trends';
 
 export class SequelizeMYSQLLocationRepository implements LocationRepository {
   async createLocation(location: LocationEntity): Promise<void> {
@@ -154,13 +166,57 @@ export class SequelizeMYSQLLocationRepository implements LocationRepository {
 
     const locationsDatabase = await LocationModel.findAll({
       order: [['name', 'ASC']],
+      include: [
+        {
+          model: SlotModel,
+          as: 'slots',
+          attributes: ['status']
+        }
+      ],
       limit,
       offset
     });
 
-    const locations = locationsDatabase.map(location =>
-      LocationEntity.fromPrimitives(location.get({ plain: true }))
-    );
+    let locationTmp;
+    const locations = locationsDatabase.map((location: LocationModel) => {
+      locationTmp = location.get({ plain: true });
+      const slots = locationTmp.slots || [];
+
+      const totalSlots = slots.length;
+      let availableSlots: number = 0;
+      let unavailableSlots: number = 0;
+      let occupiedSlots: number = 0;
+
+      slots.forEach((slot: { status: string }) => {
+        if (slot.status === SlotStatus.ACTIVE) {
+          availableSlots++;
+        }
+
+        if (slot.status === SlotStatus.INACTIVE) {
+          unavailableSlots++;
+        }
+
+        if (slot.status === SlotStatus.OCCUPIED) {
+          occupiedSlots++;
+        }
+      });
+
+      return {
+        id: locationTmp.id,
+        name: locationTmp.name,
+        address: locationTmp.address,
+        contactReference: locationTmp.contactReference,
+        phone: locationTmp.phone,
+        email: locationTmp.email,
+        comments: locationTmp.comments,
+        numberOfIdentifier: locationTmp.numberOfIdentifier,
+        status: locationTmp.status,
+        totalSlots,
+        availableSlots,
+        unavailableSlots,
+        occupiedSlots
+      };
+    });
 
     return { data: locations, pageCounter: allPages };
   }
@@ -194,5 +250,63 @@ export class SequelizeMYSQLLocationRepository implements LocationRepository {
     });
 
     return Object.values(result) as TypeProcedureResult;
+  }
+
+  async overviewData(): Promise<OverviewDataResult> {
+    const [result]: {
+      total_slots: number;
+      available_slots: number;
+      unavailable_slots: number;
+      occupied_slots: number;
+    }[] = await sequelize.query(
+      `
+      select
+      sum(total_slots) as total_slots,
+      sum(available_slots) as available_slots,
+      sum(unavailable_slots) as unavailable_slots,
+      sum(occupied_slots) as occupied_slots
+      from location_slot_summary
+      `,
+      {
+        type: QueryTypes.SELECT
+      }
+    );
+
+    return {
+      totalSlots: Number(result.total_slots),
+      availableSlots: Number(result.available_slots),
+      unavailableSlots: Number(result.unavailable_slots),
+      occupiedSlots: Number(result.occupied_slots)
+    };
+  }
+  async trendData(
+    limit: number = 20,
+    page: number = 1,
+    startDate: string,
+    endDate: string
+  ): Promise<TrendDataResult[]> {
+    const trendsCounter = await ParkingTrendsModel.count({
+      where: { date: { [Op.between]: [startDate, endDate] } }
+    });
+    const allPages = Math.ceil(trendsCounter / limit);
+    const offset = (page - 1) * limit;
+
+    const data = await ParkingTrendsModel.findAll({
+      where: { date: { [Op.between]: [startDate, endDate] } },
+      limit,
+      offset
+    });
+
+    return data.map((item: ParkingTrendsModel) => {
+      const data = item.get({ plain: true });
+      return {
+        date: data.date,
+        totalSlots: data.totalSlots,
+        availableSlots: data.availableSlots,
+        unavailableSlots: data.unavailableSlots,
+        occupiedSlots: data.occupiedSlots,
+        occupancyRate: data.occupancyRate
+      };
+    });
   }
 }
