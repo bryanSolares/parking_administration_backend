@@ -6,6 +6,7 @@ import { UpdateLocation } from '@src/location/application/user-cases/update-loca
 import { DeleteLocation } from '@src/location/application/user-cases/delete-location';
 import { GetLocationByIdFinder } from '@src/location/application/user-cases/location-by-id-finder';
 import { LocationFinder } from '@src/location/application/user-cases/location-finder';
+import { StatisticsDataUseCase } from '@src/location/application/user-cases/statistics-data';
 
 const locationRepository = new SequelizeMYSQLLocationRepository();
 
@@ -22,6 +23,7 @@ const updateLocation = new UpdateLocation(
 const deleteLocation = new DeleteLocation(locationRepository);
 const locationFinder = new LocationFinder(locationRepository);
 const locationFinderById = new GetLocationByIdFinder(locationRepository);
+const statisticsDataUseCase = new StatisticsDataUseCase(locationRepository);
 
 //Controllers
 const locationController = new LocationController(
@@ -29,7 +31,8 @@ const locationController = new LocationController(
   updateLocation,
   deleteLocation,
   locationFinderById,
-  locationFinder
+  locationFinder,
+  statisticsDataUseCase
 );
 
 export { locationController };

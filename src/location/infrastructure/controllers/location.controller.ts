@@ -1,3 +1,5 @@
+/* eslint-disable  @typescript-eslint/no-base-to-string */
+
 import { Request, Response } from 'express';
 import { NextFunction } from 'express';
 
@@ -6,6 +8,8 @@ import { UpdateLocation } from '@src/location/application/user-cases/update-loca
 import { DeleteLocation } from '@src/location/application/user-cases/delete-location';
 import { GetLocationByIdFinder } from '@src/location/application/user-cases/location-by-id-finder';
 import { LocationFinder } from '@src/location/application/user-cases/location-finder';
+import { StatisticsDataUseCase } from '../../application/user-cases/statistics-data';
+import { TrendDataType } from '@src/location/core/repositories/location-repository';
 
 export class LocationController {
   constructor(
@@ -13,7 +17,8 @@ export class LocationController {
     private readonly updateLocationUseCase: UpdateLocation,
     private readonly deleteLocationUseCase: DeleteLocation,
     private readonly getLocationByIdFinderUseCase: GetLocationByIdFinder,
-    private readonly locationFinderUseCase: LocationFinder
+    private readonly locationFinderUseCase: LocationFinder,
+    private readonly statisticsDataUseCase: StatisticsDataUseCase
   ) {}
 
   async createLocation(req: Request, res: Response, next: NextFunction) {
@@ -79,6 +84,31 @@ export class LocationController {
       const response = { data: data?.data, pageCounter: data?.pageCounter };
       res.status(200).send(response);
     } catch (error) {
+      next(error);
+    }
+  }
+
+  async overviewParkingData(req: Request, res: Response, next: NextFunction) {
+    try {
+      const data = await this.statisticsDataUseCase.overviewData();
+      res.status(200).send({ data });
+    } catch (error) {
+      console.log(error);
+      next(error);
+    }
+  }
+
+  async trendParkingData(req: Request, res: Response, next: NextFunction) {
+    const { type } = req.query;
+
+    try {
+      const data = await this.statisticsDataUseCase.trendData(
+        type as TrendDataType
+      );
+
+      res.status(200).send({ data });
+    } catch (error) {
+      console.log(error);
       next(error);
     }
   }

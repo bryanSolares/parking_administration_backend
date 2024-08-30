@@ -1,7 +1,7 @@
 import { AppError } from '@src/server/config/err/AppError';
 
 export enum SlotStatus {
-  ACTIVE = 'ACTIVO',
+  ACTIVE = 'DISPONIBLE',
   INACTIVE = 'INACTIVO',
   OCCUPIED = 'OCUPADO'
 }

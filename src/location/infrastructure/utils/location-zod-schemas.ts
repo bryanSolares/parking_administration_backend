@@ -84,3 +84,7 @@ export const getLocationsSchemaForQuery = z.object({
 export const deleteSlotsSchema = z.object({
   slots: z.array(z.string().uuid())
 });
+
+export const trendSchema = z.object({
+  type: z.enum(['daily', 'weekly', 'monthly'])
+});

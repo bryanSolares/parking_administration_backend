@@ -6,6 +6,7 @@ import { locationUpdateParamsSchema } from '../utils/location-zod-schemas';
 import { locationDeleteParamsSchema } from '../utils/location-zod-schemas';
 import { getLocationByIdSchema } from '../utils/location-zod-schemas';
 import { getLocationsSchemaForQuery } from '../utils/location-zod-schemas';
+import { trendSchema } from '../utils/location-zod-schemas';
 
 import { locationController } from '@src/location/infrastructure/repositories/dependecies';
 import { validateRequest } from '@shared/zod-validator';
@@ -38,6 +39,15 @@ routes
     '/location/:id',
     validateRequest(locationDeleteParamsSchema, 'params'),
     locationController.deleteLocation.bind(locationController)
+  )
+  .get(
+    '/location/stats/overview',
+    locationController.overviewParkingData.bind(locationController)
+  )
+  .get(
+    '/location/stats/trend',
+    validateRequest(trendSchema, 'query'),
+    locationController.trendParkingData.bind(locationController)
   );
 
 export default routes;
