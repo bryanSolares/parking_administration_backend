@@ -33,14 +33,12 @@ export interface OverviewDataResult {
   occupiedSlots: number;
 }
 
-export interface TrendDataResult {
-  date: string;
-  totalSlots: number;
-  availableSlots: number;
-  unavailableSlots: number;
-  occupiedSlots: number;
-  occupancyRate: number;
+export interface TrendDataResult extends OverviewDataResult {
+  periodTrend: string;
+  startDate: string;
 }
+
+export type TrendDataType = 'daily' | 'weekly' | 'monthly';
 
 export interface LocationRepository {
   createLocation(location: LocationEntity): Promise<void>;
@@ -64,10 +62,5 @@ export interface LocationRepository {
     params: string[]
   ): Promise<TypeProcedureResult>;
   overviewData(): Promise<OverviewDataResult>;
-  trendData(
-    limit: number,
-    page: number,
-    startDate: string,
-    endDate: string
-  ): Promise<TrendDataResult[]>;
+  trendData(type: TrendDataType): Promise<TrendDataResult[] | []>;
 }

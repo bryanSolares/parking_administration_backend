@@ -9,6 +9,7 @@ import { DeleteLocation } from '@src/location/application/user-cases/delete-loca
 import { GetLocationByIdFinder } from '@src/location/application/user-cases/location-by-id-finder';
 import { LocationFinder } from '@src/location/application/user-cases/location-finder';
 import { StatisticsDataUseCase } from '../../application/user-cases/statistics-data';
+import { TrendDataType } from '@src/location/core/repositories/location-repository';
 
 export class LocationController {
   constructor(
@@ -98,14 +99,11 @@ export class LocationController {
   }
 
   async trendParkingData(req: Request, res: Response, next: NextFunction) {
-    const { start_date, end_date, page, limit } = req.query;
+    const { type } = req.query;
 
     try {
       const data = await this.statisticsDataUseCase.trendData(
-        Number(limit),
-        Number(page),
-        start_date!.toString(),
-        end_date!.toString()
+        type as TrendDataType
       );
 
       res.status(200).send({ data });

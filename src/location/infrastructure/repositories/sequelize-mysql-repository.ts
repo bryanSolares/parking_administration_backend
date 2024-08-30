@@ -2,9 +2,15 @@
 /* eslint-disable  @typescript-eslint/no-unsafe-enum-comparison */
 /* eslint-disable  @typescript-eslint/no-unused-vars */
 
-import { Op, QueryTypes } from 'sequelize';
+import { FindAttributeOptions } from 'sequelize';
+import { Op } from 'sequelize';
+import { QueryTypes } from 'sequelize';
 import { Transaction } from 'sequelize';
 import { v4 as uuid } from 'uuid';
+import { addDay } from '@formkit/tempo';
+import { format } from '@formkit/tempo';
+import { weekStart } from '@formkit/tempo';
+import { addMonth } from '@formkit/tempo';
 
 import { logger } from '@config/logger/load-logger';
 import { sequelize } from '@config/database/sequelize';
@@ -12,18 +18,15 @@ import { sequelize } from '@config/database/sequelize';
 import { LocationModel } from '@config/database/models/location.model';
 import { SlotModel } from '@config/database/models/slot.model';
 
-import {
-  LocationRepository,
-  OverviewDataResult,
-  TrendDataResult
-} from '@location-module-core/repositories/location-repository';
+import { LocationRepository } from '@location-module-core/repositories/location-repository';
+import { OverviewDataResult } from '@location-module-core/repositories/location-repository';
+import { TrendDataResult } from '@location-module-core/repositories/location-repository';
+import { TrendDataType } from '@location-module-core/repositories/location-repository';
 import { LocationFinderResult } from '@location-module-core/repositories/location-repository';
 
 import { LocationEntity } from '@location-module-core/entities/location-entity';
-import {
-  SlotEntity,
-  SlotStatus
-} from '@location-module-core/entities/slot-entity';
+import { SlotEntity } from '@location-module-core/entities/slot-entity';
+import { SlotStatus } from '@location-module-core/entities/slot-entity';
 import { ParkingTrendsModel } from '@src/server/config/database/models/parking/parking-trends';
 
 export class SequelizeMYSQLLocationRepository implements LocationRepository {
@@ -279,33 +282,86 @@ export class SequelizeMYSQLLocationRepository implements LocationRepository {
       occupiedSlots: Number(result.occupied_slots)
     };
   }
-  async trendData(
-    limit: number = 20,
-    page: number = 1,
-    startDate: string,
-    endDate: string
-  ): Promise<TrendDataResult[]> {
-    const trendsCounter = await ParkingTrendsModel.count({
-      where: { date: { [Op.between]: [startDate, endDate] } }
-    });
-    const allPages = Math.ceil(trendsCounter / limit);
-    const offset = (page - 1) * limit;
 
-    const data = await ParkingTrendsModel.findAll({
-      where: { date: { [Op.between]: [startDate, endDate] } },
-      limit,
-      offset
+  async trendData(type: TrendDataType): Promise<TrendDataResult[] | []> {
+    const today = new Date();
+    let dateRange: { startDate: string; endDate: string } = {
+      startDate: '',
+      endDate: ''
+    };
+    let groupBy: string = '';
+    let attributes: FindAttributeOptions | string = [];
+
+    const baseAttributes: FindAttributeOptions | string = [
+      [sequelize.fn('SUM', sequelize.col('total_slots')), 'totalSlots'],
+      [sequelize.fn('SUM', sequelize.col('available_slots')), 'availableSlots'],
+      [
+        sequelize.fn('SUM', sequelize.col('unavailable_slots')),
+        'unavailableSlots'
+      ],
+      [sequelize.fn('SUM', sequelize.col('occupied_slots')), 'occupiedSlots']
+    ];
+
+    if (type === 'daily') {
+      dateRange = {
+        startDate: format(addDay(today, -7), 'YYYY-MM-DD', 'en'),
+        endDate: format(today, 'YYYY-MM-DD', 'en')
+      };
+      attributes = [
+        [sequelize.fn('DATE', sequelize.col('date')), 'periodTrend']
+      ];
+      groupBy = 'periodTrend';
+    }
+
+    if (type === 'weekly') {
+      dateRange = {
+        startDate: format(weekStart(addDay(today, -28), 1), 'YYYY-MM-DD', 'en'),
+        endDate: format(today, 'YYYY-MM-DD', 'en')
+      };
+      attributes = [
+        [sequelize.fn('WEEK', sequelize.col('date')), 'periodTrend'],
+        [sequelize.fn('MIN', sequelize.col('date')), 'startDate']
+      ];
+      groupBy = 'periodTrend';
+    }
+
+    if (type === 'monthly') {
+      dateRange = {
+        startDate: format(addMonth(today, -12), 'YYYY-MM-DD', 'en'),
+        endDate: format(today, 'YYYY-MM-DD', 'en')
+      };
+      attributes = [
+        [
+          sequelize.fn('DATE_FORMAT', sequelize.col('date'), '%Y-%m'),
+          'periodTrend'
+        ]
+      ];
+      groupBy = 'periodTrend';
+    }
+
+    attributes.push(...baseAttributes);
+
+    const trendsDatabase = await ParkingTrendsModel.findAll({
+      attributes,
+      where: {
+        date: { [Op.between]: [dateRange.startDate, dateRange.endDate] }
+      },
+      group: [groupBy]
     });
 
-    return data.map((item: ParkingTrendsModel) => {
-      const data = item.get({ plain: true });
+    if (trendsDatabase.length === 0) return [];
+
+    let trend;
+
+    return trendsDatabase.map(data => {
+      trend = data.get({ plain: true });
       return {
-        date: data.date,
-        totalSlots: data.totalSlots,
-        availableSlots: data.availableSlots,
-        unavailableSlots: data.unavailableSlots,
-        occupiedSlots: data.occupiedSlots,
-        occupancyRate: data.occupancyRate
+        periodTrend: trend.periodTrend,
+        startDate: trend.startDate,
+        totalSlots: trend.totalSlots,
+        availableSlots: trend.availableSlots,
+        unavailableSlots: trend.unavailableSlots,
+        occupiedSlots: trend.occupiedSlots
       };
     });
   }
