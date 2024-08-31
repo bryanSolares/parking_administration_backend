@@ -11,9 +11,7 @@ services:
       - 3306:3306
     volumes:
       - database:/bitnami/mysql/data
-      - ./db/mysql.init.sql:/docker-entrypoint-initdb.d/init.sql
-    networks:
-      - public_network
+      - ./db/mysql.init.sql:/docker-entrypoint-initdb.d/mysql.init.sql
 
   server:
     build: .
@@ -28,13 +26,13 @@ services:
       start_period: 30s
     ports:
       - 3500:3500
+    deploy:
+      resources:
+        limits:
+          cpus: '0.50'
+          memory: 256M
     depends_on:
       - database
-    networks:
-      - public_network
 
 volumes:
   database:
-
-networks:
-  public_network:
