@@ -40,15 +40,8 @@ const scheduleSchema = z.object({
 
 export const assignmentCreateSchema = z.object({
   slotId: z.string().uuid(),
-  employee: employeeSchema
-  // assignment_loan: z
-  //   .object({
-  //     start_date_assignment: z.string().date('YYYY-MM-DD'),
-  //     end_date_assignment: z.string().date('YYYY-MM-DD'),
-  //     employee: employeeSchema
-  //   })
-  //   .optional(),
-  // tags: z.array(z.string().uuid())
+  employee: employeeSchema,
+  tags: z.array(z.string().uuid()).nonempty()
 });
 
 export const assignmentUpdateSchema = z.object({

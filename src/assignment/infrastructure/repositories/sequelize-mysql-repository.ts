@@ -26,35 +26,20 @@ import { SlotModel } from '@config/database/models/slot.model';
 import { LocationModel } from '@config/database/models/location.model';
 import { DeAssignmentModel } from '@config/database/models/de-assignment.model';
 import { DiscountNoteModel } from '@config/database/models/discount-note.model';
-//import { AssignmentTagDetailModel } from '@src/server/config/database/models/assignment-tag-detail';
+import { AssignmentTagDetailModel } from '@src/server/config/database/models/assignment-tag-detail';
 
 export class SequelizeAssignmentRepository implements AssignmentRepository {
   async createAssignment(assignment: AssignmentEntity): Promise<void> {
     const ownerData = assignment.employee;
     const vehiclesOwnerData = assignment.employee.vehicles;
 
-    // const scheduleData = assignment.schedule;
-    // const tags = assignment.tags;
-    // const loanAssignmentData = assignment.assignment_loan;
-    // const guestData = assignment.assignment_loan?.employee;
-    // const vehiclesGuestData = assignment.assignment_loan?.employee.vehicles;
-    // let scheduleIdSaved;
-
     const transaction = await sequelize.transaction();
     //Save employee
     const ownerIdSaved = await this.upsertEmployee(ownerData, transaction);
     //Save vehicles
     await this.upsertVehicles(vehiclesOwnerData, ownerIdSaved, transaction);
-    // //Save Schedule
-    // if (scheduleData) {
-    //   scheduleIdSaved = await this.upsertSchedule(
-    //     scheduleData,
-    //     assignment.slot_id,
-    //     transaction
-    //   );
-    // }
-    // //Save assignment
-    await AssignmentModel.create(
+    //Save assignment
+    const assignmentSaved = await AssignmentModel.create(
       {
         ...assignment,
         slotId: assignment.slot.id,
@@ -63,34 +48,16 @@ export class SequelizeAssignmentRepository implements AssignmentRepository {
       { transaction }
     );
 
-    // if (loanAssignmentData && guestData && vehiclesGuestData) {
-    //   const guestIdSaved = await this.upsertEmployee(guestData, transaction);
-    //   //Save vehicles
-    //   await this.upsertVehicles(vehiclesGuestData, guestIdSaved, transaction);
-    //   //Save Assignment Loan
-    //   await AssignmentLoanModel.create(
-    //     {
-    //       ...loanAssignmentData,
-    //       id: uuid(),
-    //       employee_id: guestIdSaved,
-    //       assignment_id: assignmentSaved.getDataValue('id')
-    //     },
-    //     { transaction }
-    //   );
-    // }
-    await SlotModel.update(
-      { status: 'OCUPADO' },
-      { where: { id: assignment.slot.id }, transaction }
+    await AssignmentTagDetailModel.bulkCreate(
+      assignment.tags.map(tag => {
+        return {
+          id: uuid(),
+          tagId: tag.id,
+          assignmentId: assignmentSaved.getDataValue('id')
+        };
+      }),
+      { transaction }
     );
-
-    // await AssignmentTagDetailModel.bulkCreate(
-    //   tags.map(tag => ({
-    //     id: uuid(),
-    //     tag_id: tag,
-    //     assignment_id: assignmentSaved.getDataValue('id')
-    //   })),
-    //   { transaction }
-    // );
 
     await transaction.commit();
   }
@@ -342,8 +309,8 @@ export class SequelizeAssignmentRepository implements AssignmentRepository {
           'company',
           'department',
           'sub_management',
-          'management_1',
-          'management_2',
+          'management1',
+          'management2',
           'work_site',
           'address',
           'email',

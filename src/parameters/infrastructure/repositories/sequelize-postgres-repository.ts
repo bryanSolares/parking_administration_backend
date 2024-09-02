@@ -1,9 +1,10 @@
 import { v4 as uuid } from 'uuid';
+import { Op } from 'sequelize';
 
 import { TagRepository } from '@src/parameters/core/repositories/tag-repository';
 import { TagModel } from '@config/database/models/tag.model';
 import { TagEntity } from '@src/parameters/core/entities/tag-entity';
-import { TagAssignmentDetailEntity } from '@src/parameters/core/entities/tag-assignment-detail-entity';
+import { TagAssignmentDetailEntity } from '@src/assignment/core/entities/tag-assignment-detail-entity';
 import { AssignmentTagDetailModel } from '@src/server/config/database/models/assignment-tag-detail';
 
 export class SequelizePostgresRepository implements TagRepository {
@@ -70,5 +71,19 @@ export class SequelizePostgresRepository implements TagRepository {
           tagDetailDatabase?.get({ plain: true })
         )
       : null;
+  }
+
+  async getTagsByIds(ids: string[]): Promise<TagEntity[] | []> {
+    const tagsDatabase = await TagModel.findAll({
+      where: { id: { [Op.in]: ids }, status: 'ACTIVO' }
+    });
+
+    if (tagsDatabase.length === 0) {
+      return [];
+    }
+
+    return tagsDatabase.map(tag =>
+      TagEntity.fromPrimitives(tag.get({ plain: true }))
+    );
   }
 }

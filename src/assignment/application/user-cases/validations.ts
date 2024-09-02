@@ -4,6 +4,7 @@ import { EmployeeRepository } from '@src/assignment/core/repositories/employee-r
 import { SlotEntity } from '@src/location/core/entities/slot-entity';
 import { SlotStatus } from '@src/location/core/entities/slot-entity';
 import { SlotType } from '@src/location/core/entities/slot-entity';
+import { TagEntity } from '@src/parameters/core/entities/tag-entity';
 import { AppError } from '@src/server/config/err/AppError';
 
 export class Validations {
@@ -21,20 +22,34 @@ export class Validations {
         id: string;
       }[];
     };
+    tags: {
+      request: string[];
+      database: TagEntity[] | [];
+    };
   }): Promise<void> {
     this.validateIfSlotIsValid(data.slot);
     await this.validateIfCanCreateAssignmentInSlot(data.slot!);
-    await this.validateIfEmployeeHasAnActiveAssignment(data.employee.id);
     await this.validateIfVehiclesBelongToEmployee(
       data.employee.id,
       data.employee.employeeCode,
       data.employee.vehicles
     );
+    await this.validateIfEmployeeHasAnActiveAssignment(data.employee.id);
+    this.validateIfTagsAreValid(data.tags);
   }
 
   private validateIfSlotIsValid(slot: SlotEntity | null) {
     if (!slot) {
       throw new AppError('SLOT_NOT_FOUND', 400, 'Slot not found', true);
+    }
+
+    if (slot.status === SlotStatus.INACTIVE) {
+      throw new AppError(
+        'SLOT_NOT_AVAILABLE',
+        400,
+        'Slot is not available',
+        true
+      );
     }
   }
 
@@ -53,7 +68,7 @@ export class Validations {
 
     if (
       slot.slotType === SlotType.MULTIPLE &&
-      slot.status === SlotStatus.OCCUPIED
+      slot.status !== SlotStatus.INACTIVE
     ) {
       const canCreateMoreAssignments =
         await this.assignmentRepository.executeFunction(
@@ -136,6 +151,20 @@ export class Validations {
           );
         }
       });
+    }
+  }
+
+  private validateIfTagsAreValid(tags: {
+    request: string[];
+    database: TagEntity[] | [];
+  }) {
+    if (tags.request.length !== tags.database.length) {
+      throw new AppError(
+        'TAGS_NOT_VALID',
+        400,
+        'Tags are not valid or not exist',
+        true
+      );
     }
   }
 }

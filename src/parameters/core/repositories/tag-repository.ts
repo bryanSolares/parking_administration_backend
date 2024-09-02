@@ -1,5 +1,5 @@
 import { TagEntity as Tag } from '../entities/tag-entity';
-import { TagAssignmentDetailEntity } from '../entities/tag-assignment-detail-entity';
+import { TagAssignmentDetailEntity } from '../../../assignment/core/entities/tag-assignment-detail-entity';
 
 export interface TagRepository {
   create(tag: {
@@ -22,4 +22,5 @@ export interface TagRepository {
   getDetailTagsWithAssignment(
     tagId: string
   ): Promise<TagAssignmentDetailEntity | null>;
+  getTagsByIds(ids: string[]): Promise<Tag[] | []>;
 }

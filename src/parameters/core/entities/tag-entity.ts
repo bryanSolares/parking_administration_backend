@@ -1,14 +1,19 @@
+export enum TagStatus {
+  'ACTIVE' = 'ACTIVO',
+  'INACTIVE' = 'INACTIVO'
+}
+
 export class TagEntity {
   readonly id: string;
   readonly name: string;
   readonly description: string;
-  readonly status: 'ACTIVO' | 'INACTIVO';
+  readonly status: TagStatus;
 
   constructor(
     id: string,
     name: string,
     description: string,
-    status: 'ACTIVO' | 'INACTIVO'
+    status: TagStatus
   ) {
     this.id = id;
     this.name = name;
@@ -20,7 +25,7 @@ export class TagEntity {
     id: string;
     name: string;
     description: string;
-    status: 'ACTIVO' | 'INACTIVO';
+    status: TagStatus;
   }) {
     return new TagEntity(
       plainData.id,

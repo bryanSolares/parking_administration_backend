@@ -10,11 +10,13 @@ import { VehicleType } from '@src/location/core/entities/slot-entity';
 import { EmployeeEntity } from '@src/assignment/core/entities/employee-entity';
 import { LocationRepository } from '@src/location/core/repositories/location-repository';
 import { Validations } from './validations';
+import { TagRepository } from '@src/parameters/core/repositories/tag-repository';
 
 export class CreateAssignment {
   constructor(
     private readonly assignmentRepository: AssignmentRepository,
     private readonly locationRepository: LocationRepository,
+    private readonly tagRepository: TagRepository,
     private readonly validations: Validations
   ) {}
 
@@ -44,12 +46,18 @@ export class CreateAssignment {
         type: VehicleType;
       }[];
     };
+    tags: string[];
   }): Promise<void> {
     const slot = await this.locationRepository.getSlotById(data.slotId);
+    const tags = await this.tagRepository.getTagsByIds(data.tags);
 
     await this.validations.validateIfCanCreate({
       slot,
-      employee: { ...data.employee }
+      employee: { ...data.employee },
+      tags: {
+        request: data.tags,
+        database: tags
+      }
     });
 
     const employeeId = uuid();
@@ -71,7 +79,8 @@ export class CreateAssignment {
       assignmentId,
       slot!,
       employee,
-      AssignmentStatus.CREATED
+      AssignmentStatus.CREATED,
+      tags
     );
 
     await this.assignmentRepository.createAssignment(assignment);

@@ -3,6 +3,7 @@ import { AssignmentController } from '../controllers/assignment.controller';
 
 import { SequelizeMYSQLLocationRepository } from '@src/location/infrastructure/repositories/sequelize-mysql-repository';
 import { SequelizeEmployeeRepository } from '@assignment-module-infrastructure/repositories/ws-employee.repository';
+import { SequelizePostgresRepository } from '@src/parameters/infrastructure/repositories/sequelize-postgres-repository';
 
 //import { GetEmployeeByCode } from '@assignment-module-application/user-cases/get-employee-by-code-from-ws';
 import { CreateAssignment } from '@assignment-module-application/user-cases/create-assignment';
@@ -25,6 +26,7 @@ import { NodemailerNotificationRepository } from '../repositories/nodemailer-not
 const sequelizeAssignmentRepository = new SequelizeAssignmentRepository();
 const sequelizeLocationRepository = new SequelizeMYSQLLocationRepository();
 const employeeRepository = new SequelizeEmployeeRepository();
+const parameterRepository = new SequelizePostgresRepository();
 
 const validations = new Validations(
   sequelizeAssignmentRepository,
@@ -47,6 +49,7 @@ const notificationService = new NotificationService(
 const createAssignment = new CreateAssignment(
   sequelizeAssignmentRepository,
   sequelizeLocationRepository,
+  parameterRepository,
   validations
 );
 

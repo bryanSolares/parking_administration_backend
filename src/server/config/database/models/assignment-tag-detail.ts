@@ -10,7 +10,7 @@ AssignmentTagDetailModel.init(
       type: DataTypes.UUID,
       primaryKey: true
     },
-    assignment_id: {
+    assignmentId: {
       type: DataTypes.UUID,
       allowNull: false,
       references: {
@@ -18,7 +18,7 @@ AssignmentTagDetailModel.init(
         key: 'id'
       }
     },
-    tag_id: {
+    tagId: {
       type: DataTypes.UUID,
       allowNull: false,
       references: {
@@ -29,6 +29,7 @@ AssignmentTagDetailModel.init(
   },
   {
     sequelize,
+    underscored: true,
     tableName: 'assignment_tag_detail',
     modelName: 'assignment_tag_detail',
     updatedAt: 'updated_at',

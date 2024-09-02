@@ -20,4 +20,12 @@ export class TagAssignmentDetailEntity {
       plainData.tagId
     );
   }
+
+  toPrimitives() {
+    return {
+      id: this.id,
+      assignmentId: this.assignmentId,
+      tagId: this.tagId
+    };
+  }
 }

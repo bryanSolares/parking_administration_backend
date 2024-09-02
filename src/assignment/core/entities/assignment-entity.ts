@@ -6,6 +6,7 @@ import { SlotEntity } from '@location-module-core/entities/slot-entity';
 import { SlotStatus } from '@location-module-core/entities/slot-entity';
 import { SlotType } from '@location-module-core/entities/slot-entity';
 import { VehicleType } from '@location-module-core/entities/slot-entity';
+import { TagEntity, TagStatus } from '@src/parameters/core/entities/tag-entity';
 
 export enum AssignmentStatus {
   'CREATED' = 'CREADO',
@@ -22,11 +23,9 @@ export class AssignmentEntity {
     public readonly slot: SlotEntity,
     public readonly employee: EmployeeEntity,
     public readonly status: AssignmentStatus,
+    public readonly tags: TagEntity[],
     public readonly assignmentDate?: Date,
     public readonly decisionDate?: Date
-    //public readonly assignmentLoan: string,
-    //public readonly discountNote: string,
-    //public readonly tags: string
   ) {
     this.id = id;
     this.slot = slot;
@@ -34,9 +33,7 @@ export class AssignmentEntity {
     this.assignmentDate = assignmentDate;
     this.decisionDate = decisionDate;
     this.status = status;
-    //this.assignmentLoan = assignmentLoan;
-    ///this.discountNote = discountNote;
-    //this.tags = tags;
+    this.tags = tags;
   }
 
   public static fromPrimitive(primitiveData: {
@@ -78,22 +75,23 @@ export class AssignmentEntity {
       }[];
     };
     status: AssignmentStatus;
+    tags: {
+      id: string;
+      name: string;
+      description: string;
+      status: TagStatus;
+    }[];
     assignmentDate?: Date;
     decisionDate?: Date;
-    //assignmentLoan: string;
-    //discountNote: string;
-    //tags: string;
   }): AssignmentEntity {
     return new AssignmentEntity(
       primitiveData.id,
       SlotEntity.fromPrimitives(primitiveData.slot),
       EmployeeEntity.fromPrimitive(primitiveData.employee),
       primitiveData.status,
+      primitiveData.tags.map(tag => TagEntity.fromPrimitives(tag)) ?? [],
       primitiveData.assignmentDate,
       primitiveData.decisionDate
-      //primitiveData.assignmentLoan,
-      //primitiveData.discountNote,
-      //primitiveData.tags
     );
   }
 
@@ -107,10 +105,8 @@ export class AssignmentEntity {
       },
       assignmentDate: this.assignmentDate,
       decisionDate: this.decisionDate,
-      status: this.status
-      //assignmentLoan: this.assignmentLoan,
-      //discountNote: this.discountNote,
-      //tags: this.tags
+      status: this.status,
+      tags: this.tags.map(tag => tag.toPrimitives()) ?? []
     };
   }
 }
