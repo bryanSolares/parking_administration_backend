@@ -1,11 +1,11 @@
-FROM bitnami/node:22 AS builder
+FROM bitnami/node:18 AS builder
 
 WORKDIR /app
 COPY . .
-RUN yarn install
+RUN yarn
 RUN yarn build
 
-FROM bitnami/node:22 AS deploy
+FROM bitnami/node:18 AS deploy
 WORKDIR /app
 COPY --from=builder /app/build /app/package.json /app/.env ./
 COPY --from=builder /app/node_modules ./node_modules

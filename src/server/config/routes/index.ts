@@ -27,7 +27,7 @@ routes.get('/api/v1/health', (req, res) => {
 });
 
 routes.use('/api/v1/auth', authRoutes);
-routes.use('/api/v1/parking/', validateAuth(), locationRoutes);
+routes.use('/api/v1/parking/', /*validateAuth(),*/ locationRoutes);
 routes.use('/api/v1/assignment', validateAuth(), assignmentRoutes);
 routes.use('/api/v1/parameter/tag', validateAuth(), tagRoutes);
 routes.use('/api/v1/parameter/users', validateAuth(), userRoutes);
