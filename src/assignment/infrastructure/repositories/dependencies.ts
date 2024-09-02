@@ -2,10 +2,11 @@ import { SequelizeAssignmentRepository } from './sequelize-mysql-repository';
 import { AssignmentController } from '../controllers/assignment.controller';
 
 import { SequelizeMYSQLLocationRepository } from '@src/location/infrastructure/repositories/sequelize-mysql-repository';
-import { SequelizeEmployeeRepository } from '@assignment-module-infrastructure/repositories/ws-employee.repository';
+import { SequelizeEmployeeRepository } from '@src/assignment/infrastructure/repositories/sequelize-employee.repository';
 import { SequelizePostgresRepository } from '@src/parameters/infrastructure/repositories/sequelize-postgres-repository';
+import { SequelizeSettingMySQLRepository } from '@src/parameters/infrastructure/repositories/sequelize-setting-mysql-repository';
 
-//import { GetEmployeeByCode } from '@assignment-module-application/user-cases/get-employee-by-code-from-ws';
+import { GetEmployeeByCode } from '@assignment-module-application/user-cases/get-employee';
 import { CreateAssignment } from '@assignment-module-application/user-cases/create-assignment';
 import { AssignmentFinder } from '@assignment-module-application/user-cases/assignment-finder';
 import { AssignmentFinderById } from '@assignment-module-application/user-cases/assignment-finder-by-id';
@@ -27,6 +28,7 @@ const sequelizeAssignmentRepository = new SequelizeAssignmentRepository();
 const sequelizeLocationRepository = new SequelizeMYSQLLocationRepository();
 const employeeRepository = new SequelizeEmployeeRepository();
 const parameterRepository = new SequelizePostgresRepository();
+const settingRepository = new SequelizeSettingMySQLRepository();
 
 const validations = new Validations(
   sequelizeAssignmentRepository,
@@ -45,7 +47,10 @@ const notificationService = new NotificationService(
 );
 
 //Use cases
-//const employeeFinderByCode = new GetEmployeeByCode(employeeRepository);
+const employeeFinderByCode = new GetEmployeeByCode(
+  employeeRepository,
+  settingRepository
+);
 const createAssignment = new CreateAssignment(
   sequelizeAssignmentRepository,
   sequelizeLocationRepository,
@@ -84,7 +89,7 @@ const assignmentController = new AssignmentController(
   assignmentFinderById,
   assignmentFinder,
   deAssignmentById,
-  //employeeFinderByCode,
+  employeeFinderByCode,
   updateAssignment,
   createAssignmentLoan,
   updateDiscountNote,

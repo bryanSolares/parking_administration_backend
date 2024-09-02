@@ -124,9 +124,7 @@ export class Validations {
 
     if (employeeId) {
       const employeeDatabase =
-        await this.employeeRepository.getEmployeeByCodeFromDatabase(
-          employeeCode
-        );
+        await this.employeeRepository.getEmployeeFromDatabase(employeeCode);
 
       if (!employeeDatabase) {
         throw new AppError(

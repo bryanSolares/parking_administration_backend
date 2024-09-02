@@ -12,30 +12,23 @@ SettingModel.init(
       unique: true,
       allowNull: false
     },
-    setting_key: {
+    settingKey: {
       type: DataTypes.STRING,
       unique: true,
       allowNull: false
     },
-    setting_value: {
+    settingValue: {
       type: DataTypes.STRING,
       allowNull: false
     },
     description: {
       type: DataTypes.STRING,
       allowNull: true
-    },
-    created_at: {
-      type: DataTypes.DATE,
-      allowNull: false
-    },
-    updated_at: {
-      type: DataTypes.DATE,
-      allowNull: false
     }
   },
   {
     sequelize,
+    underscored: true,
     modelName: 'setting',
     tableName: 'setting',
     createdAt: 'created_at',
