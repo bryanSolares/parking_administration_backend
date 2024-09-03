@@ -4,10 +4,7 @@ import { AssignmentFinderResult } from '@assignment-module-core/repositories/ass
 export class AssignmentFinder {
   constructor(private readonly assignmentRepository: AssignmentRepository) {}
 
-  async run(
-    limit: number,
-    page: number
-  ): Promise<AssignmentFinderResult | null> {
+  async run(limit: number, page: number): Promise<AssignmentFinderResult> {
     return this.assignmentRepository.getAssignments(limit, page);
   }
 }

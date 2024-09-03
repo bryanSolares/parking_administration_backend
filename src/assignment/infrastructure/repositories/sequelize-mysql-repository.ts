@@ -6,7 +6,7 @@ import { v4 as uuid } from 'uuid';
 
 import { AssignmentEntity } from '@assignment-module-core/entities/assignment-entity';
 import { AssignmentStatus } from '@assignment-module-core/entities/assignment-entity';
-import { AssignmentByIdResult } from '@assignment-module-core/repositories/assignment-repository';
+import { FinderResultById } from '@assignment-module-core/repositories/assignment-repository';
 import { AssignmentRepository } from '@assignment-module-core/repositories/assignment-repository';
 import { ListOfFunctions } from '@assignment-module-core/repositories/assignment-repository';
 import { ReturnType } from '@assignment-module-core/repositories/assignment-repository';
@@ -71,7 +71,7 @@ export class SequelizeAssignmentRepository implements AssignmentRepository {
   }
 
   /* eslint-disable  @typescript-eslint/no-unsafe-call */
-  async getAssignmentById(id: string): Promise<AssignmentByIdResult | null> {
+  async getAssignmentById(id: string): Promise<FinderResultById | null> {
     const assignmentDatabase = await AssignmentModel.findOne({
       where: { id },
       include: [
@@ -132,7 +132,7 @@ export class SequelizeAssignmentRepository implements AssignmentRepository {
       slots: [SlotEntity.fromPrimitives(plainData.slot)]
     });
 
-    const assignment: AssignmentByIdResult = {
+    const assignment: FinderResultById = {
       id: plainData.id,
       assignmentDate: plainData.assignmentDate ?? '',
       decisionDate: plainData.decisionDate ?? '',
@@ -143,6 +143,62 @@ export class SequelizeAssignmentRepository implements AssignmentRepository {
     };
 
     return assignment;
+  }
+
+  /* eslint-disable   @typescript-eslint/no-unsafe-return */
+  async getAssignments(
+    limit: number = 20,
+    page: number = 1
+  ): Promise<AssignmentFinderResult> {
+    const assignmentsCounter = await AssignmentModel.count();
+    const allPages = Math.ceil(assignmentsCounter / limit);
+    const offset = (page - 1) * limit;
+
+    const assignments = await AssignmentModel.findAll({
+      include: [
+        {
+          model: SlotModel,
+          attributes: ['id', 'slotNumber'],
+          include: [
+            {
+              model: LocationModel,
+              attributes: ['id', 'name']
+            }
+          ]
+        },
+        {
+          model: EmployeeModel,
+          attributes: ['id', 'name', 'email', 'phone']
+        }
+      ],
+      order: [['created_at', 'DESC']],
+      limit,
+      offset
+    });
+
+    if (assignments.length === 0) {
+      return { data: [], pageCounter: allPages };
+    }
+
+    const plainData = assignments.map(assignment =>
+      assignment.get({ plain: true })
+    );
+
+    const data = plainData.map(plainResult => {
+      return {
+        id: plainResult.id,
+        employee: EmployeeEntity.fromPrimitive(plainResult.employee),
+        location: LocationEntity.fromPrimitives({
+          ...plainResult.slot.location,
+          slots: [SlotEntity.fromPrimitives(plainResult.slot)]
+        }),
+        assignmentDate: plainResult.assignmentDate ?? '',
+        decisionDate: plainResult.decisionDate ?? '',
+        status: plainResult.status as AssignmentStatus
+      };
+    });
+
+    return { data, pageCounter: allPages };
   }
 
   async executeFunction(
@@ -209,58 +265,6 @@ export class SequelizeAssignmentRepository implements AssignmentRepository {
     }
 
     await transaction.commit();
-  }
-
-  async getAssignments(
-    limit: number = 20,
-    page: number = 1
-  ): Promise<AssignmentFinderResult | null> {
-    const assignmentsCounter = await AssignmentModel.count();
-    const allPages = Math.ceil(assignmentsCounter / limit);
-    const offset = (page - 1) * limit;
-
-    const assignments = await AssignmentModel.findAll({
-      attributes: {
-        exclude: ['slot_id', 'schedule_id', 'employee_id', 'updated_at']
-      },
-      include: [
-        {
-          model: SlotModel,
-          attributes: ['slot_number'],
-          include: [
-            {
-              model: LocationModel,
-              attributes: ['name']
-            }
-          ]
-        },
-        {
-          model: EmployeeModel,
-          attributes: ['name', 'email', 'phone']
-        },
-        {
-          model: DiscountNoteModel,
-          attributes: {
-            exclude: [
-              'assignment_id',
-              'reminder_frequency',
-              'max_dispatch_attempts',
-              'created_at',
-              'updated_at'
-            ]
-          }
-        }
-      ],
-      order: [['created_at', 'DESC']],
-      limit,
-      offset
-    });
-
-    const assignmentsData = assignments.map(
-      assignment => assignment.get({ plain: true }) as AssignmentEntity
-    );
-
-    return { data: assignmentsData, pageCounter: allPages };
   }
 
   async createAssignmentLoan(

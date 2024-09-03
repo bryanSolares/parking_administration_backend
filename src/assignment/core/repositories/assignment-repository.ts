@@ -9,9 +9,19 @@ import { AssignmentLoadEntity } from '../entities/assignment-load-entity';
 import { TagEntity } from '@src/parameters/core/entities/tag-entity';
 import { LocationEntity } from '@src/location/core/entities/location-entity';
 
+export type FinderResultById = {
+  id: string;
+  assignmentDate: string;
+  decisionDate: string;
+  status: AssignmentStatus;
+  location: LocationEntity;
+  employee: EmployeeEntity;
+  tags: TagEntity[];
+};
+
 export type AssignmentFinderResult = Promise<{
   pageCounter: number;
-  data: AssignmentEntity[];
+  data: Omit<FinderResultById, 'tags'>[];
 }>;
 
 export type ReturnType = {
@@ -23,24 +33,12 @@ export enum ListOfFunctions {
   FN_EMPLOYEE_HAS_AN_ACTIVE_ASSIGNMENT = 'employee_has_an_active_assignment'
 }
 
-export interface AssignmentByIdResult {
-  id: string;
-  assignmentDate: string;
-  decisionDate: string;
-  status: AssignmentStatus;
-  location: LocationEntity;
-  employee: EmployeeEntity;
-  tags: TagEntity[];
-}
-
 export interface AssignmentRepository {
   createAssignment(assignment: AssignmentEntity): Promise<void>;
-  getAssignmentById(id: string): Promise<AssignmentByIdResult | null>;
+  getAssignmentById(id: string): Promise<FinderResultById | null>;
+  getAssignments(limit: number, page: number): Promise<AssignmentFinderResult>;
+
   createAssignmentLoan(assignmentLoan: AssignmentLoadEntity): Promise<void>;
-  getAssignments(
-    limit: number,
-    page: number
-  ): Promise<AssignmentFinderResult | null>;
   createDeAssignment(
     assignmentId: string,
     deAssignment: DeAssignmentEntity
