@@ -1,10 +1,13 @@
 import { AssignmentEntity } from '../entities/assignment-entity';
+import { AssignmentStatus } from '../entities/assignment-entity';
 import { DeAssignmentEntity } from '../entities/deassignment-entity';
 import { DiscountNoteEntity } from '../entities/discount-note-entity';
 import { EmployeeEntity } from '../entities/employee-entity';
 import { ScheduleEntity } from '../entities/schedule-entity';
 import { VehicleEntity } from '../entities/vehicle-entity';
 import { AssignmentLoadEntity } from '../entities/assignment-load-entity';
+import { TagEntity } from '@src/parameters/core/entities/tag-entity';
+import { LocationEntity } from '@src/location/core/entities/location-entity';
 
 export type AssignmentFinderResult = Promise<{
   pageCounter: number;
@@ -20,10 +23,20 @@ export enum ListOfFunctions {
   FN_EMPLOYEE_HAS_AN_ACTIVE_ASSIGNMENT = 'employee_has_an_active_assignment'
 }
 
+export interface AssignmentByIdResult {
+  id: string;
+  assignmentDate: string;
+  decisionDate: string;
+  status: AssignmentStatus;
+  location: LocationEntity;
+  employee: EmployeeEntity;
+  tags: TagEntity[];
+}
+
 export interface AssignmentRepository {
   createAssignment(assignment: AssignmentEntity): Promise<void>;
+  getAssignmentById(id: string): Promise<AssignmentByIdResult | null>;
   createAssignmentLoan(assignmentLoan: AssignmentLoadEntity): Promise<void>;
-  getAssignmentById(id: string): Promise<AssignmentEntity | null>;
   getAssignments(
     limit: number,
     page: number

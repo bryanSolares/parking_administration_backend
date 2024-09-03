@@ -24,8 +24,8 @@ export class AssignmentEntity {
     public readonly employee: EmployeeEntity,
     public readonly status: AssignmentStatus,
     public readonly tags: TagEntity[],
-    public readonly assignmentDate?: Date,
-    public readonly decisionDate?: Date
+    public readonly assignmentDate?: string,
+    public readonly decisionDate?: string
   ) {
     this.id = id;
     this.slot = slot;
@@ -81,15 +81,17 @@ export class AssignmentEntity {
       description: string;
       status: TagStatus;
     }[];
-    assignmentDate?: Date;
-    decisionDate?: Date;
+    assignmentDate?: string;
+    decisionDate?: string;
   }): AssignmentEntity {
     return new AssignmentEntity(
       primitiveData.id,
       SlotEntity.fromPrimitives(primitiveData.slot),
       EmployeeEntity.fromPrimitive(primitiveData.employee),
       primitiveData.status,
-      primitiveData.tags.map(tag => TagEntity.fromPrimitives(tag)) ?? [],
+      primitiveData.tags
+        ? primitiveData.tags.map(tag => TagEntity.fromPrimitives(tag))
+        : [],
       primitiveData.assignmentDate,
       primitiveData.decisionDate
     );
@@ -106,7 +108,7 @@ export class AssignmentEntity {
       assignmentDate: this.assignmentDate,
       decisionDate: this.decisionDate,
       status: this.status,
-      tags: this.tags.map(tag => tag.toPrimitives()) ?? []
+      tags: this.tags ? this.tags.map(tag => tag.toPrimitives()) : []
     };
   }
 }

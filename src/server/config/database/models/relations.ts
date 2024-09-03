@@ -1,18 +1,18 @@
 import { AssignmentModel } from './assignment.model';
 import { EmployeeModel } from './employee.model';
 import { LocationModel } from './location.model';
-import { ScheduleModel } from './schedule.model';
 import { SlotModel } from './slot.model';
 import { VehicleModel } from './vehicle.model';
-import { AssignmentLoanModel } from './assignment-loan';
 import { TagModel } from './tag.model';
 import { AssignmentTagDetailModel } from './assignment-tag-detail';
-import { DiscountNoteModel } from './discount-note.model';
 
-import { RoleModel } from './auth/role.model';
-import { RoleDetailModel } from './auth/role.detail.model';
-import { ResourceModel } from './auth/resource.model';
-import { UserModel } from './auth/user.model';
+//import { ScheduleModel } from './schedule.model';
+//import { DiscountNoteModel } from './discount-note.model';
+//import { AssignmentLoanModel } from './assignment-loan';
+// import { RoleModel } from './auth/role.model';
+// import { RoleDetailModel } from './auth/role.detail.model';
+// import { ResourceModel } from './auth/resource.model';
+// import { UserModel } from './auth/user.model';
 
 LocationModel.hasMany(SlotModel, {
   foreignKey: 'location_id',
@@ -42,19 +42,19 @@ AssignmentModel.belongsTo(SlotModel, { foreignKey: 'slot_id' });
 // });
 // AssignmentModel.belongsTo(ScheduleModel, { foreignKey: 'schedule_id' });
 
-AssignmentModel.hasOne(AssignmentLoanModel, {
-  foreignKey: 'assignment_id',
-  onUpdate: 'RESTRICT',
-  onDelete: 'RESTRICT'
-});
-AssignmentLoanModel.belongsTo(AssignmentModel, { foreignKey: 'assignment_id' });
+// AssignmentModel.hasOne(AssignmentLoanModel, {
+//   foreignKey: 'assignment_id',
+//   onUpdate: 'RESTRICT',
+//   onDelete: 'RESTRICT'
+// });
+// AssignmentLoanModel.belongsTo(AssignmentModel, { foreignKey: 'assignment_id' });
 
-EmployeeModel.hasOne(AssignmentLoanModel, {
-  foreignKey: 'employee_id',
-  onUpdate: 'RESTRICT',
-  onDelete: 'RESTRICT'
-});
-AssignmentLoanModel.belongsTo(EmployeeModel, { foreignKey: 'employee_id' });
+// EmployeeModel.hasOne(AssignmentLoanModel, {
+//   foreignKey: 'employee_id',
+//   onUpdate: 'RESTRICT',
+//   onDelete: 'RESTRICT'
+// });
+// AssignmentLoanModel.belongsTo(EmployeeModel, { foreignKey: 'employee_id' });
 
 EmployeeModel.hasMany(VehicleModel, {
   foreignKey: 'employee_id',
@@ -63,43 +63,45 @@ EmployeeModel.hasMany(VehicleModel, {
 });
 VehicleModel.belongsTo(EmployeeModel, { foreignKey: 'employee_id' });
 
-SlotModel.hasMany(ScheduleModel, {
-  foreignKey: 'slot_id',
-  onUpdate: 'RESTRICT',
-  onDelete: 'RESTRICT'
-});
-ScheduleModel.belongsTo(SlotModel, { foreignKey: 'slot_id' });
+// SlotModel.hasMany(ScheduleModel, {
+//   foreignKey: 'slot_id',
+//   onUpdate: 'RESTRICT',
+//   onDelete: 'RESTRICT'
+// });
+// ScheduleModel.belongsTo(SlotModel, { foreignKey: 'slot_id' });
 
 TagModel.belongsToMany(AssignmentModel, {
   through: AssignmentTagDetailModel
 });
 
-AssignmentModel.hasOne(DiscountNoteModel, {
-  foreignKey: 'assignment_id',
-  onUpdate: 'RESTRICT',
-  onDelete: 'RESTRICT'
-});
-DiscountNoteModel.belongsTo(AssignmentModel, {
-  foreignKey: 'assignment_id'
-});
+AssignmentModel.belongsToMany(TagModel, { through: AssignmentTagDetailModel });
 
-RoleModel.belongsToMany(ResourceModel, {
-  through: RoleDetailModel,
-  foreignKey: 'role_id',
-  onUpdate: 'CASCADE',
-  onDelete: 'CASCADE'
-});
+// AssignmentModel.hasOne(DiscountNoteModel, {
+//   foreignKey: 'assignment_id',
+//   onUpdate: 'RESTRICT',
+//   onDelete: 'RESTRICT'
+// });
+// DiscountNoteModel.belongsTo(AssignmentModel, {
+//   foreignKey: 'assignment_id'
+// });
 
-ResourceModel.belongsToMany(RoleModel, {
-  through: RoleDetailModel,
-  foreignKey: 'resource_id',
-  onUpdate: 'CASCADE',
-  onDelete: 'CASCADE'
-});
+// RoleModel.belongsToMany(ResourceModel, {
+//   through: RoleDetailModel,
+//   foreignKey: 'role_id',
+//   onUpdate: 'CASCADE',
+//   onDelete: 'CASCADE'
+// });
 
-RoleModel.hasMany(UserModel, {
-  foreignKey: 'role_id',
-  onUpdate: 'RESTRICT',
-  onDelete: 'RESTRICT'
-});
-UserModel.belongsTo(RoleModel, { foreignKey: 'role_id' });
+// ResourceModel.belongsToMany(RoleModel, {
+//   through: RoleDetailModel,
+//   foreignKey: 'resource_id',
+//   onUpdate: 'CASCADE',
+//   onDelete: 'CASCADE'
+// });
+
+// RoleModel.hasMany(UserModel, {
+//   foreignKey: 'role_id',
+//   onUpdate: 'RESTRICT',
+//   onDelete: 'RESTRICT'
+// });
+// UserModel.belongsTo(RoleModel, { foreignKey: 'role_id' });

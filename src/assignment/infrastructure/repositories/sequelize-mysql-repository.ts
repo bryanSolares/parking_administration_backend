@@ -5,6 +5,8 @@ import { Transaction } from 'sequelize';
 import { v4 as uuid } from 'uuid';
 
 import { AssignmentEntity } from '@assignment-module-core/entities/assignment-entity';
+import { AssignmentStatus } from '@assignment-module-core/entities/assignment-entity';
+import { AssignmentByIdResult } from '@assignment-module-core/repositories/assignment-repository';
 import { AssignmentRepository } from '@assignment-module-core/repositories/assignment-repository';
 import { ListOfFunctions } from '@assignment-module-core/repositories/assignment-repository';
 import { ReturnType } from '@assignment-module-core/repositories/assignment-repository';
@@ -27,6 +29,12 @@ import { LocationModel } from '@config/database/models/location.model';
 import { DeAssignmentModel } from '@config/database/models/de-assignment.model';
 import { DiscountNoteModel } from '@config/database/models/discount-note.model';
 import { AssignmentTagDetailModel } from '@src/server/config/database/models/assignment-tag-detail';
+import { TagModel } from '@src/server/config/database/models/tag.model';
+import { SlotEntity } from '@src/location/core/entities/slot-entity';
+import { VehicleType } from '@src/location/core/entities/slot-entity';
+import { TagEntity } from '@src/parameters/core/entities/tag-entity';
+import { TagStatus } from '@src/parameters/core/entities/tag-entity';
+import { LocationEntity } from '@src/location/core/entities/location-entity';
 
 export class SequelizeAssignmentRepository implements AssignmentRepository {
   async createAssignment(assignment: AssignmentEntity): Promise<void> {
@@ -60,6 +68,81 @@ export class SequelizeAssignmentRepository implements AssignmentRepository {
     );
 
     await transaction.commit();
+  }
+
+  /* eslint-disable  @typescript-eslint/no-unsafe-call */
+  async getAssignmentById(id: string): Promise<AssignmentByIdResult | null> {
+    const assignmentDatabase = await AssignmentModel.findOne({
+      where: { id },
+      include: [
+        {
+          model: EmployeeModel,
+          include: [
+            {
+              model: VehicleModel
+            }
+          ]
+        },
+        {
+          model: SlotModel,
+          include: [
+            {
+              model: LocationModel
+            }
+          ]
+        },
+        {
+          model: TagModel
+        }
+      ]
+    });
+
+    if (!assignmentDatabase) return null;
+
+    const plainData = assignmentDatabase.get({
+      plain: true
+    });
+
+    const employeeData = EmployeeEntity.fromPrimitive(plainData.employee);
+
+    employeeData.vehicles = plainData.employee.vehicles.map(
+      (vehicle: {
+        id: string;
+        vehicleBadge: string;
+        color: string;
+        brand: string;
+        model: string;
+        type: VehicleType;
+      }) => {
+        return VehicleEntity.fromPrimitive(vehicle);
+      }
+    );
+
+    const tagsData = plainData.tags.map(
+      (tag: {
+        id: string;
+        name: string;
+        description: string;
+        status: TagStatus;
+      }) => TagEntity.fromPrimitives(tag)
+    );
+
+    const locationData = LocationEntity.fromPrimitives({
+      ...plainData.slot.location,
+      slots: [SlotEntity.fromPrimitives(plainData.slot)]
+    });
+
+    const assignment: AssignmentByIdResult = {
+      id: plainData.id,
+      assignmentDate: plainData.assignmentDate ?? '',
+      decisionDate: plainData.decisionDate ?? '',
+      status: plainData.status as AssignmentStatus,
+      employee: employeeData,
+      tags: tagsData,
+      location: locationData
+    };
+
+    return assignment;
   }
 
   async executeFunction(
@@ -178,87 +261,6 @@ export class SequelizeAssignmentRepository implements AssignmentRepository {
     );
 
     return { data: assignmentsData, pageCounter: allPages };
-  }
-
-  async getAssignmentById(id: string): Promise<AssignmentEntity | null> {
-    const listExcludedAttributes = ['created_at', 'updated_at'];
-
-    const assignment = await AssignmentModel.findOne({
-      where: { id },
-      include: [
-        {
-          model: EmployeeModel,
-          attributes: {
-            exclude: listExcludedAttributes
-          },
-          include: [
-            {
-              model: VehicleModel,
-              attributes: {
-                exclude: [...listExcludedAttributes, 'employee_id']
-              }
-            }
-          ]
-        },
-        {
-          model: SlotModel,
-          attributes: {
-            exclude: [...listExcludedAttributes, 'location_id']
-          },
-          include: [
-            {
-              model: LocationModel,
-              attributes: {
-                exclude: listExcludedAttributes
-              }
-            }
-          ]
-        },
-        {
-          model: ScheduleModel,
-          attributes: { exclude: [...listExcludedAttributes, 'slot_id'] }
-        },
-        {
-          model: AssignmentLoanModel,
-          include: [
-            {
-              model: EmployeeModel,
-              attributes: {
-                exclude: listExcludedAttributes
-              },
-
-              include: [
-                {
-                  model: VehicleModel,
-                  attributes: {
-                    exclude: [...listExcludedAttributes, 'employee_id']
-                  }
-                }
-              ]
-            }
-          ],
-          where: { status: 'ACTIVO' },
-          required: false,
-          attributes: {
-            exclude: [...listExcludedAttributes, 'assignment_id']
-          }
-        },
-        {
-          model: DiscountNoteModel,
-          attributes: {
-            exclude: [
-              ...listExcludedAttributes,
-              'assignment_id',
-              'reminder_frequency',
-              'max_dispatch_attempts'
-            ]
-          }
-        }
-      ],
-      attributes: ['id', 'assignment_date', 'status']
-    });
-
-    return assignment?.get({ plain: true }) as AssignmentEntity;
   }
 
   async createAssignmentLoan(
