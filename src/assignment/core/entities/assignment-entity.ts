@@ -24,6 +24,7 @@ export class AssignmentEntity {
     public readonly slot: SlotEntity,
     public readonly employee: EmployeeEntity,
     public readonly parkingCardNumber: string,
+    public readonly benefitType: CostType,
     public readonly status: AssignmentStatus,
     public readonly tags: TagEntity[],
     public readonly assignmentDate?: string,
@@ -35,6 +36,7 @@ export class AssignmentEntity {
     this.assignmentDate = assignmentDate;
     this.formDecisionDate = formDecisionDate;
     this.parkingCardNumber = parkingCardNumber;
+    this.benefitType = benefitType;
     this.status = status;
     this.tags = tags;
   }
@@ -78,6 +80,7 @@ export class AssignmentEntity {
       }[];
     };
     parkingCardNumber: string;
+    benefitType: CostType;
     status: AssignmentStatus;
     tags: {
       id: string;
@@ -93,6 +96,7 @@ export class AssignmentEntity {
       SlotEntity.fromPrimitives(primitiveData.slot),
       EmployeeEntity.fromPrimitive(primitiveData.employee),
       primitiveData.parkingCardNumber,
+      primitiveData.benefitType,
       primitiveData.status,
       primitiveData.tags
         ? primitiveData.tags.map(tag => TagEntity.fromPrimitives(tag))
@@ -113,6 +117,7 @@ export class AssignmentEntity {
       assignmentDate: this.assignmentDate,
       formDecisionDate: this.formDecisionDate,
       parkingCardNumber: this.parkingCardNumber,
+      benefitType: this.benefitType,
       status: this.status,
       tags: this.tags ? this.tags.map(tag => tag.toPrimitives()) : []
     };

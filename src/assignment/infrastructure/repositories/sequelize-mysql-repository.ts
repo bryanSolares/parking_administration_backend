@@ -138,6 +138,7 @@ export class SequelizeAssignmentRepository implements AssignmentRepository {
       assignmentDate: plainData.assignmentDate ?? '',
       decisionDate: plainData.decisionDate ?? '',
       parkingCardNumber: plainData.parkingCardNumber,
+      benefitType: plainData.benefitType,
       status: plainData.status as AssignmentStatus,
       employee: employeeData,
       tags: tagsData,
@@ -197,6 +198,7 @@ export class SequelizeAssignmentRepository implements AssignmentRepository {
         assignmentDate: plainResult.assignmentDate ?? '',
         decisionDate: plainResult.decisionDate ?? '',
         parkingCardNumber: plainResult.parkingCardNumber,
+        benefitType: plainResult.benefitType,
         status: plainResult.status as AssignmentStatus
       };
     });

@@ -54,6 +54,7 @@ export class GetFormDataOfAcceptanceUseCase {
     return {
       assignmentId: assignment.id,
       parkingCardNumber: assignment.parkingCardNumber,
+      benefitType: assignment.benefitType,
       employee: {
         id,
         employeeCode,

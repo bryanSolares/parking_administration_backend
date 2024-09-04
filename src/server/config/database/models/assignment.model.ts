@@ -40,6 +40,11 @@ AssignmentModel.init(
     parkingCardNumber: {
       type: DataTypes.STRING
     },
+    benefitType: {
+      type: DataTypes.ENUM,
+      values: ['SIN_COSTO', 'DESCUENTO', 'COMPLEMENTO'],
+      allowNull: false
+    },
     assignmentDate: {
       type: DataTypes.DATEONLY,
       allowNull: true
