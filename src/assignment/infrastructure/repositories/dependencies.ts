@@ -17,6 +17,10 @@ import { CreateAssignmentLoan } from '@assignment-module-application/user-cases/
 import { UpdateStatusDiscountNote } from '@src/assignment/application/user-cases/update-status-discount-note';
 import { DeleteAssignmentLoan } from '@assignment-module-application/user-cases/delete-assignment-loan';
 
+import { GetFormDataOfAcceptanceUseCase } from '@assignment-module-application/user-cases/acceptance-form/get-form-data';
+import { CreateAcceptanceProcessUseCase } from '@assignment-module-application/user-cases/acceptance-form/create-acceptance-process';
+import { UpdateAcceptanceStatusUseCase } from '@assignment-module-application/user-cases/acceptance-form/update-acceptance-status';
+
 import { Validations } from '@assignment-module-application/user-cases/validations';
 
 import { AssignmentDomainService } from '@assignment-module-application/services/assignment-domain-service';
@@ -81,6 +85,19 @@ const updateDiscountNote = new UpdateStatusDiscountNote(
 const deleteAssignmentLoan = new DeleteAssignmentLoan(
   sequelizeAssignmentRepository
 );
+const getFormDataOfAcceptance = new GetFormDataOfAcceptanceUseCase(
+  sequelizeAssignmentRepository,
+  settingRepository
+);
+
+const createAcceptanceProcess = new CreateAcceptanceProcessUseCase(
+  sequelizeAssignmentRepository,
+  settingRepository
+);
+
+const updateStatusAcceptanceAssignment = new UpdateAcceptanceStatusUseCase(
+  sequelizeAssignmentRepository
+);
 
 //Controllers
 const assignmentController = new AssignmentController(
@@ -93,7 +110,10 @@ const assignmentController = new AssignmentController(
   updateAssignment,
   createAssignmentLoan,
   updateDiscountNote,
-  deleteAssignmentLoan
+  deleteAssignmentLoan,
+  getFormDataOfAcceptance,
+  createAcceptanceProcess,
+  updateStatusAcceptanceAssignment
 );
 
 export { assignmentController };

@@ -14,7 +14,8 @@ export enum AssignmentStatus {
   'CANCELLED' = 'CANCELADO',
   'ACTIVE' = 'ACTIVO',
   'AUTO_DE_ASSIGNMENT' = 'BAJA_AUTOMATICA',
-  'MANUAL_DE_ASSIGNMENT' = 'BAJA_MANUAL'
+  'MANUAL_DE_ASSIGNMENT' = 'BAJA_MANUAL',
+  'ACCEPTED' = 'ACEPTADO'
 }
 
 export class AssignmentEntity {

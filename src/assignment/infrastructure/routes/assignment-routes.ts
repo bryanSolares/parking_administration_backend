@@ -71,6 +71,18 @@ routes
     '/assignment-loan/:assignment_loan_id',
     validateRequest(assignmentIdSchema, 'params'),
     assignmentController.deleteAssignmentLoan.bind(assignmentController)
+  )
+  .get(
+    '/acceptance/:assignment_id/data',
+    assignmentController.getAcceptanceData.bind(assignmentController)
+  )
+  .post(
+    '/acceptance/:assignment_id',
+    assignmentController.sendAcceptanceForm.bind(assignmentController)
+  )
+  .patch(
+    '/acceptance/:assignment_id',
+    assignmentController.updateStatusAcceptanceForm.bind(assignmentController)
   );
 
 export default routes;

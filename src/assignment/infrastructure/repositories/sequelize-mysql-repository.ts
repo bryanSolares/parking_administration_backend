@@ -35,6 +35,7 @@ import { VehicleType } from '@src/location/core/entities/slot-entity';
 import { TagEntity } from '@src/parameters/core/entities/tag-entity';
 import { TagStatus } from '@src/parameters/core/entities/tag-entity';
 import { LocationEntity } from '@src/location/core/entities/location-entity';
+import { format } from '@formkit/tempo';
 
 export class SequelizeAssignmentRepository implements AssignmentRepository {
   async createAssignment(assignment: AssignmentEntity): Promise<void> {
@@ -497,5 +498,50 @@ export class SequelizeAssignmentRepository implements AssignmentRepository {
       { status: 'INACTIVO' },
       { where: { id: assignmentLoanId } }
     );
+  }
+
+  async changeStatusAssignment(
+    assignmentId: string,
+    status: AssignmentStatus
+  ): Promise<void> {
+    console.log(assignmentId, status);
+
+    if (status === AssignmentStatus.ACTIVE) {
+      await AssignmentModel.update(
+        {
+          status,
+          assignmentDate: format({
+            date: new Date(),
+            format: 'YYYY-MM-DD',
+            tz: 'America/Guatemala'
+          })
+        },
+        { where: { id: assignmentId } }
+      );
+    }
+
+    //TODO: extract to function formatDATE
+    if (
+      status ===
+      (AssignmentStatus.CANCELLED ||
+        AssignmentStatus.MANUAL_DE_ASSIGNMENT ||
+        AssignmentStatus.AUTO_DE_ASSIGNMENT)
+    ) {
+      await AssignmentModel.update(
+        {
+          status,
+          decisionDate: format({
+            date: new Date(),
+            format: 'YYYY-MM-DD',
+            tz: 'America/Guatemala'
+          })
+        },
+        { where: { id: assignmentId } }
+      );
+    }
+
+    if (status === AssignmentStatus.IN_PROGRESS) {
+      await AssignmentModel.update({ status }, { where: { id: assignmentId } });
+    }
   }
 }

@@ -73,4 +73,9 @@ export interface AssignmentRepository {
     functionName: ListOfFunctions,
     parameters: string[]
   ): Promise<ReturnType>;
+
+  changeStatusAssignment(
+    assignmentId: string,
+    status: AssignmentStatus
+  ): Promise<void>;
 }

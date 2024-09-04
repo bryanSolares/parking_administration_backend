@@ -11,6 +11,9 @@ import { UpdateAssignment } from '@src/assignment/application/user-cases/update-
 import { CreateAssignmentLoan } from '@src/assignment/application/user-cases/create-assignment-loan';
 import { UpdateStatusDiscountNote } from '@src/assignment/application/user-cases/update-status-discount-note';
 import { DeleteAssignmentLoan } from '@src/assignment/application/user-cases/delete-assignment-loan';
+import { GetFormDataOfAcceptanceUseCase } from '@src/assignment/application/user-cases/acceptance-form/get-form-data';
+import { CreateAcceptanceProcessUseCase } from '@src/assignment/application/user-cases/acceptance-form/create-acceptance-process';
+import { UpdateAcceptanceStatusUseCase } from '@src/assignment/application/user-cases/acceptance-form/update-acceptance-status';
 
 export class AssignmentController {
   constructor(
@@ -23,7 +26,10 @@ export class AssignmentController {
     private readonly updateAssignmentUseCase: UpdateAssignment,
     private readonly createAssignmentLoanUseCase: CreateAssignmentLoan,
     private readonly updateDiscountNoteUseCase: UpdateStatusDiscountNote,
-    private readonly deleteAssignmentLoanUseCase: DeleteAssignmentLoan
+    private readonly deleteAssignmentLoanUseCase: DeleteAssignmentLoan,
+    private readonly getFormDataOfAcceptanceUseCase: GetFormDataOfAcceptanceUseCase,
+    private readonly createAcceptanceProcessUseCase: CreateAcceptanceProcessUseCase,
+    private readonly updateAcceptanceStatusUseCase: UpdateAcceptanceStatusUseCase
   ) {}
 
   async createAssignment(req: Request, res: Response, next: NextFunction) {
@@ -163,6 +169,43 @@ export class AssignmentController {
     try {
       await this.deleteAssignmentLoanUseCase.run(assignmentId);
       res.status(200).json({ message: 'Assignment loan deleted' });
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  async getAcceptanceData(req: Request, res: Response, next: NextFunction) {
+    const assignmentId = req.params.assignment_id;
+    try {
+      const data = await this.getFormDataOfAcceptanceUseCase.run(assignmentId);
+      res.status(200).json({ data });
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  async sendAcceptanceForm(req: Request, res: Response, next: NextFunction) {
+    const assignmentId = req.params.assignment_id;
+    const bossData = req.body.headEmployeeData;
+    try {
+      await this.createAcceptanceProcessUseCase.run(bossData, assignmentId);
+      res.status(200).json({ message: 'Acceptance form created' });
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  async updateStatusAcceptanceForm(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) {
+    const assignmentId = req.params.assignment_id;
+    const { status } = req.body;
+
+    try {
+      await this.updateAcceptanceStatusUseCase.run(assignmentId, status);
+      res.status(200).json({ message: 'Status of assignment updated' });
     } catch (error) {
       next(error);
     }
