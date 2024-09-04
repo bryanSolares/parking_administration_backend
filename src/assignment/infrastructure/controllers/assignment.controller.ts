@@ -5,7 +5,7 @@ import { CreateAssignment } from '@src/assignment/application/user-cases/create-
 import { AssignmentFinder } from '@src/assignment/application/user-cases/assignment-finder';
 import { AssignmentFinderById } from '@src/assignment/application/user-cases/assignment-finder-by-id';
 //import { CreateDiscountNote } from '@src/assignment/application/user-cases/create-discount-note';
-import { CreateDeAssignment } from '@src/assignment/application/user-cases/create-deassignment';
+import { CreateDeAssignment } from '@src/assignment/application/user-cases/create-de-assignment';
 import { GetEmployeeByCode } from '@src/assignment/application/user-cases/get-employee';
 import { UpdateAssignment } from '@src/assignment/application/user-cases/update-assignment';
 import { CreateAssignmentLoan } from '@src/assignment/application/user-cases/create-assignment-loan';
@@ -103,13 +103,16 @@ export class AssignmentController {
     }
   }
 
-  createDeAssignment(req: Request, res: Response, next: NextFunction) {
-    //const assignmentId = req.params.assignment_id;
-    //const deAssignment = req.body;
+  async createDeAssignment(req: Request, res: Response, next: NextFunction) {
+    const assignmentId = req.params.assignment_id;
+    const deAssignmentData = req.body;
 
     try {
-      //await this.deAssignmentByIdUseCase.run(assignmentId, deAssignment);
-      res.status(201).json({ message: 'DeAssignment created' });
+      await this.deAssignmentByIdUseCase.run({
+        assignmentId,
+        deAssignmentData
+      });
+      res.status(201).json({ message: 'De-assignment created' });
     } catch (error) {
       next(error);
     }

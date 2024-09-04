@@ -206,6 +206,14 @@ export class SequelizeAssignmentRepository implements AssignmentRepository {
     return { data, pageCounter: allPages };
   }
 
+  async createDeAssignment(deAssignment: DeAssignmentEntity): Promise<void> {
+    await DeAssignmentModel.create({
+      ...deAssignment.toPrimitives(),
+      id: uuid(),
+      assignmentId: deAssignment.assignmentId
+    });
+  }
+
   async executeFunction(
     functionName: ListOfFunctions,
     parameters: string[]
@@ -239,37 +247,6 @@ export class SequelizeAssignmentRepository implements AssignmentRepository {
       },
       { fields: ['id', 'assignment_id', 'status_dispatched', 'last_notice'] }
     );
-  }
-
-  async createDeAssignment(
-    assignmentId: string,
-    deAssignment: DeAssignmentEntity
-  ): Promise<void> {
-    const transaction = await sequelize.transaction();
-
-    if (Object.values(deAssignment).length !== 0) {
-      await AssignmentModel.update(
-        { status: 'INACTIVO' },
-        { where: { id: assignmentId }, transaction }
-      );
-
-      await DeAssignmentModel.create(
-        { ...deAssignment, id: uuid(), assignment_id: assignmentId },
-        { transaction }
-      );
-    } else {
-      await AssignmentLoanModel.update(
-        {
-          status: 'INACTIVO'
-        },
-        {
-          where: { assignment_id: assignmentId },
-          transaction
-        }
-      );
-    }
-
-    await transaction.commit();
   }
 
   async createAssignmentLoan(

@@ -102,8 +102,8 @@ export const assignmentIdSchema = z.union([
 ]);
 
 export const createDeAssignmentBodySchema = z.object({
-  reason: z.string().optional(),
-  de_assignment_date: z.string().date('YYYY-MM-DD').optional()
+  reason: z.string(),
+  deAssignmentDate: z.string().date('YYYY-MM-DD')
 });
 
 export const getAssignmentsSchemaForQuery = z.object({

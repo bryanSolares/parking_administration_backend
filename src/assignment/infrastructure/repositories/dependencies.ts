@@ -10,7 +10,7 @@ import { GetEmployeeByCode } from '@assignment-module-application/user-cases/get
 import { CreateAssignment } from '@assignment-module-application/user-cases/create-assignment';
 import { AssignmentFinder } from '@assignment-module-application/user-cases/assignment-finder';
 import { AssignmentFinderById } from '@assignment-module-application/user-cases/assignment-finder-by-id';
-import { CreateDeAssignment } from '@assignment-module-application/user-cases/create-deassignment';
+import { CreateDeAssignment } from '@src/assignment/application/user-cases/create-de-assignment';
 //import { CreateDiscountNote } from '@assignment-module-application/user-cases/create-discount-note';
 import { UpdateAssignment } from '@assignment-module-application/user-cases/update-assignment';
 import { CreateAssignmentLoan } from '@assignment-module-application/user-cases/create-assignment-loan';
@@ -66,9 +66,7 @@ const assignmentFinder = new AssignmentFinder(sequelizeAssignmentRepository);
 const assignmentFinderById = new AssignmentFinderById(
   sequelizeAssignmentRepository
 );
-const deAssignmentById = new CreateDeAssignment();
-//sequelizeAssignmentRepository,
-//notificationService
+const deAssignmentById = new CreateDeAssignment(sequelizeAssignmentRepository);
 //const createDiscountNote = new CreateDiscountNote();
 //sequelizeAssignmentRepository,
 //notificationService

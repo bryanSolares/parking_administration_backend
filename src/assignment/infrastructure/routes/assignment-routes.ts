@@ -54,7 +54,7 @@ routes
     assignmentController.assignmentFinderById.bind(assignmentController)
   )
   .post(
-    '/de_assignment/:assignment_id',
+    '/:assignment_id/de-assignment/',
     validateRequest(assignmentIdSchema, 'params'),
     validateRequest(createDeAssignmentBodySchema, 'body'),
     assignmentController.createDeAssignment.bind(assignmentController)

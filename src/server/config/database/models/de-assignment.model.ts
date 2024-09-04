@@ -11,25 +11,30 @@ DeAssignmentModel.init(
       primaryKey: true,
       unique: true
     },
-    assignment_id: {
+    assignmentId: {
       type: DataTypes.UUID,
-      allowNull: false
+      allowNull: false,
+      references: {
+        model: 'assignment',
+        key: 'id'
+      }
     },
     reason: {
       type: DataTypes.STRING,
       allowNull: false
     },
-    de_assignment_date: {
-      type: DataTypes.DATE,
+    deAssignmentDate: {
+      type: DataTypes.DATEONLY,
       allowNull: false
     },
-    is_rpa_action: {
+    isRpaAction: {
       type: DataTypes.BOOLEAN,
       defaultValue: false
     }
   },
   {
     sequelize,
+    underscored: true,
     modelName: 'de_assignment',
     tableName: 'de_assignment',
     updatedAt: 'updated_at',

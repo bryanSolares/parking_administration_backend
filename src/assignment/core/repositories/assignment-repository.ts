@@ -40,12 +40,9 @@ export interface AssignmentRepository {
   createAssignment(assignment: AssignmentEntity): Promise<void>;
   getAssignmentById(id: string): Promise<FinderResultById | null>;
   getAssignments(limit: number, page: number): Promise<AssignmentFinderResult>;
+  createDeAssignment(deAssignment: DeAssignmentEntity): Promise<void>;
 
   createAssignmentLoan(assignmentLoan: AssignmentLoadEntity): Promise<void>;
-  createDeAssignment(
-    assignmentId: string,
-    deAssignment: DeAssignmentEntity
-  ): Promise<void>;
   createDiscountNote(idAssignment: string): Promise<void>;
   getDiscountNoteById(id: string): Promise<DiscountNoteEntity | null>;
   employeeHasAnActiveAssignment(employeeId: string): Promise<boolean>;
