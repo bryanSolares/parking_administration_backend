@@ -79,6 +79,7 @@ export interface AssignmentRepository {
 
   changeStatusAssignment(
     assignmentId: string,
-    status: AssignmentStatus
+    status: AssignmentStatus,
+    assignmentDate?: string
   ): Promise<void>;
 }

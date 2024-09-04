@@ -186,9 +186,9 @@ export class AssignmentController {
 
   async sendAcceptanceForm(req: Request, res: Response, next: NextFunction) {
     const assignmentId = req.params.assignment_id;
-    const bossData = req.body.headEmployeeData;
+    const data = req.body;
     try {
-      await this.createAcceptanceProcessUseCase.run(bossData, assignmentId);
+      await this.createAcceptanceProcessUseCase.run(data, assignmentId);
       res.status(200).json({ message: 'Acceptance form created' });
     } catch (error) {
       next(error);

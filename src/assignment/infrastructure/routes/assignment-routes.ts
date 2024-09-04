@@ -13,6 +13,9 @@ import { assignmentUpdateSchema } from '../utils/assignment-zod-schemas';
 import { statusDiscountNoteBodySchema } from '../utils/assignment-zod-schemas';
 import { assignmentIdSchema } from '../utils/assignment-zod-schemas';
 
+import { dataForAcceptanceFormSchema } from '../utils/acceptance-zod-schema';
+import { statusAcceptanceFormSchema } from '../utils/acceptance-zod-schema';
+
 const routes = Router();
 
 // Employee
@@ -74,14 +77,19 @@ routes
   )
   .get(
     '/acceptance/:assignment_id/data',
+    validateRequest(assignmentIdSchema, 'params'),
     assignmentController.getAcceptanceData.bind(assignmentController)
   )
   .post(
     '/acceptance/:assignment_id',
+    validateRequest(assignmentIdSchema, 'params'),
+    validateRequest(dataForAcceptanceFormSchema, 'body'),
     assignmentController.sendAcceptanceForm.bind(assignmentController)
   )
   .patch(
     '/acceptance/:assignment_id',
+    validateRequest(assignmentIdSchema, 'params'),
+    validateRequest(statusAcceptanceFormSchema, 'body'),
     assignmentController.updateStatusAcceptanceForm.bind(assignmentController)
   );
 

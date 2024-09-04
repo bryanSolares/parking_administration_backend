@@ -506,14 +506,14 @@ export class SequelizeAssignmentRepository implements AssignmentRepository {
 
   async changeStatusAssignment(
     assignmentId: string,
-    status: AssignmentStatus
+    status: AssignmentStatus,
+    assignmentDate?: string
   ): Promise<void> {
     if (
       status === AssignmentStatus.ACCEPTED ||
       status === AssignmentStatus.CANCELLED ||
       status === AssignmentStatus.REJECTED
     ) {
-      console.log('update status');
       await AssignmentModel.update(
         {
           status,
@@ -527,8 +527,11 @@ export class SequelizeAssignmentRepository implements AssignmentRepository {
       );
     }
 
-    if (status === AssignmentStatus.IN_PROGRESS) {
-      await AssignmentModel.update({ status }, { where: { id: assignmentId } });
+    if (status === AssignmentStatus.IN_PROGRESS && assignmentDate) {
+      await AssignmentModel.update(
+        { status, assignmentDate },
+        { where: { id: assignmentId } }
+      );
     }
   }
 }

@@ -17,12 +17,15 @@ export class CreateAcceptanceProcessUseCase {
 
   async run(
     data: {
-      employeeCode: string;
-      name: string;
-      phone: string;
-      email: string;
-      subManagement: string;
-      management1: string;
+      headEmployeeData: {
+        employeeCode: string;
+        name: string;
+        phone: string;
+        email: string;
+        subManagement: string;
+        management1: string;
+      };
+      assignmentDate: string;
     },
     assignmentId: string
   ) {
@@ -81,7 +84,8 @@ export class CreateAcceptanceProcessUseCase {
     // update status
     await this.assignmentRepository.changeStatusAssignment(
       assignmentId,
-      AssignmentStatus.IN_PROGRESS
+      AssignmentStatus.IN_PROGRESS,
+      data.assignmentDate
     );
   }
 }
