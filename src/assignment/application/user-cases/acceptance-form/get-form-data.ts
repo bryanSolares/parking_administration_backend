@@ -1,3 +1,4 @@
+import { AssignmentStatus } from '@src/assignment/core/entities/assignment-entity';
 import { AssignmentRepository } from '@src/assignment/core/repositories/assignment-repository';
 import { SettingRepository } from '@src/parameters/core/repositories/setting-repository';
 import { SettingKeys } from '@src/parameters/core/repositories/setting-repository';
@@ -18,6 +19,18 @@ export class GetFormDataOfAcceptanceUseCase {
         'ASSIGNMENT_NOT_FOUND',
         404,
         'Assignment not found',
+        true
+      );
+    }
+
+    if (
+      assignment.status !==
+      (AssignmentStatus.CREATED || AssignmentStatus.IN_PROGRESS)
+    ) {
+      throw new AppError(
+        'ASSIGNMENT_NOT_VALID',
+        400,
+        'The assignment is not valid, please check the status of the assignment',
         true
       );
     }
