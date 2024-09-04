@@ -1,13 +1,15 @@
 import { DataTypes, Model } from 'sequelize';
 import { sequelize } from '@config/database/sequelize';
+import { AssignmentStatus } from '@src/assignment/core/entities/assignment-entity';
 
 export class AssignmentModel extends Model {}
 
 const assignmentStatus = [
-  'CREADO',
+  'ASIGNADO',
   'EN_PROGRESO',
   'CANCELADO',
-  'ACTIVO',
+  'RECHAZADO',
+  'ACEPTADO',
   'BAJA_AUTOMATICA',
   'BAJA_MANUAL'
 ];
@@ -35,18 +37,21 @@ AssignmentModel.init(
         key: 'id'
       }
     },
+    parkingCardNumber: {
+      type: DataTypes.STRING
+    },
     assignmentDate: {
       type: DataTypes.DATEONLY,
       allowNull: true
     },
-    decisionDate: {
+    formDecisionDate: {
       type: DataTypes.DATEONLY,
       allowNull: true
     },
     status: {
       type: DataTypes.ENUM,
       values: assignmentStatus,
-      defaultValue: 'CREADO'
+      defaultValue: AssignmentStatus.ASSIGNED
     }
   },
   {

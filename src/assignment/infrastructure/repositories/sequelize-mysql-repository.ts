@@ -137,6 +137,7 @@ export class SequelizeAssignmentRepository implements AssignmentRepository {
       id: plainData.id,
       assignmentDate: plainData.assignmentDate ?? '',
       decisionDate: plainData.decisionDate ?? '',
+      parkingCardNumber: plainData.parkingCardNumber,
       status: plainData.status as AssignmentStatus,
       employee: employeeData,
       tags: tagsData,
@@ -195,6 +196,7 @@ export class SequelizeAssignmentRepository implements AssignmentRepository {
         }),
         assignmentDate: plainResult.assignmentDate ?? '',
         decisionDate: plainResult.decisionDate ?? '',
+        parkingCardNumber: plainResult.parkingCardNumber,
         status: plainResult.status as AssignmentStatus
       };
     });
@@ -504,33 +506,16 @@ export class SequelizeAssignmentRepository implements AssignmentRepository {
     assignmentId: string,
     status: AssignmentStatus
   ): Promise<void> {
-    console.log(assignmentId, status);
-
-    if (status === AssignmentStatus.ACTIVE) {
-      await AssignmentModel.update(
-        {
-          status,
-          assignmentDate: format({
-            date: new Date(),
-            format: 'YYYY-MM-DD',
-            tz: 'America/Guatemala'
-          })
-        },
-        { where: { id: assignmentId } }
-      );
-    }
-
-    //TODO: extract to function formatDATE
     if (
-      status ===
-      (AssignmentStatus.CANCELLED ||
-        AssignmentStatus.MANUAL_DE_ASSIGNMENT ||
-        AssignmentStatus.AUTO_DE_ASSIGNMENT)
+      status === AssignmentStatus.ACCEPTED ||
+      status === AssignmentStatus.CANCELLED ||
+      status === AssignmentStatus.REJECTED
     ) {
+      console.log('update status');
       await AssignmentModel.update(
         {
           status,
-          decisionDate: format({
+          formDecisionDate: format({
             date: new Date(),
             format: 'YYYY-MM-DD',
             tz: 'America/Guatemala'

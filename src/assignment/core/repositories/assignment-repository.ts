@@ -13,6 +13,7 @@ export type FinderResultById = {
   id: string;
   assignmentDate: string;
   decisionDate: string;
+  parkingCardNumber: string;
   status: AssignmentStatus;
   location: LocationEntity;
   employee: EmployeeEntity;

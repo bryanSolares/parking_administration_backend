@@ -7,7 +7,10 @@ export class UpdateAcceptanceStatusUseCase {
 
   async run(
     assignmentId: string,
-    status: AssignmentStatus.ACCEPTED | AssignmentStatus.CANCELLED
+    status:
+      | AssignmentStatus.ACCEPTED
+      | AssignmentStatus.CANCELLED
+      | AssignmentStatus.REJECTED
   ) {
     const assignment =
       await this.assignmentRepository.getAssignmentById(assignmentId);
@@ -32,9 +35,7 @@ export class UpdateAcceptanceStatusUseCase {
 
     await this.assignmentRepository.changeStatusAssignment(
       assignmentId,
-      status === AssignmentStatus.ACCEPTED
-        ? AssignmentStatus.ACTIVE
-        : AssignmentStatus.CANCELLED
+      status
     );
   }
 }

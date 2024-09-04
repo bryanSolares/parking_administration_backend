@@ -9,13 +9,13 @@ import { VehicleType } from '@location-module-core/entities/slot-entity';
 import { TagEntity, TagStatus } from '@src/parameters/core/entities/tag-entity';
 
 export enum AssignmentStatus {
-  'CREATED' = 'CREADO',
+  'ASSIGNED' = 'ASIGNADO',
   'IN_PROGRESS' = 'EN_PROGRESO',
   'CANCELLED' = 'CANCELADO',
-  'ACTIVE' = 'ACTIVO',
+  'REJECTED' = 'RECHAZADO',
+  'ACCEPTED' = 'ACEPTADO',
   'AUTO_DE_ASSIGNMENT' = 'BAJA_AUTOMATICA',
-  'MANUAL_DE_ASSIGNMENT' = 'BAJA_MANUAL',
-  'ACCEPTED' = 'ACEPTADO'
+  'MANUAL_DE_ASSIGNMENT' = 'BAJA_MANUAL'
 }
 
 export class AssignmentEntity {
@@ -23,16 +23,18 @@ export class AssignmentEntity {
     public readonly id: string,
     public readonly slot: SlotEntity,
     public readonly employee: EmployeeEntity,
+    public readonly parkingCardNumber: string,
     public readonly status: AssignmentStatus,
     public readonly tags: TagEntity[],
     public readonly assignmentDate?: string,
-    public readonly decisionDate?: string
+    public readonly formDecisionDate?: string
   ) {
     this.id = id;
     this.slot = slot;
     this.employee = employee;
     this.assignmentDate = assignmentDate;
-    this.decisionDate = decisionDate;
+    this.formDecisionDate = formDecisionDate;
+    this.parkingCardNumber = parkingCardNumber;
     this.status = status;
     this.tags = tags;
   }
@@ -75,6 +77,7 @@ export class AssignmentEntity {
         type: VehicleType;
       }[];
     };
+    parkingCardNumber: string;
     status: AssignmentStatus;
     tags: {
       id: string;
@@ -83,18 +86,19 @@ export class AssignmentEntity {
       status: TagStatus;
     }[];
     assignmentDate?: string;
-    decisionDate?: string;
+    formDecisionDate?: string;
   }): AssignmentEntity {
     return new AssignmentEntity(
       primitiveData.id,
       SlotEntity.fromPrimitives(primitiveData.slot),
       EmployeeEntity.fromPrimitive(primitiveData.employee),
+      primitiveData.parkingCardNumber,
       primitiveData.status,
       primitiveData.tags
         ? primitiveData.tags.map(tag => TagEntity.fromPrimitives(tag))
         : [],
       primitiveData.assignmentDate,
-      primitiveData.decisionDate
+      primitiveData.formDecisionDate
     );
   }
 
@@ -107,7 +111,8 @@ export class AssignmentEntity {
         vehicles: this.employee.vehicles.map(vehicle => vehicle.toPrimitive())
       },
       assignmentDate: this.assignmentDate,
-      decisionDate: this.decisionDate,
+      formDecisionDate: this.formDecisionDate,
+      parkingCardNumber: this.parkingCardNumber,
       status: this.status,
       tags: this.tags ? this.tags.map(tag => tag.toPrimitives()) : []
     };

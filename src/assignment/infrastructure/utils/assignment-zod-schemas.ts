@@ -41,6 +41,7 @@ const scheduleSchema = z.object({
 export const assignmentCreateSchema = z.object({
   slotId: z.string().uuid(),
   employee: employeeSchema,
+  parkingCardNumber: z.string(),
   tags: z.array(z.string().uuid()).nonempty()
 });
 

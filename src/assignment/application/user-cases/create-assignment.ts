@@ -46,6 +46,7 @@ export class CreateAssignment {
         type: VehicleType;
       }[];
     };
+    parkingCardNumber: string;
     tags: string[];
   }): Promise<void> {
     const slot = await this.locationRepository.getSlotById(data.slotId);
@@ -79,7 +80,8 @@ export class CreateAssignment {
       assignmentId,
       slot!,
       employee,
-      AssignmentStatus.CREATED,
+      data.parkingCardNumber,
+      AssignmentStatus.ASSIGNED,
       tags
     );
 

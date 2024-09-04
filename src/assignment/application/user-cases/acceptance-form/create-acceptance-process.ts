@@ -40,7 +40,7 @@ export class CreateAcceptanceProcessUseCase {
 
     if (
       assignment.status !==
-      (AssignmentStatus.CREATED || AssignmentStatus.IN_PROGRESS)
+      (AssignmentStatus.ASSIGNED || AssignmentStatus.IN_PROGRESS)
     ) {
       throw new AppError(
         'ASSIGNMENT_NOT_VALID',

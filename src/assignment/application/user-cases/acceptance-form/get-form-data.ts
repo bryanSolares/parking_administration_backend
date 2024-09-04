@@ -25,7 +25,7 @@ export class GetFormDataOfAcceptanceUseCase {
 
     if (
       assignment.status !==
-      (AssignmentStatus.CREATED || AssignmentStatus.IN_PROGRESS)
+      (AssignmentStatus.ASSIGNED || AssignmentStatus.IN_PROGRESS)
     ) {
       throw new AppError(
         'ASSIGNMENT_NOT_VALID',
@@ -53,6 +53,7 @@ export class GetFormDataOfAcceptanceUseCase {
 
     return {
       assignmentId: assignment.id,
+      parkingCardNumber: assignment.parkingCardNumber,
       employee: {
         id,
         employeeCode,
