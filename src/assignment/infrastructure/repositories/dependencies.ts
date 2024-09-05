@@ -15,7 +15,7 @@ import { CreateDiscountNote } from '@assignment-module-application/user-cases/cr
 import { UpdateAssignment } from '@assignment-module-application/user-cases/update-assignment';
 import { CreateAssignmentLoan } from '@assignment-module-application/user-cases/assignment-loan/create-assignment-loan';
 import { UpdateStatusDiscountNote } from '@src/assignment/application/user-cases/update-status-discount-note';
-import { DeleteAssignmentLoan } from '@assignment-module-application/user-cases/delete-assignment-loan';
+import { DeleteAssignmentLoan } from '@src/assignment/application/user-cases/assignment-loan/delete-assignment-loan';
 
 import { GetFormDataOfAcceptanceUseCase } from '@assignment-module-application/user-cases/acceptance-form/get-form-data';
 import { CreateAcceptanceProcessUseCase } from '@assignment-module-application/user-cases/acceptance-form/create-acceptance-process';

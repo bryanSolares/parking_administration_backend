@@ -312,6 +312,27 @@ export class SequelizeAssignmentRepository implements AssignmentRepository {
     );
   }
 
+  async getAssignmentLoanById(
+    id: string
+  ): Promise<AssignmentLoadEntity | null> {
+    const assignmentLoan = await AssignmentLoanModel.findOne({
+      where: { id },
+      include: [{ model: EmployeeModel, as: 'employee' }]
+    });
+
+    if (!assignmentLoan) return null;
+
+    return AssignmentLoadEntity.fromPrimitives(
+      assignmentLoan.get({ plain: true })
+    );
+  }
+
+  async deleteAssignmentLoan(assignmentLoanId: string): Promise<void> {
+    await AssignmentLoanModel.destroy({
+      where: { id: assignmentLoanId }
+    });
+  }
+
   /* eslint-disable  @typescript-eslint/no-unsafe-return */
   async upsertEmployee(
     employee: EmployeeEntity,
@@ -480,23 +501,6 @@ export class SequelizeAssignmentRepository implements AssignmentRepository {
     //   );
     // }
     // await transaction.commit();
-  }
-
-  async getAssignmentLoanById(
-    id: string
-  ): Promise<AssignmentLoadEntity | null> {
-    const assignmentLoan = await AssignmentLoanModel.findOne({
-      where: { id, status: 'ACTIVO' },
-      include: [{ model: EmployeeModel, as: 'employee' }]
-    });
-    return assignmentLoan?.get({ plain: true }) as AssignmentLoadEntity;
-  }
-
-  async deleteAssignmentLoan(assignmentLoanId: string): Promise<void> {
-    await AssignmentLoanModel.update(
-      { status: 'INACTIVO' },
-      { where: { id: assignmentLoanId } }
-    );
   }
 
   async changeStatusAssignment(

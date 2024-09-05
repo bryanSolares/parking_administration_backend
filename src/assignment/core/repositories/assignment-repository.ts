@@ -53,6 +53,10 @@ export interface AssignmentRepository {
   getAssignmentLoanByIdAssignment(
     assignmentId: string
   ): Promise<AssignmentLoadEntity | null>;
+  getAssignmentLoanById(
+    assignmentLoanId: string
+  ): Promise<AssignmentLoadEntity | null>;
+  deleteAssignmentLoan(assignmentLoanId: string): Promise<void>;
 
   employeeHasAnActiveAssignment(employeeId: string): Promise<boolean>;
   canCreateMoreSchedulesInSlot(slotId: string): Promise<boolean>;
@@ -66,11 +70,6 @@ export interface AssignmentRepository {
     assignment: AssignmentEntity,
     vehicleIdsForDelete: string[]
   ): Promise<void>;
-  getAssignmentLoanById(
-    assignmentLoanId: string
-  ): Promise<AssignmentLoadEntity | null>;
-
-  deleteAssignmentLoan(assignmentLoanId: string): Promise<void>;
 
   executeFunction(
     functionName: ListOfFunctions,

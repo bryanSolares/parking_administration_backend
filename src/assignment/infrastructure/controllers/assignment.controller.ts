@@ -10,7 +10,7 @@ import { GetEmployeeByCode } from '@src/assignment/application/user-cases/get-em
 import { UpdateAssignment } from '@src/assignment/application/user-cases/update-assignment';
 import { CreateAssignmentLoan } from '@src/assignment/application/user-cases/assignment-loan/create-assignment-loan';
 import { UpdateStatusDiscountNote } from '@src/assignment/application/user-cases/update-status-discount-note';
-import { DeleteAssignmentLoan } from '@src/assignment/application/user-cases/delete-assignment-loan';
+import { DeleteAssignmentLoan } from '@src/assignment/application/user-cases/assignment-loan/delete-assignment-loan';
 import { GetFormDataOfAcceptanceUseCase } from '@src/assignment/application/user-cases/acceptance-form/get-form-data';
 import { CreateAcceptanceProcessUseCase } from '@src/assignment/application/user-cases/acceptance-form/create-acceptance-process';
 import { UpdateAcceptanceStatusUseCase } from '@src/assignment/application/user-cases/acceptance-form/update-acceptance-status';
