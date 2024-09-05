@@ -179,7 +179,11 @@ export class SequelizeAssignmentRepository implements AssignmentRepository {
         },
         {
           model: EmployeeModel,
-          attributes: ['id', 'name', 'email', 'phone']
+          attributes: ['id', 'name', 'email', 'phone'],
+          include: [{ model: VehicleModel }]
+        },
+        {
+          model: DiscountNoteModel
         }
       ],
       order: [['created_at', 'DESC']],
@@ -207,6 +211,9 @@ export class SequelizeAssignmentRepository implements AssignmentRepository {
         decisionDate: plainResult.decisionDate ?? '',
         parkingCardNumber: plainResult.parkingCardNumber,
         benefitType: plainResult.benefitType,
+        discountNote: plainResult.discount_note
+          ? DiscountNoteEntity.fromPrimitives(plainResult.discount_note)
+          : undefined,
         status: plainResult.status as AssignmentStatus
       };
     });
