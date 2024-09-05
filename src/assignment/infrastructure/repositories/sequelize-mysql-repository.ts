@@ -298,7 +298,8 @@ export class SequelizeAssignmentRepository implements AssignmentRepository {
   }
 
   async updateAssignmentLoan(
-    assignmentLoan: AssignmentLoadEntity
+    assignmentLoan: AssignmentLoadEntity,
+    vehiclesForDelete: string[]
   ): Promise<void> {
     const vehiclesData = assignmentLoan.employee.vehicles;
 
@@ -308,6 +309,12 @@ export class SequelizeAssignmentRepository implements AssignmentRepository {
       vehiclesData,
       assignmentLoan.employee.id,
       transaction
+    );
+
+    await Promise.all(
+      vehiclesForDelete.map(
+        async id => await VehicleModel.destroy({ where: { id } })
+      )
     );
 
     await AssignmentLoanModel.update(

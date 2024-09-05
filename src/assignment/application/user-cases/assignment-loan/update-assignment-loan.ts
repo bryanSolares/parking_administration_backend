@@ -27,6 +27,7 @@ export class UpdateAssignmentLoanUseCase {
           type: VehicleType;
         }[];
       };
+      vehiclesForDelete: string[];
     },
     assignmentLoanId: string
   ): Promise<void> {
@@ -51,6 +52,12 @@ export class UpdateAssignmentLoanUseCase {
       data.employee.vehicles
     );
 
+    await this.validations.validateIfVehiclesBelongToEmployee(
+      assignmentLoanDataBase.employee.id,
+      assignmentLoanDataBase.employee.employeeCode,
+      data.vehiclesForDelete.map(id => ({ id }))
+    );
+
     const vehicles = data.employee.vehicles.map(vehicle =>
       VehicleEntity.fromPrimitive({ ...vehicle, id: vehicle.id ?? uuid() })
     );
@@ -72,6 +79,9 @@ export class UpdateAssignmentLoanUseCase {
       data.endDateAssignment
     );
 
-    await this.assignmentRepository.updateAssignmentLoan(assignmentLoan);
+    await this.assignmentRepository.updateAssignmentLoan(
+      assignmentLoan,
+      data.vehiclesForDelete
+    );
   }
 }

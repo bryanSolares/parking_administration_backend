@@ -12,5 +12,6 @@ export const assignmentLoanSchema = z.object({
 export const schemaForAssignmentLoanUpdate = z.object({
   startDateAssignment: z.string().date('YYYY-MM-DD'),
   endDateAssignment: z.string().date('YYYY-MM-DD'),
-  employee: z.object({ vehicles: vehicleSchema })
+  employee: z.object({ vehicles: vehicleSchema }),
+  vehiclesForDelete: z.array(z.string().uuid())
 });

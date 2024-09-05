@@ -163,7 +163,7 @@ export class Validations {
           throw new AppError(
             'VEHICLE_NOT_FOUND',
             400,
-            'You can not add this vehicles because it does not belong to the employee',
+            `The vehicle with id ${vehicle.id} does not belong to the employee`,
             true
           );
         }
