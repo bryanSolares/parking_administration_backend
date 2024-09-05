@@ -289,14 +289,27 @@ export class SequelizeAssignmentRepository implements AssignmentRepository {
     await AssignmentLoanModel.create(
       {
         ...assignmentLoan,
-        id: uuid(),
-        employee_id: employeeId,
-        assignment_id: assignmentLoan.assignment_id
+        employeeId
       },
       { transaction }
     );
 
     await transaction.commit();
+  }
+
+  async getAssignmentLoanByIdAssignment(
+    assignmentId: string
+  ): Promise<AssignmentLoadEntity | null> {
+    const assignmentLoan = await AssignmentLoanModel.findOne({
+      where: { assignmentId, status: 'ACTIVO' },
+      include: [{ model: EmployeeModel, as: 'employee' }]
+    });
+
+    if (!assignmentLoan) return null;
+
+    return AssignmentLoadEntity.fromPrimitives(
+      assignmentLoan.get({ plain: true })
+    );
   }
 
   /* eslint-disable  @typescript-eslint/no-unsafe-return */
@@ -474,16 +487,6 @@ export class SequelizeAssignmentRepository implements AssignmentRepository {
   ): Promise<AssignmentLoadEntity | null> {
     const assignmentLoan = await AssignmentLoanModel.findOne({
       where: { id, status: 'ACTIVO' },
-      include: [{ model: EmployeeModel, as: 'employee' }]
-    });
-    return assignmentLoan?.get({ plain: true }) as AssignmentLoadEntity;
-  }
-
-  async getAssignmentLoanByIdAssignment(
-    assignmentId: string
-  ): Promise<AssignmentLoadEntity | null> {
-    const assignmentLoan = await AssignmentLoanModel.findOne({
-      where: { assignment_id: assignmentId },
       include: [{ model: EmployeeModel, as: 'employee' }]
     });
     return assignmentLoan?.get({ plain: true }) as AssignmentLoadEntity;

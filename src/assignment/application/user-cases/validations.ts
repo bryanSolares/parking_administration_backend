@@ -1,3 +1,4 @@
+import { diffDays } from '@formkit/tempo';
 import { AssignmentRepository } from '@src/assignment/core/repositories/assignment-repository';
 import { ListOfFunctions } from '@src/assignment/core/repositories/assignment-repository';
 import { EmployeeRepository } from '@src/assignment/core/repositories/employee-repository';
@@ -5,12 +6,15 @@ import { SlotEntity } from '@src/location/core/entities/slot-entity';
 import { SlotStatus } from '@src/location/core/entities/slot-entity';
 import { SlotType } from '@src/location/core/entities/slot-entity';
 import { TagEntity } from '@src/parameters/core/entities/tag-entity';
+import { SettingRepository } from '@src/parameters/core/repositories/setting-repository';
+import { SettingKeys } from '@src/parameters/core/repositories/setting-repository';
 import { AppError } from '@src/server/config/err/AppError';
 
 export class Validations {
   constructor(
     private readonly assignmentRepository: AssignmentRepository,
-    private readonly employeeRepository: EmployeeRepository
+    private readonly employeeRepository: EmployeeRepository,
+    private readonly settingRepository: SettingRepository
   ) {}
 
   public async validateIfCanCreate(data: {
@@ -27,6 +31,7 @@ export class Validations {
       database: TagEntity[] | [];
     };
   }): Promise<void> {
+    this.validateIfTagsAreValid(data.tags);
     this.validateIfSlotIsValid(data.slot);
     await this.validateIfCanCreateAssignmentInSlot(data.slot!);
     await this.validateIfVehiclesBelongToEmployee(
@@ -35,7 +40,21 @@ export class Validations {
       data.employee.vehicles
     );
     await this.validateIfEmployeeHasAnActiveAssignment(data.employee.id);
-    this.validateIfTagsAreValid(data.tags);
+  }
+
+  public async validateIfCanCreateAssignmentLoan(employee: {
+    id: string;
+    employeeCode: string;
+    vehicles: {
+      id: string;
+    }[];
+  }) {
+    await this.validateIfEmployeeHasAnActiveAssignment(employee.id);
+    await this.validateIfVehiclesBelongToEmployee(
+      employee.id,
+      employee.employeeCode,
+      employee.vehicles
+    );
   }
 
   private validateIfSlotIsValid(slot: SlotEntity | null) {
@@ -161,6 +180,35 @@ export class Validations {
         'TAGS_NOT_VALID',
         400,
         'Tags are not valid or not exist',
+        true
+      );
+    }
+  }
+
+  public async validateIfRangeOfDaysToAssignmentLoanIsValid(
+    start: string,
+    end: string
+  ) {
+    const diffDaysToAssignmentLoan = diffDays(end, start);
+
+    const setting = await this.settingRepository.getParameterByKey(
+      SettingKeys.MAX_DAYS_TO_ASSIGNMENT_LOAN
+    );
+
+    if (!setting) {
+      throw new AppError(
+        'SETTING_NOT_FOUND',
+        404,
+        'Data max days to assignment loan not found',
+        true
+      );
+    }
+
+    if (diffDaysToAssignmentLoan > Number(setting.settingValue)) {
+      throw new AppError(
+        'INVALID_DATE_RANGE',
+        400,
+        `Date range is invalid, you can only create assignment loan for a maximum of ${setting.settingValue} days`,
         true
       );
     }

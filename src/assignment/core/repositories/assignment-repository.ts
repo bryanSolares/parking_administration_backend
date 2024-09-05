@@ -49,8 +49,11 @@ export interface AssignmentRepository {
     discountNoteId: string,
     status: DiscountNodeStatusSignature
   ): Promise<void>;
-
   createAssignmentLoan(assignmentLoan: AssignmentLoadEntity): Promise<void>;
+  getAssignmentLoanByIdAssignment(
+    assignmentId: string
+  ): Promise<AssignmentLoadEntity | null>;
+
   employeeHasAnActiveAssignment(employeeId: string): Promise<boolean>;
   canCreateMoreSchedulesInSlot(slotId: string): Promise<boolean>;
   upsertEmployee(employee: EmployeeEntity): Promise<string>;
@@ -65,9 +68,6 @@ export interface AssignmentRepository {
   ): Promise<void>;
   getAssignmentLoanById(
     assignmentLoanId: string
-  ): Promise<AssignmentLoadEntity | null>;
-  getAssignmentLoanByIdAssignment(
-    assignmentId: string
   ): Promise<AssignmentLoadEntity | null>;
 
   deleteAssignmentLoan(assignmentLoanId: string): Promise<void>;

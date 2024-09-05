@@ -2,9 +2,11 @@ import { SettingEntity } from '../entities/setting-entity';
 
 export enum SettingKeys {
   WS_EMPLOYEES = 'WS_EMPLOYEES',
-  SIGNATURES_FOR_ACCEPTANCE_FORM = 'SIGNATURES_FOR_ACCEPTANCE_FORM'
+  SIGNATURES_FOR_ACCEPTANCE_FORM = 'SIGNATURES_FOR_ACCEPTANCE_FORM',
+  MAX_DAYS_TO_ASSIGNMENT_LOAN = 'MAX_DAYS_TO_ASSIGNMENT_LOAN'
 }
 
+//TODO: getParameter type string, or json or number
 export interface SettingRepository {
   getParameterByKey(key: SettingKeys): Promise<SettingEntity | null>;
 }

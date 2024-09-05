@@ -8,7 +8,7 @@ import { CreateDiscountNote } from '@src/assignment/application/user-cases/creat
 import { CreateDeAssignment } from '@src/assignment/application/user-cases/create-de-assignment';
 import { GetEmployeeByCode } from '@src/assignment/application/user-cases/get-employee';
 import { UpdateAssignment } from '@src/assignment/application/user-cases/update-assignment';
-import { CreateAssignmentLoan } from '@src/assignment/application/user-cases/create-assignment-loan';
+import { CreateAssignmentLoan } from '@src/assignment/application/user-cases/assignment-loan/create-assignment-loan';
 import { UpdateStatusDiscountNote } from '@src/assignment/application/user-cases/update-status-discount-note';
 import { DeleteAssignmentLoan } from '@src/assignment/application/user-cases/delete-assignment-loan';
 import { GetFormDataOfAcceptanceUseCase } from '@src/assignment/application/user-cases/acceptance-form/get-form-data';
@@ -45,13 +45,10 @@ export class AssignmentController {
   }
 
   async createAssignmentLoan(req: Request, res: Response, next: NextFunction) {
-    const assignment = req.body;
+    const data = req.body;
     const assignmentId = req.params.assignment_id;
     try {
-      await this.createAssignmentLoanUseCase.run({
-        ...assignment,
-        assignment_id: assignmentId
-      });
+      await this.createAssignmentLoanUseCase.run(data, assignmentId);
       res.status(201).json({ message: 'Assignment loan created' });
     } catch (error) {
       next(error);

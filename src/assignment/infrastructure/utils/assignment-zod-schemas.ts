@@ -1,6 +1,6 @@
 import { z } from 'zod';
 
-const employeeSchema = z.object({
+export const employeeSchema = z.object({
   id: z.string().uuid().optional(),
   employeeCode: z.string(),
   name: z.string(),

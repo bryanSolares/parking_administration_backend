@@ -11,7 +11,7 @@ AssignmentLoanModel.init(
       primaryKey: true,
       unique: true
     },
-    assignment_id: {
+    assignmentId: {
       type: DataTypes.UUID,
       allowNull: false,
       references: {
@@ -19,7 +19,7 @@ AssignmentLoanModel.init(
         key: 'id'
       }
     },
-    employee_id: {
+    employeeId: {
       type: DataTypes.UUID,
       allowNull: false,
       references: {
@@ -27,15 +27,15 @@ AssignmentLoanModel.init(
         key: 'id'
       }
     },
-    start_date_assignment: {
+    startDateAssignment: {
       type: DataTypes.DATEONLY,
       allowNull: false
     },
-    end_date_assignment: {
+    endDateAssignment: {
       type: DataTypes.DATEONLY,
       allowNull: false
     },
-    assignment_date: {
+    assignmentDate: {
       type: DataTypes.DATEONLY,
       allowNull: false,
       defaultValue: DataTypes.NOW
@@ -48,6 +48,7 @@ AssignmentLoanModel.init(
   },
   {
     sequelize,
+    underscored: true,
     tableName: 'assignment_loan',
     modelName: 'assignment_loan',
     createdAt: 'created_at',

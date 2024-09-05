@@ -13,6 +13,8 @@ import { assignmentUpdateSchema } from '../utils/assignment-zod-schemas';
 import { statusDiscountNoteBodySchema } from '../utils/assignment-zod-schemas';
 import { assignmentIdSchema } from '../utils/assignment-zod-schemas';
 
+import { assignmentLoanSchema } from '../utils/assignment-loan-zod-schema';
+
 import { dataForAcceptanceFormSchema } from '../utils/acceptance-zod-schema';
 import { statusAcceptanceFormSchema } from '../utils/acceptance-zod-schema';
 
@@ -32,10 +34,6 @@ routes
     '/',
     validateRequest(assignmentCreateSchema, 'body'),
     assignmentController.createAssignment.bind(assignmentController)
-  )
-  .post(
-    '/loan/:assignment_id',
-    assignmentController.createAssignmentLoan.bind(assignmentController)
   )
   .put(
     '/:assignment_id',
@@ -69,6 +67,12 @@ routes
     validateRequest(assignmentIdSchema, 'params'),
     validateRequest(statusDiscountNoteBodySchema, 'body'),
     assignmentController.updateStatusDiscountNode.bind(assignmentController)
+  )
+  .post(
+    '/:assignment_id/loan/',
+    validateRequest(assignmentIdSchema, 'params'),
+    validateRequest(assignmentLoanSchema, 'body'),
+    assignmentController.createAssignmentLoan.bind(assignmentController)
   )
   .delete(
     '/assignment-loan/:assignment_loan_id',
