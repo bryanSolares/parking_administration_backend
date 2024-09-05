@@ -17,7 +17,6 @@ import { DiscountNodeStatusSignature } from '@assignment-module-core/entities/di
 import { DiscountNoteDispatchedStatus } from '@assignment-module-core/entities/discount-note-entity';
 import { EmployeeEntity } from '@assignment-module-core/entities/employee-entity';
 import { VehicleEntity } from '@assignment-module-core/entities/vehicle-entity';
-import { ScheduleEntity } from '@assignment-module-core/entities/schedule-entity';
 import { AssignmentLoadEntity } from '@assignment-module-core/entities/assignment-load-entity';
 import { DeAssignmentEntity } from '@assignment-module-core/entities/deassignment-entity';
 
@@ -25,7 +24,6 @@ import { AssignmentLoanModel } from '@config/database/models/assignment-loan';
 import { AssignmentModel } from '@config/database/models/assignment.model';
 import { EmployeeModel } from '@config/database/models/employee.model';
 import { VehicleModel } from '@config/database/models/vehicle.model';
-import { ScheduleModel } from '@config/database/models/schedule.model';
 import { SlotModel } from '@config/database/models/slot.model';
 import { LocationModel } from '@config/database/models/location.model';
 import { DeAssignmentModel } from '@config/database/models/de-assignment.model';
@@ -459,45 +457,6 @@ export class SequelizeAssignmentRepository implements AssignmentRepository {
         );
       })
     );
-  }
-
-  async upsertSchedule(
-    schedule: ScheduleEntity,
-    slot_id: string,
-    transaction?: Transaction
-  ): Promise<string> {
-    const [scheduleDatabase] = await ScheduleModel.upsert(
-      {
-        ...schedule,
-        id: schedule.id ? schedule.id : uuid(),
-        slot_id: slot_id
-      },
-      { transaction }
-    );
-
-    return scheduleDatabase.getDataValue('id');
-  }
-
-  async employeeHasAnActiveAssignment(employeeId: string): Promise<boolean> {
-    const [resultFunctionHasAssignment]: {
-      [key: string]: boolean;
-    }[] = await sequelize.query('select employee_has_an_active_assignment(?)', {
-      replacements: [employeeId],
-      type: QueryTypes.SELECT
-    });
-
-    return Object.values(resultFunctionHasAssignment)[0];
-  }
-
-  async canCreateMoreSchedulesInSlot(slotId: string): Promise<boolean> {
-    const [resultFunctionCanCreateMoreSchedulesInSlot]: {
-      [key: string]: boolean;
-    }[] = await sequelize.query('select can_create_more_schedules_in_slot(?)', {
-      replacements: [slotId],
-      type: QueryTypes.SELECT
-    });
-
-    return Object.values(resultFunctionCanCreateMoreSchedulesInSlot)[0];
   }
 
   async changeStatusAssignment(

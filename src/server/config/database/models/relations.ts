@@ -8,7 +8,6 @@ import { AssignmentTagDetailModel } from './assignment-tag-detail';
 import { DiscountNoteModel } from './discount-note.model';
 import { AssignmentLoanModel } from './assignment-loan';
 
-//import { ScheduleModel } from './schedule.model';
 // import { RoleModel } from './auth/role.model';
 // import { RoleDetailModel } from './auth/role.detail.model';
 // import { ResourceModel } from './auth/resource.model';
@@ -35,13 +34,6 @@ SlotModel.hasOne(AssignmentModel, {
 });
 AssignmentModel.belongsTo(SlotModel, { foreignKey: 'slot_id' });
 
-// ScheduleModel.hasOne(AssignmentModel, {
-//   foreignKey: 'schedule_id',
-//   onUpdate: 'RESTRICT',
-//   onDelete: 'RESTRICT'
-// });
-// AssignmentModel.belongsTo(ScheduleModel, { foreignKey: 'schedule_id' });
-
 // AssignmentModel.hasOne(AssignmentLoanModel, {
 //   foreignKey: 'assignment_id',
 //   onUpdate: 'RESTRICT',
@@ -62,13 +54,6 @@ EmployeeModel.hasMany(VehicleModel, {
   onDelete: 'RESTRICT'
 });
 VehicleModel.belongsTo(EmployeeModel, { foreignKey: 'employee_id' });
-
-// SlotModel.hasMany(ScheduleModel, {
-//   foreignKey: 'slot_id',
-//   onUpdate: 'RESTRICT',
-//   onDelete: 'RESTRICT'
-// });
-// ScheduleModel.belongsTo(SlotModel, { foreignKey: 'slot_id' });
 
 TagModel.belongsToMany(AssignmentModel, {
   through: AssignmentTagDetailModel

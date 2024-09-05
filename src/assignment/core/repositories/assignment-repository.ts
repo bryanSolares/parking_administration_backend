@@ -4,8 +4,6 @@ import { DeAssignmentEntity } from '../entities/deassignment-entity';
 import { DiscountNoteEntity } from '../entities/discount-note-entity';
 import { DiscountNodeStatusSignature } from '../entities/discount-note-entity';
 import { EmployeeEntity } from '../entities/employee-entity';
-import { ScheduleEntity } from '../entities/schedule-entity';
-import { VehicleEntity } from '../entities/vehicle-entity';
 import { AssignmentLoadEntity } from '../entities/assignment-load-entity';
 import { TagEntity } from '@src/parameters/core/entities/tag-entity';
 import { LocationEntity } from '@src/location/core/entities/location-entity';
@@ -65,15 +63,6 @@ export interface AssignmentRepository {
     assignment: AssignmentEntity,
     vehicleIdsForDelete: string[]
   ): Promise<void>;
-
-  employeeHasAnActiveAssignment(employeeId: string): Promise<boolean>;
-  canCreateMoreSchedulesInSlot(slotId: string): Promise<boolean>;
-  upsertEmployee(employee: EmployeeEntity): Promise<string>;
-  upsertVehicles(
-    vehicles: VehicleEntity[],
-    ownerVehicle: string
-  ): Promise<void>;
-  upsertSchedule(schedule: ScheduleEntity, slot_id: string): Promise<string>;
 
   executeFunction(
     functionName: ListOfFunctions,

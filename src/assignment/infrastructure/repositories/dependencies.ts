@@ -24,11 +24,6 @@ import { UpdateAcceptanceStatusUseCase } from '@assignment-module-application/us
 
 import { Validations } from '@assignment-module-application/user-cases/validations';
 
-// import { AssignmentDomainService } from '@assignment-module-application/services/assignment-domain-service';
-// import { NotificationService } from '@assignment-module-application/services/notification-service';
-
-///import { NodemailerNotificationRepository } from '../repositories/nodemailer-notification-repository';
-
 const sequelizeAssignmentRepository = new SequelizeAssignmentRepository();
 const sequelizeLocationRepository = new SequelizeMYSQLLocationRepository();
 const employeeRepository = new SequelizeEmployeeRepository();
@@ -40,17 +35,6 @@ const validations = new Validations(
   employeeRepository,
   settingRepository
 );
-
-// const assignmentDomainService = new AssignmentDomainService(
-//   sequelizeAssignmentRepository,
-//   sequelizeLocationRepository
-// );
-
-///const nodemailerNotificationRepository = new NodemailerNotificationRepository();
-
-// const notificationService = new NotificationService(
-//   nodemailerNotificationRepository
-// );
 
 //Use cases
 const employeeFinderByCode = new GetEmployeeByCode(
