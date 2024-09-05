@@ -13,6 +13,8 @@ import { ReturnType } from '@assignment-module-core/repositories/assignment-repo
 import { AssignmentFinderResult } from '@assignment-module-core/repositories/assignment-repository';
 
 import { DiscountNoteEntity } from '@assignment-module-core/entities/discount-note-entity';
+import { DiscountNodeStatusSignature } from '@assignment-module-core/entities/discount-note-entity';
+import { DiscountNoteDispatchedStatus } from '@assignment-module-core/entities/discount-note-entity';
 import { EmployeeEntity } from '@assignment-module-core/entities/employee-entity';
 import { VehicleEntity } from '@assignment-module-core/entities/vehicle-entity';
 import { ScheduleEntity } from '@assignment-module-core/entities/schedule-entity';
@@ -94,6 +96,9 @@ export class SequelizeAssignmentRepository implements AssignmentRepository {
         },
         {
           model: TagModel
+        },
+        {
+          model: DiscountNoteModel
         }
       ]
     });
@@ -142,7 +147,10 @@ export class SequelizeAssignmentRepository implements AssignmentRepository {
       status: plainData.status as AssignmentStatus,
       employee: employeeData,
       tags: tagsData,
-      location: locationData
+      location: locationData,
+      discountNote: plainData.discount_note
+        ? DiscountNoteEntity.fromPrimitives(plainData.discount_note)
+        : undefined
     };
 
     return assignment;
@@ -214,6 +222,33 @@ export class SequelizeAssignmentRepository implements AssignmentRepository {
     });
   }
 
+  async createDiscountNote(discountNote: DiscountNoteEntity): Promise<void> {
+    await DiscountNoteModel.create(discountNote.toPrimitives());
+  }
+
+  async getDiscountNoteById(id: string): Promise<DiscountNoteEntity | null> {
+    const discountNote = await DiscountNoteModel.findOne({
+      where: { id }
+    });
+
+    if (!discountNote) return null;
+
+    return DiscountNoteEntity.fromPrimitives(discountNote.get({ plain: true }));
+  }
+
+  async updateStatusDiscountNote(
+    id: string,
+    status: DiscountNodeStatusSignature
+  ): Promise<void> {
+    await DiscountNoteModel.update(
+      {
+        statusSignature: status,
+        statusDispatched: DiscountNoteDispatchedStatus.SUCCESS
+      },
+      { where: { id } }
+    );
+  }
+
   async executeFunction(
     functionName: ListOfFunctions,
     parameters: string[]
@@ -227,26 +262,6 @@ export class SequelizeAssignmentRepository implements AssignmentRepository {
     );
 
     return Object.values(result)[0];
-  }
-
-  async getDiscountNoteById(id: string): Promise<DiscountNoteEntity | null> {
-    const discountNote = await DiscountNoteModel.findOne({
-      where: { id }
-    });
-
-    return discountNote?.get({ plain: true }) as DiscountNoteEntity;
-  }
-
-  async createDiscountNote(idAssignment: string): Promise<void> {
-    await DiscountNoteModel.create(
-      {
-        id: uuid(),
-        assignment_id: idAssignment,
-        status_dispatched: 'EXITOSO',
-        last_notice: new Date()
-      },
-      { fields: ['id', 'assignment_id', 'status_dispatched', 'last_notice'] }
-    );
   }
 
   async createAssignmentLoan(
@@ -465,13 +480,6 @@ export class SequelizeAssignmentRepository implements AssignmentRepository {
       include: [{ model: EmployeeModel, as: 'employee' }]
     });
     return assignmentLoan?.get({ plain: true }) as AssignmentLoadEntity;
-  }
-
-  async updateStatusDiscountNote(id: string, status: string): Promise<void> {
-    await DiscountNoteModel.update(
-      { status_signature: status },
-      { where: { id } }
-    );
   }
 
   async deleteAssignmentLoan(assignmentLoanId: string): Promise<void> {

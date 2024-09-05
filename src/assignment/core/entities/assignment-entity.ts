@@ -7,6 +7,9 @@ import { SlotStatus } from '@location-module-core/entities/slot-entity';
 import { SlotType } from '@location-module-core/entities/slot-entity';
 import { VehicleType } from '@location-module-core/entities/slot-entity';
 import { TagEntity, TagStatus } from '@src/parameters/core/entities/tag-entity';
+import { DiscountNoteEntity } from './discount-note-entity';
+import { DiscountNodeStatusSignature } from './discount-note-entity';
+import { DiscountNoteDispatchedStatus } from './discount-note-entity';
 
 export enum AssignmentStatus {
   'ASSIGNED' = 'ASIGNADO',
@@ -27,6 +30,7 @@ export class AssignmentEntity {
     public readonly benefitType: CostType,
     public readonly status: AssignmentStatus,
     public readonly tags: TagEntity[],
+    public readonly discountNote?: DiscountNoteEntity,
     public readonly assignmentDate?: string,
     public readonly formDecisionDate?: string
   ) {
@@ -39,6 +43,7 @@ export class AssignmentEntity {
     this.benefitType = benefitType;
     this.status = status;
     this.tags = tags;
+    this.discountNote = discountNote;
   }
 
   public static fromPrimitive(primitiveData: {
@@ -88,6 +93,17 @@ export class AssignmentEntity {
       description: string;
       status: TagStatus;
     }[];
+    discountNote?: {
+      id: string;
+      assignmentId: string;
+      maxDispatchAttempts?: number;
+      reminderFrequency?: number;
+      dispatchAttempts?: number;
+      lastNotice?: Date;
+      nextNotice?: Date;
+      statusSignature?: DiscountNodeStatusSignature;
+      statusDispatched?: DiscountNoteDispatchedStatus;
+    };
     assignmentDate?: string;
     formDecisionDate?: string;
   }): AssignmentEntity {
@@ -101,6 +117,9 @@ export class AssignmentEntity {
       primitiveData.tags
         ? primitiveData.tags.map(tag => TagEntity.fromPrimitives(tag))
         : [],
+      primitiveData.discountNote
+        ? DiscountNoteEntity.fromPrimitives(primitiveData.discountNote)
+        : undefined,
       primitiveData.assignmentDate,
       primitiveData.formDecisionDate
     );
@@ -119,7 +138,10 @@ export class AssignmentEntity {
       parkingCardNumber: this.parkingCardNumber,
       benefitType: this.benefitType,
       status: this.status,
-      tags: this.tags ? this.tags.map(tag => tag.toPrimitives()) : []
+      tags: this.tags ? this.tags.map(tag => tag.toPrimitives()) : [],
+      discountNote: this.discountNote
+        ? this.discountNote.toPrimitives()
+        : undefined
     };
   }
 }

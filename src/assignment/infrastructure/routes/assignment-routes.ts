@@ -60,7 +60,7 @@ routes
     assignmentController.createDeAssignment.bind(assignmentController)
   )
   .post(
-    '/discount-note/:assignment_id',
+    '/:assignment_id/discount-note/',
     validateRequest(assignmentIdSchema, 'params'),
     assignmentController.createDiscountNote.bind(assignmentController)
   )

@@ -2,6 +2,7 @@ import { AssignmentEntity } from '../entities/assignment-entity';
 import { AssignmentStatus } from '../entities/assignment-entity';
 import { DeAssignmentEntity } from '../entities/deassignment-entity';
 import { DiscountNoteEntity } from '../entities/discount-note-entity';
+import { DiscountNodeStatusSignature } from '../entities/discount-note-entity';
 import { EmployeeEntity } from '../entities/employee-entity';
 import { ScheduleEntity } from '../entities/schedule-entity';
 import { VehicleEntity } from '../entities/vehicle-entity';
@@ -20,6 +21,7 @@ export type FinderResultById = {
   location: LocationEntity;
   employee: EmployeeEntity;
   tags: TagEntity[];
+  discountNote?: DiscountNoteEntity;
 };
 
 export type AssignmentFinderResult = Promise<{
@@ -41,10 +43,14 @@ export interface AssignmentRepository {
   getAssignmentById(id: string): Promise<FinderResultById | null>;
   getAssignments(limit: number, page: number): Promise<AssignmentFinderResult>;
   createDeAssignment(deAssignment: DeAssignmentEntity): Promise<void>;
+  createDiscountNote(discountNote: DiscountNoteEntity): Promise<void>;
+  getDiscountNoteById(id: string): Promise<DiscountNoteEntity | null>;
+  updateStatusDiscountNote(
+    discountNoteId: string,
+    status: DiscountNodeStatusSignature
+  ): Promise<void>;
 
   createAssignmentLoan(assignmentLoan: AssignmentLoadEntity): Promise<void>;
-  createDiscountNote(idAssignment: string): Promise<void>;
-  getDiscountNoteById(id: string): Promise<DiscountNoteEntity | null>;
   employeeHasAnActiveAssignment(employeeId: string): Promise<boolean>;
   canCreateMoreSchedulesInSlot(slotId: string): Promise<boolean>;
   upsertEmployee(employee: EmployeeEntity): Promise<string>;
@@ -63,10 +69,7 @@ export interface AssignmentRepository {
   getAssignmentLoanByIdAssignment(
     assignmentId: string
   ): Promise<AssignmentLoadEntity | null>;
-  updateStatusDiscountNote(
-    discountNoteId: string,
-    status: string
-  ): Promise<void>;
+
   deleteAssignmentLoan(assignmentLoanId: string): Promise<void>;
 
   executeFunction(

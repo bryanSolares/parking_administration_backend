@@ -1,27 +1,34 @@
 import { AssignmentRepository } from '@assignment-module-core/repositories/assignment-repository';
+import { DiscountNodeStatusSignature } from '@src/assignment/core/entities/discount-note-entity';
 import { AppError } from '@src/server/config/err/AppError';
 
 export class UpdateStatusDiscountNote {
   constructor(private readonly assignmentRepository: AssignmentRepository) {}
 
-  async run(id: string, status: string) {
+  async run(
+    id: string,
+    status:
+      | DiscountNodeStatusSignature.APPROVED
+      | DiscountNodeStatusSignature.REJECTED
+      | DiscountNodeStatusSignature.CANCELED
+  ) {
     const discountNote =
       await this.assignmentRepository.getDiscountNoteById(id);
 
     if (!discountNote) {
-      throw new Error('Discount note not found');
+      throw new AppError(
+        'DISCOUNT_NOTE_NOT_FOUND',
+        404,
+        'Discount note not found',
+        true
+      );
     }
 
-    if (
-      discountNote.status_signature &&
-      ['APROBADO', 'RECHAZADO', 'CANCELADO'].includes(
-        discountNote.status_signature
-      )
-    ) {
+    if (discountNote.statusSignature !== DiscountNodeStatusSignature.PENDING) {
       throw new AppError(
         'DISCOUNT_NOTE_ALREADY_SIGNED',
         400,
-        'Discount note already signed, canceled or rejected',
+        'Discount note already signed.',
         true
       );
     }

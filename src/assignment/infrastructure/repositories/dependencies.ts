@@ -11,7 +11,7 @@ import { CreateAssignment } from '@assignment-module-application/user-cases/crea
 import { AssignmentFinder } from '@assignment-module-application/user-cases/assignment-finder';
 import { AssignmentFinderById } from '@assignment-module-application/user-cases/assignment-finder-by-id';
 import { CreateDeAssignment } from '@src/assignment/application/user-cases/create-de-assignment';
-//import { CreateDiscountNote } from '@assignment-module-application/user-cases/create-discount-note';
+import { CreateDiscountNote } from '@assignment-module-application/user-cases/create-discount-note';
 import { UpdateAssignment } from '@assignment-module-application/user-cases/update-assignment';
 import { CreateAssignmentLoan } from '@assignment-module-application/user-cases/create-assignment-loan';
 import { UpdateStatusDiscountNote } from '@src/assignment/application/user-cases/update-status-discount-note';
@@ -67,9 +67,9 @@ const assignmentFinderById = new AssignmentFinderById(
   sequelizeAssignmentRepository
 );
 const deAssignmentById = new CreateDeAssignment(sequelizeAssignmentRepository);
-//const createDiscountNote = new CreateDiscountNote();
-//sequelizeAssignmentRepository,
-//notificationService
+const createDiscountNote = new CreateDiscountNote(
+  sequelizeAssignmentRepository
+);
 const createAssignmentLoan = new CreateAssignmentLoan(
   sequelizeAssignmentRepository,
   notificationService,
@@ -100,7 +100,7 @@ const updateStatusAcceptanceAssignment = new UpdateAcceptanceStatusUseCase(
 //Controllers
 const assignmentController = new AssignmentController(
   createAssignment,
-  //createDiscountNote,
+  createDiscountNote,
   assignmentFinderById,
   assignmentFinder,
   deAssignmentById,

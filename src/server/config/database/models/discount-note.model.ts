@@ -2,8 +2,13 @@ import { Model } from 'sequelize';
 import { DataTypes } from 'sequelize';
 
 import { sequelize } from '../sequelize';
+import { DiscountNodeStatusSignature } from '@src/assignment/core/entities/discount-note-entity';
 
 export class DiscountNoteModel extends Model {}
+
+const statusSignature = ['PENDIENTE', 'APROBADO', 'RECHAZADO', 'CANCELADO'];
+
+const statusDispatched = ['EXITOSO', 'FALLIDO', 'PENDIENTE', 'REINTENTANDO'];
 
 DiscountNoteModel.init(
   {
@@ -12,41 +17,46 @@ DiscountNoteModel.init(
       primaryKey: true,
       unique: true
     },
-    assignment_id: {
+    assignmentId: {
       type: DataTypes.UUID,
-      allowNull: false
+      allowNull: false,
+      references: {
+        model: 'assignment',
+        key: 'id'
+      }
     },
-    status_signature: {
+    statusSignature: {
       type: DataTypes.ENUM,
-      values: ['PENDIENTE', 'APROBADO', 'RECHAZADO', 'CANCELADO'],
-      defaultValue: 'PENDIENTE'
+      values: statusSignature,
+      defaultValue: DiscountNodeStatusSignature.PENDING
     },
-    status_dispatched: {
+    statusDispatched: {
       type: DataTypes.ENUM,
-      values: ['EXITOSO', 'FALLIDO', 'PENDIENTE', 'REINTENTANDO'],
-      defaultValue: 'PENDIENTE'
+      values: statusDispatched,
+      defaultValue: DiscountNodeStatusSignature.PENDING
     },
-    last_notice: {
+    lastNotice: {
       type: DataTypes.DATE
     },
-    next_notice: {
+    nextNotice: {
       type: DataTypes.DATE
     },
-    reminder_frequency: {
+    reminderFrequency: {
       type: DataTypes.INTEGER,
-      defaultValue: 2
+      defaultValue: 3
     },
-    dispatch_attempts: {
+    dispatchAttempts: {
       type: DataTypes.INTEGER,
       defaultValue: 0
     },
-    max_dispatch_attempts: {
+    maxDispatchAttempts: {
       type: DataTypes.INTEGER,
       defaultValue: 3
     }
   },
   {
     sequelize,
+    underscored: true,
     modelName: 'discount_note',
     tableName: 'discount_note',
     createdAt: 'created_at',

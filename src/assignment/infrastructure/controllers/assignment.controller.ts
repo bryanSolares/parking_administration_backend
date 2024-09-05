@@ -4,7 +4,7 @@ import { NextFunction } from 'express';
 import { CreateAssignment } from '@src/assignment/application/user-cases/create-assignment';
 import { AssignmentFinder } from '@src/assignment/application/user-cases/assignment-finder';
 import { AssignmentFinderById } from '@src/assignment/application/user-cases/assignment-finder-by-id';
-//import { CreateDiscountNote } from '@src/assignment/application/user-cases/create-discount-note';
+import { CreateDiscountNote } from '@src/assignment/application/user-cases/create-discount-note';
 import { CreateDeAssignment } from '@src/assignment/application/user-cases/create-de-assignment';
 import { GetEmployeeByCode } from '@src/assignment/application/user-cases/get-employee';
 import { UpdateAssignment } from '@src/assignment/application/user-cases/update-assignment';
@@ -18,7 +18,7 @@ import { UpdateAcceptanceStatusUseCase } from '@src/assignment/application/user-
 export class AssignmentController {
   constructor(
     private readonly createAssignmentUseCase: CreateAssignment,
-    //private readonly createDiscountNoteUseCase: CreateDiscountNote,
+    private readonly createDiscountNoteUseCase: CreateDiscountNote,
     private readonly assignmentFinderByIdUseCase: AssignmentFinderById,
     private readonly assignmentFinderUseCase: AssignmentFinder,
     private readonly deAssignmentByIdUseCase: CreateDeAssignment,
@@ -58,12 +58,28 @@ export class AssignmentController {
     }
   }
 
-  createDiscountNote(req: Request, res: Response, next: NextFunction) {
-    //const idAssignment = req.params.assignment_id;
+  async createDiscountNote(req: Request, res: Response, next: NextFunction) {
+    const idAssignment = req.params.assignment_id;
 
     try {
-      //await this.createDiscountNoteUseCase.run(idAssignment);
-      res.status(200).json({ message: 'Discount note created' });
+      await this.createDiscountNoteUseCase.run(idAssignment);
+      res.status(201).json({ message: 'Discount note created' });
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  async updateStatusDiscountNode(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) {
+    const assignmentId = req.params.discount_note_id;
+    const statusSignature = req.body.status;
+
+    try {
+      await this.updateDiscountNoteUseCase.run(assignmentId, statusSignature);
+      res.status(200).json({ message: 'Discount note updated' });
     } catch (error) {
       next(error);
     }
@@ -146,22 +162,6 @@ export class AssignmentController {
       //   vehiclesForDelete
       // );
       res.status(200).json({ message: 'Assignment updated' });
-    } catch (error) {
-      next(error);
-    }
-  }
-
-  async updateStatusDiscountNode(
-    req: Request,
-    res: Response,
-    next: NextFunction
-  ) {
-    const assignmentId = req.params.discount_note_id;
-    const statusSignature = req.body.status;
-
-    try {
-      await this.updateDiscountNoteUseCase.run(assignmentId, statusSignature);
-      res.status(200).json({ message: 'Discount note updated' });
     } catch (error) {
       next(error);
     }

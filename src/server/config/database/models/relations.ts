@@ -5,9 +5,9 @@ import { SlotModel } from './slot.model';
 import { VehicleModel } from './vehicle.model';
 import { TagModel } from './tag.model';
 import { AssignmentTagDetailModel } from './assignment-tag-detail';
+import { DiscountNoteModel } from './discount-note.model';
 
 //import { ScheduleModel } from './schedule.model';
-//import { DiscountNoteModel } from './discount-note.model';
 //import { AssignmentLoanModel } from './assignment-loan';
 // import { RoleModel } from './auth/role.model';
 // import { RoleDetailModel } from './auth/role.detail.model';
@@ -76,14 +76,14 @@ TagModel.belongsToMany(AssignmentModel, {
 
 AssignmentModel.belongsToMany(TagModel, { through: AssignmentTagDetailModel });
 
-// AssignmentModel.hasOne(DiscountNoteModel, {
-//   foreignKey: 'assignment_id',
-//   onUpdate: 'RESTRICT',
-//   onDelete: 'RESTRICT'
-// });
-// DiscountNoteModel.belongsTo(AssignmentModel, {
-//   foreignKey: 'assignment_id'
-// });
+AssignmentModel.hasOne(DiscountNoteModel, {
+  foreignKey: 'assignment_id',
+  onUpdate: 'RESTRICT',
+  onDelete: 'RESTRICT'
+});
+DiscountNoteModel.belongsTo(AssignmentModel, {
+  foreignKey: 'assignment_id'
+});
 
 // RoleModel.belongsToMany(ResourceModel, {
 //   through: RoleDetailModel,
