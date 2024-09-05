@@ -57,6 +57,7 @@ export interface AssignmentRepository {
     assignmentLoanId: string
   ): Promise<AssignmentLoadEntity | null>;
   deleteAssignmentLoan(assignmentLoanId: string): Promise<void>;
+  updateAssignmentLoan(assignmentLoan: AssignmentLoadEntity): Promise<void>;
 
   employeeHasAnActiveAssignment(employeeId: string): Promise<boolean>;
   canCreateMoreSchedulesInSlot(slotId: string): Promise<boolean>;

@@ -297,6 +297,30 @@ export class SequelizeAssignmentRepository implements AssignmentRepository {
     await transaction.commit();
   }
 
+  async updateAssignmentLoan(
+    assignmentLoan: AssignmentLoadEntity
+  ): Promise<void> {
+    const vehiclesData = assignmentLoan.employee.vehicles;
+
+    const transaction = await sequelize.transaction();
+
+    await this.upsertVehicles(
+      vehiclesData,
+      assignmentLoan.employee.id,
+      transaction
+    );
+
+    await AssignmentLoanModel.update(
+      {
+        startDateAssignment: assignmentLoan.startDateAssignment,
+        endDateAssignment: assignmentLoan.endDateAssignment
+      },
+      { where: { id: assignmentLoan.id } }
+    );
+
+    await transaction.commit();
+  }
+
   async getAssignmentLoanByIdAssignment(
     assignmentId: string
   ): Promise<AssignmentLoadEntity | null> {

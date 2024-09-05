@@ -9,6 +9,7 @@ import { CreateDeAssignment } from '@src/assignment/application/user-cases/creat
 import { GetEmployeeByCode } from '@src/assignment/application/user-cases/get-employee';
 import { UpdateAssignment } from '@src/assignment/application/user-cases/update-assignment';
 import { CreateAssignmentLoan } from '@src/assignment/application/user-cases/assignment-loan/create-assignment-loan';
+import { UpdateAssignmentLoanUseCase } from '@src/assignment/application/user-cases/assignment-loan/update-assignment-loan';
 import { UpdateStatusDiscountNote } from '@src/assignment/application/user-cases/update-status-discount-note';
 import { DeleteAssignmentLoan } from '@src/assignment/application/user-cases/assignment-loan/delete-assignment-loan';
 import { GetFormDataOfAcceptanceUseCase } from '@src/assignment/application/user-cases/acceptance-form/get-form-data';
@@ -25,6 +26,7 @@ export class AssignmentController {
     private readonly employeeFinderByCodeUseCase: GetEmployeeByCode,
     private readonly updateAssignmentUseCase: UpdateAssignment,
     private readonly createAssignmentLoanUseCase: CreateAssignmentLoan,
+    private readonly updateAssignmentLoanUseCase: UpdateAssignmentLoanUseCase,
     private readonly updateDiscountNoteUseCase: UpdateStatusDiscountNote,
     private readonly deleteAssignmentLoanUseCase: DeleteAssignmentLoan,
     private readonly getFormDataOfAcceptanceUseCase: GetFormDataOfAcceptanceUseCase,
@@ -169,6 +171,17 @@ export class AssignmentController {
     try {
       await this.deleteAssignmentLoanUseCase.run(assignmentId);
       res.status(200).json({ message: 'Assignment loan deleted' });
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  async updateAssignmentLoan(req: Request, res: Response, next: NextFunction) {
+    const assignmentLoanId = req.params.assignment_loan_id;
+    const data = req.body;
+    try {
+      await this.updateAssignmentLoanUseCase.run(data, assignmentLoanId);
+      res.status(200).json({ message: 'Assignment loan updated' });
     } catch (error) {
       next(error);
     }

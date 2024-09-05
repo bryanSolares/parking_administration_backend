@@ -1,5 +1,16 @@
 import { z } from 'zod';
 
+export const vehicleSchema = z.array(
+  z.object({
+    id: z.string().uuid().optional(),
+    vehicleBadge: z.string(),
+    color: z.string(),
+    brand: z.string(),
+    model: z.string(),
+    type: z.enum(['CARRO', 'MOTO', 'CAMION'])
+  })
+);
+
 export const employeeSchema = z.object({
   id: z.string().uuid().optional(),
   employeeCode: z.string(),
@@ -17,16 +28,7 @@ export const employeeSchema = z.object({
   phone: z.string().regex(/^\+\(50\d{1}\) \d{8}$/, {
     message: 'Format phone number is +(5XX) XXXXXXXX, example: +(502) 45454545'
   }),
-  vehicles: z.array(
-    z.object({
-      id: z.string().uuid().optional(),
-      vehicleBadge: z.string(),
-      color: z.string(),
-      brand: z.string(),
-      model: z.string(),
-      type: z.enum(['CARRO', 'MOTO', 'CAMION'])
-    })
-  )
+  vehicles: vehicleSchema
 });
 
 const scheduleSchema = z.object({

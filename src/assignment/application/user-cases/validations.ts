@@ -124,7 +124,7 @@ export class Validations {
     }
   }
 
-  private async validateIfVehiclesBelongToEmployee(
+  public async validateIfVehiclesBelongToEmployee(
     employeeId: string,
     employeeCode: string,
     vehiclesRequest: { id: string }[]
@@ -159,7 +159,7 @@ export class Validations {
       );
 
       vehiclesRequest.forEach(vehicle => {
-        if (vehicle && !vehicles.has(vehicle.id)) {
+        if (vehicle && vehicle.id && !vehicles.has(vehicle.id)) {
           throw new AppError(
             'VEHICLE_NOT_FOUND',
             400,

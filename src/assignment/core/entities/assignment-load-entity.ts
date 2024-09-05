@@ -1,4 +1,4 @@
-import { isBefore } from '@formkit/tempo';
+import { format, isBefore } from '@formkit/tempo';
 import { isEqual } from '@formkit/tempo';
 
 import { VehicleType } from '@src/location/core/entities/slot-entity';
@@ -11,7 +11,7 @@ export enum AssignmentLoadStatus {
 }
 
 export class AssignmentLoadEntity {
-  readonly DATE_FORMAT_PATTERN = /^\d{4}-\d{2}-\d{2}$/;
+  private readonly DATE_FORMAT_PATTERN = /^\d{4}-\d{2}-\d{2}$/;
 
   constructor(
     public readonly id: string,
@@ -98,18 +98,9 @@ export class AssignmentLoadEntity {
     end: string,
     assignmentDate: string
   ) {
-    if (
-      !this.validateFormatDate(start) ||
-      !this.validateFormatDate(end) ||
-      !this.validateFormatDate(assignmentDate)
-    ) {
-      throw new AppError(
-        'INVALID_DATE_FORMAT',
-        400,
-        'Date format must be YYYY-MM-DD',
-        true
-      );
-    }
+    this.validateFormatDate(start);
+    this.validateFormatDate(end);
+    this.validateFormatDate(assignmentDate);
 
     if (isBefore(start, assignmentDate)) {
       throw new AppError(
@@ -148,7 +139,25 @@ export class AssignmentLoadEntity {
     }
   }
 
-  private validateFormatDate(date: string): boolean {
-    return this.DATE_FORMAT_PATTERN.test(date);
+  private validateFormatDate(date: string) {
+    if (!this.DATE_FORMAT_PATTERN.test(date)) {
+      throw new AppError(
+        'INVALID_DATE_FORMAT',
+        400,
+        'Date format must be YYYY-MM-DD',
+        true
+      );
+    }
+
+    try {
+      format({
+        date,
+        format: 'YYYY-MM-DD',
+        tz: 'America/Guatemala'
+      });
+      return this.DATE_FORMAT_PATTERN.test(date);
+    } catch (error) {
+      throw new AppError('INVALID_DATE', 400, 'Date not valid', true);
+    }
   }
 }

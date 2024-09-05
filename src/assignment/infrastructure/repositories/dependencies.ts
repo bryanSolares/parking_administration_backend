@@ -16,6 +16,7 @@ import { UpdateAssignment } from '@assignment-module-application/user-cases/upda
 import { CreateAssignmentLoan } from '@assignment-module-application/user-cases/assignment-loan/create-assignment-loan';
 import { UpdateStatusDiscountNote } from '@src/assignment/application/user-cases/update-status-discount-note';
 import { DeleteAssignmentLoan } from '@src/assignment/application/user-cases/assignment-loan/delete-assignment-loan';
+import { UpdateAssignmentLoanUseCase } from '@src/assignment/application/user-cases/assignment-loan/update-assignment-loan';
 
 import { GetFormDataOfAcceptanceUseCase } from '@assignment-module-application/user-cases/acceptance-form/get-form-data';
 import { CreateAcceptanceProcessUseCase } from '@assignment-module-application/user-cases/acceptance-form/create-acceptance-process';
@@ -75,6 +76,10 @@ const createAssignmentLoan = new CreateAssignmentLoan(
   sequelizeAssignmentRepository,
   validations
 );
+const updateAssignmentLoan = new UpdateAssignmentLoanUseCase(
+  sequelizeAssignmentRepository,
+  validations
+);
 const updateAssignment = new UpdateAssignment();
 //sequelizeAssignmentRepository
 const updateDiscountNote = new UpdateStatusDiscountNote(
@@ -107,6 +112,7 @@ const assignmentController = new AssignmentController(
   employeeFinderByCode,
   updateAssignment,
   createAssignmentLoan,
+  updateAssignmentLoan,
   updateDiscountNote,
   deleteAssignmentLoan,
   getFormDataOfAcceptance,
