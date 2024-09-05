@@ -61,6 +61,10 @@ export interface AssignmentRepository {
     assignmentLoan: AssignmentLoadEntity,
     vehiclesForDelete: string[]
   ): Promise<void>;
+  updateAssignment(
+    assignment: AssignmentEntity,
+    vehicleIdsForDelete: string[]
+  ): Promise<void>;
 
   employeeHasAnActiveAssignment(employeeId: string): Promise<boolean>;
   canCreateMoreSchedulesInSlot(slotId: string): Promise<boolean>;
@@ -70,10 +74,6 @@ export interface AssignmentRepository {
     ownerVehicle: string
   ): Promise<void>;
   upsertSchedule(schedule: ScheduleEntity, slot_id: string): Promise<string>;
-  updateAssignment(
-    assignment: AssignmentEntity,
-    vehicleIdsForDelete: string[]
-  ): Promise<void>;
 
   executeFunction(
     functionName: ListOfFunctions,

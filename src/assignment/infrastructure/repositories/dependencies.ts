@@ -12,7 +12,7 @@ import { AssignmentFinder } from '@assignment-module-application/user-cases/assi
 import { AssignmentFinderById } from '@assignment-module-application/user-cases/assignment-finder-by-id';
 import { CreateDeAssignment } from '@src/assignment/application/user-cases/create-de-assignment';
 import { CreateDiscountNote } from '@assignment-module-application/user-cases/create-discount-note';
-import { UpdateAssignment } from '@assignment-module-application/user-cases/update-assignment';
+import { UpdateAssignmentUseCase } from '@assignment-module-application/user-cases/update-assignment';
 import { CreateAssignmentLoan } from '@assignment-module-application/user-cases/assignment-loan/create-assignment-loan';
 import { UpdateStatusDiscountNote } from '@src/assignment/application/user-cases/update-status-discount-note';
 import { DeleteAssignmentLoan } from '@src/assignment/application/user-cases/assignment-loan/delete-assignment-loan';
@@ -80,8 +80,12 @@ const updateAssignmentLoan = new UpdateAssignmentLoanUseCase(
   sequelizeAssignmentRepository,
   validations
 );
-const updateAssignment = new UpdateAssignment();
-//sequelizeAssignmentRepository
+const updateAssignment = new UpdateAssignmentUseCase(
+  sequelizeAssignmentRepository,
+  parameterRepository,
+  validations
+);
+
 const updateDiscountNote = new UpdateStatusDiscountNote(
   sequelizeAssignmentRepository
 );

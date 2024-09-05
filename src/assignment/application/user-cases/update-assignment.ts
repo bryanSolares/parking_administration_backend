@@ -1,87 +1,101 @@
-//import { AssignmentRepository } from '@assignment-module-core/repositories/assignment-repository';
-//import { AssignmentEntity } from '@assignment-module-core/entities/assignment-entity';
-//import { AppError } from '@src/server/config/err/AppError';
+import { v4 as uuid } from 'uuid';
+import { AssignmentRepository } from '@assignment-module-core/repositories/assignment-repository';
+import { TagRepository } from '@src/parameters/core/repositories/tag-repository';
+import { VehicleType } from '@src/location/core/entities/slot-entity';
+import { AppError } from '@src/server/config/err/AppError';
+import { AssignmentEntity } from '@src/assignment/core/entities/assignment-entity';
+import { AssignmentStatus } from '@src/assignment/core/entities/assignment-entity';
+import { Validations } from './validations';
+import { VehicleEntity } from '@src/assignment/core/entities/vehicle-entity';
 
-export class UpdateAssignment {
-  constructor() {} //  private readonly assignmentRepository: AssignmentRepository
+export class UpdateAssignmentUseCase {
+  constructor(
+    private readonly assignmentRepository: AssignmentRepository,
+    private readonly tagRepository: TagRepository,
+    private readonly validations: Validations
+  ) {}
 
-  async run() // assignment: AssignmentEntity,
-  // vehicleIdsForDelete: string[]
-  : Promise<void> {
-    // const assignmentDatabase =
-    //   await this.assignmentRepository.getAssignmentById(assignment.id);
-    // // Validate if the assignment exists
-    // if (!assignmentDatabase) {
-    //   throw new AppError(
-    //     'ASSIGNMENT_NOT_FOUND',
-    //     404,
-    //     'Assignment not found',
-    //     true
-    //   );
-    // }
-    // // Validate if the assignment is active
-    // if (assignmentDatabase.status === 'INACTIVO') {
-    //   throw new AppError(
-    //     'INACTIVE_ASSIGNMENT',
-    //     400,
-    //     'Can not update an inactive assignment',
-    //     true
-    //   );
-    // }
-    // // Validate if schedule previously exist
-    // if (
-    //   (assignmentDatabase.schedule && !assignment.schedule) ||
-    //   (!assignmentDatabase.schedule && assignment.schedule)
-    // ) {
-    //   throw new AppError(
-    //     'INVALID_ASSIGNMENT_SCHEDULE',
-    //     400,
-    //     'You can not add a schedule if it did exist before and you must provide a schedule if it had before',
-    //     true
-    //   );
-    // }
-    // // Validate if the assignment have or not a loan
-    // if (
-    //   (assignment.assignment_loan && !assignmentDatabase.assignment_loan) ||
-    //   (!assignment.assignment_loan && assignmentDatabase.assignment_loan)
-    // ) {
-    //   throw new AppError(
-    //     'INVALID_ASSIGNMENT_LOAN',
-    //     400,
-    //     'You can not update an assignment if it had not loan before or you should provide a loan if it had before',
-    //     true
-    //   );
-    // }
-    // // Validate that employee is the same (owner)
-    // if (assignmentDatabase.employee.id !== assignment.employee.id) {
-    //   throw new AppError(
-    //     'INVALID_ASSIGNMENT_OWNER',
-    //     400,
-    //     'You can not update an assignment with another employee (owner)',
-    //     true
-    //   );
-    // }
-    // // Validate that employee guest is the same
-    // if (
-    //   assignment.assignment_loan?.employee?.id !==
-    //   assignmentDatabase.assignment_loan?.employee?.id
-    // ) {
-    //   throw new AppError(
-    //     'INVALID_ASSIGNMENT_OWNER',
-    //     400,
-    //     'You can not update an assignment with another employee (guest)',
-    //     true
-    //   );
-    // }
-    // await this.assignmentRepository.updateAssignment(
-    //   {
-    //     ...assignment,
-    //     schedule: {
-    //       ...assignment.schedule,
-    //       id: assignmentDatabase.schedule?.id
-    //     }
-    //   },
-    //   vehicleIdsForDelete
-    // );
+  async run(
+    data: {
+      employee: {
+        vehicles: {
+          id: string;
+          vehicleBadge: string;
+          color: string;
+          brand: string;
+          model: string;
+          type: VehicleType;
+        }[];
+      };
+      tags: string[];
+      vehicleIdsForDelete: string[];
+    },
+    assignmentId: string
+  ): Promise<void> {
+    const assignmentDatabase =
+      await this.assignmentRepository.getAssignmentById(assignmentId);
+    if (!assignmentDatabase) {
+      throw new AppError(
+        'ASSIGNMENT_NOT_FOUND',
+        404,
+        'Assignment not found',
+        true
+      );
+    }
+
+    if (
+      ![
+        AssignmentStatus.ASSIGNED,
+        AssignmentStatus.IN_PROGRESS,
+        AssignmentStatus.ACCEPTED
+      ].some(status => status === assignmentDatabase.status)
+    ) {
+      throw new AppError(
+        'INACTIVE_ASSIGNMENT',
+        400,
+        'You can not update an assignment that is canceled or it is de-assigned',
+        true
+      );
+    }
+
+    await this.validations.validateIfVehiclesBelongToEmployee(
+      assignmentDatabase.employee.id,
+      assignmentDatabase.employee.employeeCode,
+      data.employee.vehicles
+    );
+
+    await this.validations.validateIfVehiclesBelongToEmployee(
+      assignmentDatabase.employee.id,
+      assignmentDatabase.employee.employeeCode,
+      data.vehicleIdsForDelete.map(id => ({ id }))
+    );
+
+    //TODO: Refactor this
+    const tagsDatabase = await this.tagRepository.getTagsByIds(
+      data.tags.map(id => id)
+    );
+    this.validations.validateIfTagsAreValid({
+      database: tagsDatabase,
+      request: data.tags.map(id => id)
+    });
+
+    assignmentDatabase.employee.vehicles = data.employee.vehicles.map(vehicle =>
+      VehicleEntity.fromPrimitive({ ...vehicle, id: vehicle.id ?? uuid() })
+    );
+
+    const assignment = new AssignmentEntity(
+      assignmentDatabase.id,
+      assignmentDatabase.location.slots[0],
+      assignmentDatabase.employee,
+      assignmentDatabase.parkingCardNumber,
+      assignmentDatabase.benefitType,
+      assignmentDatabase.status,
+      tagsDatabase
+    );
+
+    await this.assignmentRepository.updateAssignment(
+      assignment,
+      data.vehicleIdsForDelete
+    );
   }
 }

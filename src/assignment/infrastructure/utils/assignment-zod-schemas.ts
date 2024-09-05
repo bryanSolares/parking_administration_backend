@@ -31,15 +31,6 @@ export const employeeSchema = z.object({
   vehicles: vehicleSchema
 });
 
-const scheduleSchema = z.object({
-  start_time_assignment: z.string().regex(/^([01]\d|2[0-3]):([0-5]\d)$/, {
-    message: 'Format to time is HH:MM and time must be between 00:00 and 23:59'
-  }),
-  end_time_assignment: z.string().regex(/^([01]\d|2[0-3]):([0-5]\d)$/, {
-    message: 'Format to time is HH:MM and time must be between 00:00 and 23:59'
-  })
-});
-
 export const assignmentCreateSchema = z.object({
   slotId: z.string().uuid(),
   employee: employeeSchema,
@@ -49,11 +40,10 @@ export const assignmentCreateSchema = z.object({
 
 export const assignmentUpdateSchema = z.object({
   employee: z.object({
-    id: z.string().uuid(),
     vehicles: z.array(
       z.object({
         id: z.string().uuid().optional(),
-        vehicle_badge: z.string(),
+        vehicleBadge: z.string(),
         color: z.string(),
         brand: z.string(),
         model: z.string(),
@@ -61,28 +51,8 @@ export const assignmentUpdateSchema = z.object({
       })
     )
   }),
-  schedule: scheduleSchema.optional(),
-  assignment_loan: z
-    .object({
-      start_date_assignment: z.string().date('YYYY-MM-DD'),
-      end_date_assignment: z.string().date('YYYY-MM-DD'),
-      employee: z.object({
-        id: z.string().uuid(),
-        vehicles: z.array(
-          z.object({
-            id: z.string().uuid().optional(),
-            vehicle_badge: z.string(),
-            color: z.string(),
-            brand: z.string(),
-            model: z.string(),
-            type: z.enum(['CARRO', 'MOTO', 'CAMION'])
-          })
-        )
-      })
-    })
-    .optional(),
-  vehicles_for_delete: z.array(z.string().uuid()).optional(),
-  tags: z.array(z.string().uuid())
+  vehiclesForDelete: z.array(z.string().uuid()),
+  tags: z.array(z.string().uuid()).nonempty()
 });
 
 const assignmentId = z.object({

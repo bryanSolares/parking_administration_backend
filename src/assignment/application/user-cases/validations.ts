@@ -171,7 +171,7 @@ export class Validations {
     }
   }
 
-  private validateIfTagsAreValid(tags: {
+  public validateIfTagsAreValid(tags: {
     request: string[];
     database: TagEntity[] | [];
   }) {

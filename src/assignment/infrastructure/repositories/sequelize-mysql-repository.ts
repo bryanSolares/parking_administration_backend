@@ -1,4 +1,4 @@
-//import { Op } from 'sequelize';
+import { Op } from 'sequelize';
 import { sequelize } from '@config/database/sequelize';
 import { QueryTypes } from 'sequelize';
 import { Transaction } from 'sequelize';
@@ -364,6 +364,50 @@ export class SequelizeAssignmentRepository implements AssignmentRepository {
     });
   }
 
+  async updateAssignment(
+    assignment: AssignmentEntity,
+    vehicleIdsForDelete: string[]
+  ): Promise<void> {
+    const transaction = await sequelize.transaction();
+
+    if (vehicleIdsForDelete.length > 0) {
+      await VehicleModel.destroy({
+        where: {
+          id: {
+            [Op.in]: vehicleIdsForDelete
+          },
+          employeeId: {
+            [Op.in]: [assignment.employee.id]
+          }
+        },
+        transaction
+      });
+    }
+    //update vehicles owner
+    await this.upsertVehicles(
+      assignment.employee.vehicles,
+      assignment.employee.id,
+      transaction
+    );
+
+    if (assignment.tags.length > 0) {
+      await AssignmentTagDetailModel.destroy({
+        where: { assignmentId: assignment.id },
+        transaction
+      });
+      await AssignmentTagDetailModel.bulkCreate(
+        assignment.tags.map(tag => ({
+          id: uuid(),
+          assignmentId: assignment.id,
+          tagId: tag.id
+        })),
+        { transaction }
+      );
+    }
+
+    await transaction.commit();
+  }
+
   /* eslint-disable  @typescript-eslint/no-unsafe-return */
   async upsertEmployee(
     employee: EmployeeEntity,
@@ -454,84 +498,6 @@ export class SequelizeAssignmentRepository implements AssignmentRepository {
     });
 
     return Object.values(resultFunctionCanCreateMoreSchedulesInSlot)[0];
-  }
-
-  async updateAssignment() //assignment: AssignmentEntity,
-  //vehicleIdsForDelete: string[]
-  : Promise<void> {
-    // const ownerData = assignment.employee;
-    // const guestData = assignment.assignment_loan?.employee;
-    // const vehiclesOwnerData = assignment.employee.vehicles;
-    // const vehiclesGuestData = assignment.assignment_loan?.employee.vehicles;
-    // const scheduleData = assignment.schedule;
-    // const assignmentLoanData = assignment.assignment_loan;
-    // const tags = assignment.tags;
-    // const transaction = await sequelize.transaction();
-    // if (vehicleIdsForDelete.length > 0) {
-    //   await VehicleModel.destroy({
-    //     where: {
-    //       id: {
-    //         [Op.in]: vehicleIdsForDelete
-    //       },
-    //       employee_id: {
-    //         [Op.in]: [ownerData.id, guestData?.id]
-    //       }
-    //     },
-    //     transaction
-    //   });
-    // }
-    // //update vehicles owner
-    // await this.upsertVehicles(vehiclesOwnerData, ownerData.id, transaction);
-    // //update schedule
-    // if (scheduleData.id) {
-    //   await ScheduleModel.update(
-    //     {
-    //       start_time_assignment: scheduleData.start_time_assignment,
-    //       end_time_assignment: scheduleData.end_time_assignment
-    //     },
-    //     {
-    //       where: {
-    //         id: scheduleData.id
-    //       },
-    //       transaction
-    //     }
-    //   );
-    // }
-    // if (guestData && vehiclesGuestData) {
-    //   //Upsert vehicles guest
-    //   await this.upsertVehicles(guestData.vehicles, guestData.id, transaction);
-    // }
-    // if (assignmentLoanData) {
-    //   await AssignmentLoanModel.update(
-    //     {
-    //       start_date_assignment: assignmentLoanData.start_date_assignment,
-    //       end_date_assignment: assignmentLoanData.end_date_assignment
-    //     },
-    //     {
-    //       where: {
-    //         assignment_id: assignment.id
-    //       },
-    //       transaction
-    //     }
-    //   );
-    // }
-    // if (tags.length > 0) {
-    //   await AssignmentTagDetailModel.destroy({
-    //     where: {
-    //       assignment_id: assignment.id
-    //     },
-    //     transaction
-    //   });
-    //   await AssignmentTagDetailModel.bulkCreate(
-    //     tags.map(tag => ({
-    //       id: uuid(),
-    //       assignment_id: assignment.id,
-    //       tag_id: tag
-    //     })),
-    //     { transaction }
-    //   );
-    // }
-    // await transaction.commit();
   }
 
   async changeStatusAssignment(

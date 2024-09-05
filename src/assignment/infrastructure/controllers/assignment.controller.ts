@@ -7,7 +7,7 @@ import { AssignmentFinderById } from '@src/assignment/application/user-cases/ass
 import { CreateDiscountNote } from '@src/assignment/application/user-cases/create-discount-note';
 import { CreateDeAssignment } from '@src/assignment/application/user-cases/create-de-assignment';
 import { GetEmployeeByCode } from '@src/assignment/application/user-cases/get-employee';
-import { UpdateAssignment } from '@src/assignment/application/user-cases/update-assignment';
+import { UpdateAssignmentUseCase } from '@src/assignment/application/user-cases/update-assignment';
 import { CreateAssignmentLoan } from '@src/assignment/application/user-cases/assignment-loan/create-assignment-loan';
 import { UpdateAssignmentLoanUseCase } from '@src/assignment/application/user-cases/assignment-loan/update-assignment-loan';
 import { UpdateStatusDiscountNote } from '@src/assignment/application/user-cases/update-status-discount-note';
@@ -24,7 +24,7 @@ export class AssignmentController {
     private readonly assignmentFinderUseCase: AssignmentFinder,
     private readonly deAssignmentByIdUseCase: CreateDeAssignment,
     private readonly employeeFinderByCodeUseCase: GetEmployeeByCode,
-    private readonly updateAssignmentUseCase: UpdateAssignment,
+    private readonly updateAssignmentUseCase: UpdateAssignmentUseCase,
     private readonly createAssignmentLoanUseCase: CreateAssignmentLoan,
     private readonly updateAssignmentLoanUseCase: UpdateAssignmentLoanUseCase,
     private readonly updateDiscountNoteUseCase: UpdateStatusDiscountNote,
@@ -147,19 +147,21 @@ export class AssignmentController {
     }
   }
 
-  updateAssignment(req: Request, res: Response, next: NextFunction) {
-    // const assignmentId = req.params.assignment_id;
-    // const assignment = req.body;
-    // const vehiclesForDelete = req.body.vehicles_for_delete;
+  async updateAssignment(req: Request, res: Response, next: NextFunction) {
+    const assignmentId = req.params.assignment_id;
+    const employee = req.body.employee;
+    const vehiclesForDelete = req.body.vehiclesForDelete;
+    const tags = req.body.tags;
 
     try {
-      // await this.updateAssignmentUseCase.run(
-      //   {
-      //     id: assignmentId,
-      //     ...assignment
-      //   },
-      //   vehiclesForDelete
-      // );
+      await this.updateAssignmentUseCase.run(
+        {
+          employee,
+          tags,
+          vehicleIdsForDelete: vehiclesForDelete
+        },
+        assignmentId
+      );
       res.status(200).json({ message: 'Assignment updated' });
     } catch (error) {
       next(error);

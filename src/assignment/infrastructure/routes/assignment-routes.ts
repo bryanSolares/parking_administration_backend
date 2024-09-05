@@ -36,7 +36,7 @@ routes
     validateRequest(assignmentCreateSchema, 'body'),
     assignmentController.createAssignment.bind(assignmentController)
   )
-  .put(
+  .patch(
     '/:assignment_id',
     validateRequest(assignmentIdSchema, 'params'),
     validateRequest(assignmentUpdateSchema, 'body'),
@@ -70,7 +70,7 @@ routes
     assignmentController.updateStatusDiscountNode.bind(assignmentController)
   )
   .post(
-    '/:assignment_id/loan/',
+    '/:assignment_id/assignment-loan/',
     validateRequest(assignmentIdSchema, 'params'),
     validateRequest(assignmentLoanSchema, 'body'),
     assignmentController.createAssignmentLoan.bind(assignmentController)
