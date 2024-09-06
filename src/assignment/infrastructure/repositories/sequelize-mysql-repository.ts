@@ -96,7 +96,16 @@ export class SequelizeAssignmentRepository implements AssignmentRepository {
           model: TagModel
         },
         {
-          model: DiscountNoteModel
+          model: DiscountNoteModel,
+          required: false
+        },
+        {
+          model: AssignmentLoanModel,
+          where: { status: 'ACTIVO' },
+          required: false,
+          include: [
+            { model: EmployeeModel, include: [{ model: VehicleModel }] }
+          ]
         }
       ]
     });
@@ -148,6 +157,9 @@ export class SequelizeAssignmentRepository implements AssignmentRepository {
       location: locationData,
       discountNote: plainData.discount_note
         ? DiscountNoteEntity.fromPrimitives(plainData.discount_note)
+        : undefined,
+      assignmentLoan: plainData.assignment_loan
+        ? AssignmentLoadEntity.fromPrimitives(plainData.assignment_loan)
         : undefined
     };
 

@@ -20,6 +20,7 @@ export type FinderResultById = {
   employee: EmployeeEntity;
   tags: TagEntity[];
   discountNote?: DiscountNoteEntity;
+  assignmentLoan?: AssignmentLoadEntity;
 };
 
 export type AssignmentFinderResult = Promise<{

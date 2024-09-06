@@ -9,10 +9,9 @@ export enum AssignmentLoadStatus {
   'ACTIVE' = 'ACTIVO',
   'INACTIVE' = 'INACTIVO'
 }
+const DATE_FORMAT_PATTERN = /^\d{4}-\d{2}-\d{2}$/;
 
 export class AssignmentLoadEntity {
-  private readonly DATE_FORMAT_PATTERN = /^\d{4}-\d{2}-\d{2}$/;
-
   constructor(
     public readonly id: string,
     public readonly assignmentId: string,
@@ -140,7 +139,7 @@ export class AssignmentLoadEntity {
   }
 
   private validateFormatDate(date: string) {
-    if (!this.DATE_FORMAT_PATTERN.test(date)) {
+    if (!DATE_FORMAT_PATTERN.test(date)) {
       throw new AppError(
         'INVALID_DATE_FORMAT',
         400,
@@ -155,7 +154,7 @@ export class AssignmentLoadEntity {
         format: 'YYYY-MM-DD',
         tz: 'America/Guatemala'
       });
-      return this.DATE_FORMAT_PATTERN.test(date);
+      return DATE_FORMAT_PATTERN.test(date);
     } catch (error) {
       throw new AppError('INVALID_DATE', 400, 'Date not valid', true);
     }
