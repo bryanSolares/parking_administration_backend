@@ -63,7 +63,10 @@ export class GetFormDataOfAcceptanceUseCase {
         phone,
         email,
         subManagement,
-        management1
+        management1,
+        vehicles: assignment.employee.vehicles.map(vehicle =>
+          vehicle.toPrimitive()
+        )
       },
       previousEmployee: {
         id,
