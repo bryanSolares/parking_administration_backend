@@ -194,6 +194,10 @@ export class SequelizeAssignmentRepository implements AssignmentRepository {
         },
         {
           model: DiscountNoteModel
+        },
+        {
+          model: DeAssignmentModel,
+          required: false
         }
       ],
       order: [['created_at', 'DESC']],
@@ -212,19 +216,22 @@ export class SequelizeAssignmentRepository implements AssignmentRepository {
     const data = plainData.map(plainResult => {
       return {
         id: plainResult.id,
+        status: plainResult.status as AssignmentStatus,
+        assignmentDate: plainResult.assignmentDate ?? '',
+        decisionDate: plainResult.decisionDate ?? '',
+        parkingCardNumber: plainResult.parkingCardNumber,
+        benefitType: plainResult.benefitType,
         employee: EmployeeEntity.fromPrimitive(plainResult.employee),
         location: LocationEntity.fromPrimitives({
           ...plainResult.slot.location,
           slots: [SlotEntity.fromPrimitives(plainResult.slot)]
         }),
-        assignmentDate: plainResult.assignmentDate ?? '',
-        decisionDate: plainResult.decisionDate ?? '',
-        parkingCardNumber: plainResult.parkingCardNumber,
-        benefitType: plainResult.benefitType,
         discountNote: plainResult.discount_note
           ? DiscountNoteEntity.fromPrimitives(plainResult.discount_note)
           : undefined,
-        status: plainResult.status as AssignmentStatus
+        deAssignment: plainResult.de_assignment
+          ? DeAssignmentEntity.fromPrimitives(plainResult.de_assignment)
+          : undefined
       };
     });
 

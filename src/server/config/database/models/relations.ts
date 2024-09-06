@@ -7,6 +7,7 @@ import { TagModel } from './tag.model';
 import { AssignmentTagDetailModel } from './assignment-tag-detail';
 import { DiscountNoteModel } from './discount-note.model';
 import { AssignmentLoanModel } from './assignment-loan';
+import { DeAssignmentModel } from './de-assignment.model';
 
 // import { RoleModel } from './auth/role.model';
 // import { RoleDetailModel } from './auth/role.detail.model';
@@ -68,6 +69,15 @@ AssignmentModel.hasOne(DiscountNoteModel, {
 });
 DiscountNoteModel.belongsTo(AssignmentModel, {
   foreignKey: 'assignment_id'
+});
+
+DeAssignmentModel.belongsTo(AssignmentModel, {
+  foreignKey: 'assignment_id'
+});
+AssignmentModel.hasOne(DeAssignmentModel, {
+  foreignKey: 'assignment_id',
+  onUpdate: 'RESTRICT',
+  onDelete: 'RESTRICT'
 });
 
 // RoleModel.belongsToMany(ResourceModel, {
