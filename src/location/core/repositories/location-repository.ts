@@ -53,6 +53,7 @@ export interface LocationRepository {
     page: number
   ): Promise<LocationFinderResult | null>;
   getSlotById(id: string): Promise<SlotEntity | null>;
+  getLocationBySlotId(slotId: string): Promise<LocationEntity | null>;
   executeFunction<TypeFunctionResult = boolean | number>(
     functionName: FunctionNames,
     params: string[]

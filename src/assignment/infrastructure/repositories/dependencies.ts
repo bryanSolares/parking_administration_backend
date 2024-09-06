@@ -33,7 +33,8 @@ const settingRepository = new SequelizeSettingMySQLRepository();
 const validations = new Validations(
   sequelizeAssignmentRepository,
   employeeRepository,
-  settingRepository
+  settingRepository,
+  sequelizeLocationRepository
 );
 
 //Use cases

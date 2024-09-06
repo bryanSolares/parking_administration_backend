@@ -7,4 +7,8 @@ export interface EmployeeRepository {
   ): Promise<Response>;
 
   getEmployeeFromDatabase(employeeCode: string): Promise<EmployeeEntity | null>;
+
+  getEmployeeByIdFromDatabase(
+    employeeId: string
+  ): Promise<EmployeeEntity | null>;
 }

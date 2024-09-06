@@ -233,6 +233,24 @@ export class SequelizeMYSQLLocationRepository implements LocationRepository {
     //return slotDatabase?.get({ plain: true }) as SlotEntity;
   }
 
+  async getLocationBySlotId(slotId: string): Promise<LocationEntity | null> {
+    const location = await LocationModel.findOne({
+      include: [
+        {
+          model: SlotModel,
+          as: 'slots',
+          where: { id: slotId }
+        }
+      ]
+    });
+
+    if (!location) return null;
+
+    return LocationEntity.fromPrimitives({
+      ...location.get({ plain: true })
+    });
+  }
+
   async executeFunction<TypeFunctionResult = boolean | number>(
     functionName: 'location_has_active_assignment',
     params: string[]

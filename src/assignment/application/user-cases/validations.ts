@@ -1,5 +1,6 @@
 import { diffDays } from '@formkit/tempo';
 import { AssignmentRepository } from '@src/assignment/core/repositories/assignment-repository';
+import { LocationRepository } from '@src/location/core/repositories/location-repository';
 import { ListOfFunctions } from '@src/assignment/core/repositories/assignment-repository';
 import { EmployeeRepository } from '@src/assignment/core/repositories/employee-repository';
 import { SlotEntity } from '@src/location/core/entities/slot-entity';
@@ -9,19 +10,20 @@ import { TagEntity } from '@src/parameters/core/entities/tag-entity';
 import { SettingRepository } from '@src/parameters/core/repositories/setting-repository';
 import { SettingKeys } from '@src/parameters/core/repositories/setting-repository';
 import { AppError } from '@src/server/config/err/AppError';
+import { LocationStatus } from '@src/location/core/entities/location-entity';
 
 export class Validations {
   constructor(
     private readonly assignmentRepository: AssignmentRepository,
     private readonly employeeRepository: EmployeeRepository,
-    private readonly settingRepository: SettingRepository
+    private readonly settingRepository: SettingRepository,
+    private readonly locationRepository: LocationRepository
   ) {}
 
   public async validateIfCanCreate(data: {
     slot: SlotEntity | null;
     employee: {
       id: string;
-      employeeCode: string;
       vehicles: {
         id: string;
       }[];
@@ -31,12 +33,11 @@ export class Validations {
       database: TagEntity[] | [];
     };
   }): Promise<void> {
+    await this.validateIfSlotIsValid(data.slot);
     this.validateIfTagsAreValid(data.tags);
-    this.validateIfSlotIsValid(data.slot);
     await this.validateIfCanCreateAssignmentInSlot(data.slot!);
     await this.validateIfVehiclesBelongToEmployee(
       data.employee.id,
-      data.employee.employeeCode,
       data.employee.vehicles
     );
     await this.validateIfEmployeeHasAnActiveAssignment(data.employee.id);
@@ -44,7 +45,6 @@ export class Validations {
 
   public async validateIfCanCreateAssignmentLoan(employee: {
     id: string;
-    employeeCode: string;
     vehicles: {
       id: string;
     }[];
@@ -52,14 +52,13 @@ export class Validations {
     await this.validateIfEmployeeHasAnActiveAssignment(employee.id);
     await this.validateIfVehiclesBelongToEmployee(
       employee.id,
-      employee.employeeCode,
       employee.vehicles
     );
   }
 
-  private validateIfSlotIsValid(slot: SlotEntity | null) {
+  private async validateIfSlotIsValid(slot: SlotEntity | null) {
     if (!slot) {
-      throw new AppError('SLOT_NOT_FOUND', 400, 'Slot not found', true);
+      throw new AppError('SLOT_NOT_FOUND', 404, 'Slot not found', true);
     }
 
     if (slot.status === SlotStatus.INACTIVE) {
@@ -70,9 +69,7 @@ export class Validations {
         true
       );
     }
-  }
 
-  private async validateIfCanCreateAssignmentInSlot(slot: SlotEntity) {
     if (
       slot.slotType === SlotType.SIMPLE &&
       slot.status === SlotStatus.OCCUPIED
@@ -85,6 +82,23 @@ export class Validations {
       );
     }
 
+    const location = await this.locationRepository.getLocationBySlotId(slot.id);
+
+    if (!location) {
+      throw new AppError('LOCATION_NOT_FOUND', 404, 'Location not found', true);
+    }
+
+    if (location.status === LocationStatus.INACTIVE) {
+      throw new AppError(
+        'LOCATION_NOT_AVAILABLE',
+        400,
+        'You can not create an assignment if the location is inactive',
+        true
+      );
+    }
+  }
+
+  private async validateIfCanCreateAssignmentInSlot(slot: SlotEntity) {
     if (
       slot.slotType === SlotType.MULTIPLE &&
       slot.status !== SlotStatus.INACTIVE
@@ -126,7 +140,6 @@ export class Validations {
 
   public async validateIfVehiclesBelongToEmployee(
     employeeId: string,
-    employeeCode: string,
     vehiclesRequest: { id: string }[]
   ) {
     if (
@@ -143,7 +156,7 @@ export class Validations {
 
     if (employeeId) {
       const employeeDatabase =
-        await this.employeeRepository.getEmployeeFromDatabase(employeeCode);
+        await this.employeeRepository.getEmployeeByIdFromDatabase(employeeId);
 
       if (!employeeDatabase) {
         throw new AppError(

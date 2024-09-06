@@ -34,4 +34,20 @@ export class SequelizeEmployeeRepository implements EmployeeRepository {
 
     return EmployeeEntity.fromPrimitive(employeeDatabase.get({ plain: true }));
   }
+
+  async getEmployeeByIdFromDatabase(
+    employeeId: string
+  ): Promise<EmployeeEntity | null> {
+    const employeeDatabase = await EmployeeModel.findByPk(employeeId, {
+      include: [
+        {
+          model: VehicleModel
+        }
+      ]
+    });
+
+    if (!employeeDatabase) return null;
+
+    return EmployeeEntity.fromPrimitive(employeeDatabase.get({ plain: true }));
+  }
 }

@@ -60,13 +60,11 @@ export class UpdateAssignmentUseCase {
 
     await this.validations.validateIfVehiclesBelongToEmployee(
       assignmentDatabase.employee.id,
-      assignmentDatabase.employee.employeeCode,
       data.employee.vehicles
     );
 
     await this.validations.validateIfVehiclesBelongToEmployee(
       assignmentDatabase.employee.id,
-      assignmentDatabase.employee.employeeCode,
       data.vehicleIdsForDelete.map(id => ({ id }))
     );
 
