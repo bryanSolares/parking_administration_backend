@@ -42,8 +42,9 @@ export class CreateAcceptanceProcessUseCase {
     }
 
     if (
-      assignment.status !==
-      (AssignmentStatus.ASSIGNED || AssignmentStatus.IN_PROGRESS)
+      ![AssignmentStatus.ASSIGNED, AssignmentStatus.IN_PROGRESS].some(
+        status => status === assignment.status
+      )
     ) {
       throw new AppError(
         'ASSIGNMENT_NOT_VALID',
