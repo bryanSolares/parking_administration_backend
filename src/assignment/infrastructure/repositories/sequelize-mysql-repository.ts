@@ -7,6 +7,7 @@ import { v4 as uuid } from 'uuid';
 import { AssignmentEntity } from '@assignment-module-core/entities/assignment-entity';
 import { AssignmentStatus } from '@assignment-module-core/entities/assignment-entity';
 import { FinderResultById } from '@assignment-module-core/repositories/assignment-repository';
+import { FinderResultPreviousAssignment } from '@assignment-module-core/repositories/assignment-repository';
 import { AssignmentRepository } from '@assignment-module-core/repositories/assignment-repository';
 import { ListOfFunctions } from '@assignment-module-core/repositories/assignment-repository';
 import { ReturnType } from '@assignment-module-core/repositories/assignment-repository';
@@ -507,5 +508,51 @@ export class SequelizeAssignmentRepository implements AssignmentRepository {
         { where: { id: assignmentId } }
       );
     }
+  }
+
+  async getLastAssignmentInactiveBySlotId(
+    slotId: string
+  ): Promise<FinderResultPreviousAssignment | null> {
+    const assignmentDatabase = await AssignmentModel.findOne({
+      where: {
+        slotId,
+        status: {
+          [Op.in]: [
+            AssignmentStatus.AUTO_DE_ASSIGNMENT,
+            AssignmentStatus.MANUAL_DE_ASSIGNMENT
+          ]
+        }
+      },
+      include: [
+        {
+          model: EmployeeModel,
+          include: [{ model: VehicleModel }]
+        },
+        {
+          model: DeAssignmentModel,
+          required: true,
+          order: [
+            ['deAssignmentDate', 'DESC'],
+            ['updated_at', 'DESC']
+          ]
+        }
+      ],
+      order: [['updated_at', 'DESC']],
+      limit: 1
+    });
+
+    if (!assignmentDatabase) return null;
+    const plainData = assignmentDatabase.get({ plain: true });
+
+    return {
+      id: plainData.id,
+      benefitType: plainData.benefitType,
+      decisionDate: plainData.decisionDate,
+      parkingCardNumber: plainData.parkingCardNumber,
+      status: plainData.status,
+      assignmentDate: plainData.assignmentDate,
+      employee: EmployeeEntity.fromPrimitive(plainData.employee),
+      deAssignment: DeAssignmentEntity.fromPrimitives(plainData.de_assignment)
+    };
   }
 }

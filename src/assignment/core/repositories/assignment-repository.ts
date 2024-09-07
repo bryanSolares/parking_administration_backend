@@ -23,6 +23,11 @@ export type FinderResultById = {
   assignmentLoan?: AssignmentLoadEntity;
 };
 
+export type FinderResultPreviousAssignment = Omit<
+  FinderResultById,
+  'tags' | 'discountNote' | 'assignmentLoan' | 'location'
+> & { deAssignment: DeAssignmentEntity };
+
 export type AssignmentFinderResult = Promise<{
   pageCounter: number;
   data: Omit<FinderResultById, 'tags'>[];
@@ -75,4 +80,8 @@ export interface AssignmentRepository {
     status: AssignmentStatus,
     assignmentDate?: string
   ): Promise<void>;
+
+  getLastAssignmentInactiveBySlotId(
+    slotId: string
+  ): Promise<FinderResultPreviousAssignment | null>;
 }

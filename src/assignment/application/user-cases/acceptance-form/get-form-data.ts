@@ -52,6 +52,11 @@ export class GetFormDataOfAcceptanceUseCase {
     const { id, employeeCode, name, phone, email, subManagement, management1 } =
       assignment.employee;
 
+    const previousAssignment =
+      await this.assignmentRepository.getLastAssignmentInactiveBySlotId(
+        assignment.location.slots[0].id
+      );
+
     return {
       assignmentId: assignment.id,
       parkingCardNumber: assignment.parkingCardNumber,
@@ -64,19 +69,37 @@ export class GetFormDataOfAcceptanceUseCase {
         email,
         subManagement,
         management1,
-        vehicles: assignment.employee.vehicles.map(vehicle =>
-          vehicle.toPrimitive()
-        )
+        vehicles: assignment.employee.vehicles
+          ? assignment.employee.vehicles.map(vehicle => vehicle.toPrimitive())
+          : []
       },
-      previousEmployee: {
-        id,
-        employeeCode,
-        name,
-        phone,
-        email,
-        subManagement,
-        management1
-      },
+      previousEmployee: previousAssignment
+        ? {
+            assignment: {
+              id: previousAssignment.id,
+              benefitType: previousAssignment.benefitType,
+              decisionDate: previousAssignment.decisionDate,
+              parkingCardNumber: previousAssignment.parkingCardNumber,
+              status: previousAssignment.status,
+              assignmentDate: previousAssignment.assignmentDate
+            },
+            employee: {
+              id: previousAssignment.employee.id,
+              employeeCode: previousAssignment.employee.employeeCode,
+              name: previousAssignment.employee.name,
+              phone: previousAssignment.employee.phone,
+              email: previousAssignment.employee.email,
+              subManagement: previousAssignment.employee.subManagement,
+              management1: previousAssignment.employee.management1,
+              vehicles: previousAssignment.employee.vehicles
+                ? previousAssignment.employee.vehicles.map(vehicle =>
+                    vehicle.toPrimitive()
+                  )
+                : []
+            },
+            deAssignment: previousAssignment.deAssignment.toPrimitives()
+          }
+        : null,
       signatures: signatures.settingValue
     };
   }
