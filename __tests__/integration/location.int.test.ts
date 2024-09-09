@@ -5,57 +5,25 @@ import { sequelize } from '../../src/server/config/database/sequelize';
 import { LocationMother } from './mother/location-mother';
 import { QueryTypes } from 'sequelize';
 import { faker } from '@faker-js/faker';
+import { prepareDatabase } from "./utils/db";
+import { cleanDatabase } from "./utils/db";
 const server = new Server();
 
-let cookies: string;
-
-const initUser = async () => {
-  await syncDatabase();
-  try {
-    await sequelize.query(
-      `INSERT INTO role
-  	(id, name, description, status, created_at, updated_at)
-    VALUES('fa15f4b4-0330-4020-94bc-3a118e68deb9', 'Wesley Bernhard', 'Porro minus aut eligendi et ut non reprehenderit.', 'ACTIVO', '2024-08-13 23:53:22', '2024-08-13 23:53:22');`
-    );
-
-    await sequelize.query(
-      `INSERT INTO resource
-  	(id, slug, description, created_at, updated_at)
-    VALUES('13a87ee9-5290-445b-8b6a-d2e5aea9eb8b', 'manage_parking', 'Parking administrator', '2024-08-13 00:00:00', '2024-08-13 00:00:00');`
-    );
-
-    await sequelize.query(
-      `INSERT INTO role_detail
-  	(role_id, resource_id, can_access, created_at, updated_at)
-    VALUES('fa15f4b4-0330-4020-94bc-3a118e68deb9', '13a87ee9-5290-445b-8b6a-d2e5aea9eb8b', 1, '2024-08-13 23:53:22', '2024-08-13 23:53:22');`
-    );
-
-    await sequelize.query(
-      `INSERT INTO user
-  	(id, username, name, email, phone, password, role_id, status, created_at, updated_at)
-    VALUES('0421958e-8630-4ee0-ba8d-a487b8c4c9f6', 'Janie_Frami', 'Rosie Hane', 'Jerel69@hotmail.com', '+(502) 45573001', 'ODHp5Hv7CXzuclf', 'fa15f4b4-0330-4020-94bc-3a118e68deb9', 'ACTIVO', '2024-08-14 00:24:50', '2024-08-14 00:36:41');`
-    );
-  } catch (error) {
-    console.log(error);
-  }
-};
 
 beforeAll(async () => {
   await server.startServer();
   await syncDatabase();
-  await initUser();
+  await cleanDatabase();
+});
 
-  const authResponse = await request(server.getApp())
-    .post(`${baseUrl}/auth/login`)
-    .send({
-      username: 'Janie_Frami',
-      password: 'ODHp5Hv7CXzuclf'
-    });
-
-  cookies = authResponse.headers['set-cookie'];
+beforeEach(async () => {
+  await cleanDatabase();
+  await prepareDatabase();
 });
 
 afterAll(async () => {
+  await cleanDatabase();
+  await sequelize.close();
   await server.stopServer();
 });
 
@@ -77,7 +45,6 @@ describe('CREATE LOCATION', () => {
   it('should create a location', async () => {
     const response = await request(server.getApp())
       .post(`${baseUrl}/parking/location`)
-      .set('Cookie', cookies)
       .send(dataRequest)
       .expect(201);
 
@@ -91,7 +58,6 @@ describe('CREATE LOCATION', () => {
 
     const response = await request(server.getApp())
       .post(`${baseUrl}/parking/location`)
-      .set('Cookie', cookies)
       .send(dataRequest)
       .expect(400);
 
@@ -105,7 +71,6 @@ describe('CREATE LOCATION', () => {
 
     const response = await request(server.getApp())
       .post(`${baseUrl}/parking/location`)
-      .set('Cookie', cookies)
       .send(dataRequest)
       .expect(400);
 
@@ -120,7 +85,6 @@ describe('CREATE LOCATION', () => {
 
     const response = await request(server.getApp())
       .post(`${baseUrl}/parking/location`)
-      .set('Cookie', cookies)
       .send(dataRequest)
       .expect(400);
 
@@ -135,7 +99,7 @@ describe('CREATE LOCATION', () => {
 //   const createLocation = async () => {
 //     await request(server.getApp())
 //       .post(`${baseUrl}/parking/location`)
-//       .set('Cookie', cookies)
+//       ////.set('Cookie', cookies)
 //       .send(dataRequest)
 //       .expect(201);
 //   }
@@ -155,7 +119,7 @@ describe('CREATE LOCATION', () => {
 //   //   dataRequest.name = 'UPDATED NAME';
 //   //   const response = await request(server.getApp())
 //   //     .put(`${baseUrl}/parking/location/${location.id}`)
-//   //     .set('Cookie', cookies)
+//   //     ////.set('Cookie', cookies)
 //   //     .send(dataRequest)
 //   //     .expect(200);
 //   //   expect(response.body).toEqual({
@@ -172,7 +136,6 @@ describe('GET LOCATION BY ID', () => {
     const [location] : {id: string, name: string, address: string}[] = await sequelize.query('select * from location', {type: QueryTypes.SELECT})
     const response = await request(server.getApp())
       .get(`${baseUrl}/parking/location/${location.id}`)
-      .set('Cookie', cookies)
       .expect(200);
 
     const {body} = response;
@@ -185,7 +148,6 @@ describe('GET LOCATION BY ID', () => {
   it('should return 400 BAD REQUEST if location id is not uuid', async () => {
     const response = await request(server.getApp())
       .get(`${baseUrl}/parking/location/abc`)
-      .set('Cookie', cookies)
       .expect(400);
     expect(response.body).toHaveProperty('message');
     expect(response.body.message[0]).toHaveProperty('message', 'Invalid uuid');
@@ -194,7 +156,6 @@ describe('GET LOCATION BY ID', () => {
   it('should return 404 NOT FOUND if location does not exist', async () => {
     const response = await request(server.getApp())
       .get(`${baseUrl}/parking/location/${faker.string.uuid()}`)
-      .set('Cookie', cookies)
       .expect(404);
       expect(response.body).toHaveProperty('message', 'Location not found');
   })
@@ -205,7 +166,7 @@ describe('GET LOCATIONS', () => {
   it('should return 200 OK', async () => {
     const response = await request(server.getApp())
       .get(`${baseUrl}/parking/location?limit=1&page=1`)
-      .set('Cookie', cookies)
+      ////.set('Cookie', cookies)
       .expect(200);
     expect(response.body).toHaveProperty('data');
     expect(response.body.data).toBeInstanceOf(Array);
@@ -216,7 +177,7 @@ describe('GET LOCATIONS', () => {
 
      const response1 = await request(server.getApp())
       .get(`${baseUrl}/parking/location?limit=abc&page=1`)
-      .set('Cookie', cookies)
+      ////.set('Cookie', cookies)
       .expect(400);
       expect(response1.body).toHaveProperty('message');
       expect(response1.body.message[0]).toHaveProperty('message', 'Expected number, received nan');
@@ -224,7 +185,6 @@ describe('GET LOCATIONS', () => {
 
     const response2 = await request(server.getApp())
         .get(`${baseUrl}/parking/location?limit=1&page=abc`)
-        .set('Cookie', cookies)
         .expect(400);
         expect(response2.body).toHaveProperty('message');
         expect(response2.body.message[0]).toHaveProperty('message', 'Expected number, received nan');
@@ -233,7 +193,6 @@ describe('GET LOCATIONS', () => {
     it('should return 400 BAD REQUEST if limit is greater than 100', async () => {
       const response = await request(server.getApp())
         .get(`${baseUrl}/parking/location?limit=101&page=1`)
-        .set('Cookie', cookies)
         .expect(400);
         expect(response.body).toHaveProperty('message');
         expect(response.body.message[0]).toHaveProperty('message', 'Number must be less than or equal to 100');
@@ -247,7 +206,6 @@ describe('DELETE LOCATION', () => {
     const [location] : {id: string, name: string, address: string}[] = await sequelize.query('select * from location', {type: QueryTypes.SELECT})
     const response = await request(server.getApp())
       .delete(`${baseUrl}/parking/location/${location.id}`)
-      .set('Cookie', cookies)
       .expect(200);
     expect(response.body).toEqual({
       message: 'Location deleted'
@@ -257,7 +215,6 @@ describe('DELETE LOCATION', () => {
   it('should return 400 BAD REQUEST if location id is not uuid', async () => {
     const response = await request(server.getApp())
       .delete(`${baseUrl}/parking/location/abc`)
-      .set('Cookie', cookies)
       .expect(400);
     expect(response.body).toHaveProperty('message');
     expect(response.body.message[0]).toHaveProperty('message', 'Invalid uuid');
@@ -266,44 +223,39 @@ describe('DELETE LOCATION', () => {
   it('should return 404 NOT FOUND if location does not exist', async () => {
     const response = await request(server.getApp())
       .delete(`${baseUrl}/parking/location/${faker.string.uuid()}`)
-      .set('Cookie', cookies)
       .expect(404);
       expect(response.body).toHaveProperty('message', 'Location not found');
   })
 })
 
 describe('LOCATION STATS', () => {
-  // it('should return 200 OK', async () => {
-  //   const response = await request(server.getApp())
-  //     .get(`${baseUrl}/parking/location/stats/overview`)
-  //     .set('Cookie', cookies)
-  //     .expect(200);
-  //   expect(response.body).toHaveProperty('data');
-  // })
+  it('should return 200 OK', async () => {
+    const response = await request(server.getApp())
+      .get(`${baseUrl}/parking/location/stats/overview`)
+      .expect(200);
+    expect(response.body).toHaveProperty('data');
+  })
 
-  // it('should return 200 OK to get trend data', async () => {
-  //   const response = await request(server.getApp())
-  //     .get(`${baseUrl}/parking/location/stats/trend?type=daily`)
-  //     .set('Cookie', cookies)
-  //     .expect(200);
+  it('should return 200 OK to get trend data', async () => {
+    const response = await request(server.getApp())
+      .get(`${baseUrl}/parking/location/stats/trend?type=daily`)
+      .expect(200);
 
-  //     await request(server.getApp())
-  //     .get(`${baseUrl}/parking/location/stats/trend?type=monthly`)
-  //     .set('Cookie', cookies)
-  //     .expect(200);
+      await request(server.getApp())
+      .get(`${baseUrl}/parking/location/stats/trend?type=monthly`)
+      ////.set('Cookie', cookies)
+      .expect(200);
 
-  //     await request(server.getApp())
-  //     .get(`${baseUrl}/parking/location/stats/trend?type=weekly`)
-  //     .set('Cookie', cookies)
-  //     .expect(200);
+      await request(server.getApp())
+      .get(`${baseUrl}/parking/location/stats/trend?type=weekly`)
+      .expect(200);
 
-  //   expect(response.body).toHaveProperty('data');
-  // })
+    expect(response.body).toHaveProperty('data');
+  })
 
   it('should return 400 BAD REQUEST if type is not allowed', async () => {
     const response = await request(server.getApp())
       .get(`${baseUrl}/parking/location/stats/trend?type=abc`)
-      .set('Cookie', cookies)
       .expect(400);
     expect(response.body).toHaveProperty('message');
     expect(response.body.message[0]).toHaveProperty('message', "Invalid enum value. Expected 'daily' | 'weekly' | 'monthly', received 'abc'");

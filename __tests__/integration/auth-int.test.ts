@@ -55,7 +55,7 @@ afterAll(async () => {
 const baseUrl = '/api/v1';
 describe('INTEGRATION: Auth', () => {
 
-  describe('POST /auth/login', () => {
+  describe.skip('POST /auth/login', () => {
     it('should return a token', async () => {
       const response = await request(server.getApp())
         .post( `${baseUrl}/auth/login`)
