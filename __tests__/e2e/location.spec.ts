@@ -3,7 +3,7 @@ import { faker } from '@faker-js/faker';
 
 import { Server } from '../../src/server/server';
 import { LocationMother } from '../utils/mother/location-mother';
-import { cleanDatabase } from '../utils/db';
+import { cleanDatabaseLocationTesting } from '../utils/db';
 
 import { LocationModel } from '../../src/server/config/database/models/location.model';
 import { SlotModel } from '../../src/server/config/database/models/slot.model';
@@ -20,11 +20,11 @@ const server = new Server();
 
 beforeAll(async () => {
   await server.startServer();
-  await cleanDatabase();
+  await cleanDatabaseLocationTesting();
 });
 
 afterEach(async () => {
-  await cleanDatabase();
+  await cleanDatabaseLocationTesting();
 });
 
 afterAll(async () => {
@@ -633,7 +633,7 @@ describe('(e2e) Location and Slots', () => {
         });
       });
 
-      it('No se permite inactiva ubicación si tiene asignaciones activas', async () => {
+      it('No se permite inactivar ubicación si tiene asignaciones activas', async () => {
         const locationEntity = LocationMother.createLocationEntity();
         await LocationModel.create({
           ...locationEntity.toPrimitives(),
