@@ -11,6 +11,7 @@ import swaggerUI from 'swagger-ui-express';
 import { config } from '@config/logger/load-envs';
 import { logger } from '@config/logger/load-logger';
 import { sequelizeConnection } from '@config/database/sequelize';
+import { sequelize } from '@config/database/sequelize';
 import swaggerDocs from '@config/swagger/openapi.json';
 import '@config/database/models/relations';
 
@@ -56,8 +57,8 @@ export class Server {
             const { port, address } = this.server?.address() as AddressInfo;
             logger().info(`Server running on port ${address}:${port}`);
             logger().info(message);
+            resolve();
           });
-          resolve();
         })
         .catch(error => {
           logger().error(error);
@@ -68,11 +69,12 @@ export class Server {
 
   public stopServer(): Promise<void> {
     return new Promise((resolve, reject) => {
-      this.server?.close(error => {
+      this.server?.close(async error => {
         if (error) {
           logger().error('Error closing server', error);
           reject(error);
         }
+        await sequelize.close();
         logger().info('Server closed');
         resolve();
       });

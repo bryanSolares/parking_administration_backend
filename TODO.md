@@ -121,3 +121,9 @@ TODO:
 - [ ] solve problem with "as" alias entities
 - [ ] implement handle error in hole application
 - [ ] fix issue with timezone in docker
+- [ ] delete ?? from maps
+- [ ] integrate nock and nyc
+
+- [ ] extract functions date to utils
+- [ ] error to create assignment into single slot
+- [ ] verify if can create assignment if location is inactive

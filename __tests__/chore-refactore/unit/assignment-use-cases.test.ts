@@ -1,13 +1,13 @@
-import { mockAssignmentRepository } from "./__mocks__/assignment-mocks";
- import { mockValidations } from "./__mocks__/assignment-mocks";
- import { mockLocationRepository  } from "./__mocks__/location-mocks";
- import { mocksTagRepository  } from "./__mocks__/tag-mocks";
+import { mockAssignmentRepository } from "../__mocks__/assignment-mocks";
+ import { mockValidations } from "../__mocks__/assignment-mocks";
+ import { mockLocationRepository  } from "../__mocks__/location-mocks";
+ import { mocksTagRepository  } from "../__mocks__/tag-mocks";
 
- import { AssignmentMother } from "./mother/assignment-mother";
- import { LocationMother } from "./mother/location-mother";
+ import { AssignmentMother } from "../mother/assignment-mother";
+ import { LocationMother } from "../mother/location-mother";
 
-import { CreateAssignment } from '../src/assignment/application/user-cases/create-assignment';
-import { AssignmentEntity } from "../src/assignment/core/entities/assignment-entity";
+import { CreateAssignment } from '../../src/assignment/application/user-cases/create-assignment';
+import { AssignmentEntity } from "../../src/assignment/core/entities/assignment-entity";
 // import { CreateAssignmentLoan } from '../src/assignment/application/user-cases/create-assignment-loan';
 // import { CreateDeAssignment } from '../src/assignment/application/user-cases/create-deassignment';
 // import { CreateDiscountNote } from '../src/assignment/application/user-cases/create-discount-note';

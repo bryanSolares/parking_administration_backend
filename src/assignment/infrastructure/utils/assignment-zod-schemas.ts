@@ -25,7 +25,7 @@ export const employeeSchema = z.object({
   workSite: z.string(),
   address: z.string(),
   email: z.string().email(),
-  phone: z.string().regex(/^\+\(50\d{1}\) \d{8}$/, {
+  phone: z.string().regex(/^\+\(50[2-5]{1}\) \d{8}$/, {
     message: 'Format phone number is +(5XX) XXXXXXXX, example: +(502) 45454545'
   }),
   vehicles: vehicleSchema

@@ -1,9 +1,9 @@
-import { mockAuth } from "./__mocks__/auth-mocks";
+import { mockAuth } from "../__mocks__/auth-mocks";
 
-import { LoginUseCase } from "../src/auth/application/use-cases/auth/login";
-import { RefreshTokenUseCase } from "../src/auth/application/use-cases/auth/refresh-token";
-import { UserEntity } from "../src/auth/domain/entities/user-entity";
-import { RoleEntity } from "../src/auth/domain/entities/role-entity";
+import { LoginUseCase } from "../../src/auth/application/use-cases/auth/login";
+import { RefreshTokenUseCase } from "../../src/auth/application/use-cases/auth/refresh-token";
+import { UserEntity } from "../../src/auth/domain/entities/user-entity";
+import { RoleEntity } from "../../src/auth/domain/entities/role-entity";
 
 describe("USE_CASE: Auth", () => {
 

@@ -116,7 +116,7 @@ export class SlotEntity {
     if (
       (data.costType === CostType.DISCOUNT ||
         data.costType === CostType.COMPLEMENT) &&
-      data.cost === 0
+      data.cost <= 0
     ) {
       throw new AppError(
         'ENTITY_VALIDATIONS',

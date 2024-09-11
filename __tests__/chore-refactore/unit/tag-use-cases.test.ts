@@ -1,11 +1,11 @@
-import { mocksTagRepository } from "./__mocks__/tag-mocks";
-import { CreateTag } from '../src/parameters/application/use-cases/create-tag';
-import { UpdateTag } from '../src/parameters/application/use-cases/update-tag';
-import { DeleteTag } from '../src/parameters/application/use-cases/delete-tag';
-import { TagFinderById } from '../src/parameters/application/use-cases/tag-finder-by-id';
-import { TagFinder } from '../src/parameters/application/use-cases/tag-finder';
+import { mocksTagRepository } from "../__mocks__/tag-mocks";
+import { CreateTag } from '../../src/parameters/application/use-cases/create-tag';
+import { UpdateTag } from '../../src/parameters/application/use-cases/update-tag';
+import { DeleteTag } from '../../src/parameters/application/use-cases/delete-tag';
+import { TagFinderById } from '../../src/parameters/application/use-cases/tag-finder-by-id';
+import { TagFinder } from '../../src/parameters/application/use-cases/tag-finder';
 
-import { TagMother } from "./mother/tag-mother";
+import { TagMother } from "../mother/tag-mother";
 
 describe('TAG: Use Cases', () => {
   beforeAll(() => {

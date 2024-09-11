@@ -1,11 +1,11 @@
-import { mockRoleRepository } from "./__mocks__/role-mocks";
-import { RoleMother } from "./mother/role-mother";
+import { mockRoleRepository } from "../__mocks__/role-mocks";
+import { RoleMother } from "../mother/role-mother";
 
-import { CreateRole } from "../src/auth/application/use-cases/role/create-role";
-import { UpdateRole } from "../src/auth/application/use-cases/role/update-role";
-import { DeleteRole } from "../src/auth/application/use-cases/role/delete-role";
-import { FinderById } from "../src/auth/application/use-cases/role/finder-by-id-role";
-import { FinderRole } from "../src/auth/application/use-cases/role/finder-role";
+import { CreateRole } from "../../src/auth/application/use-cases/role/create-role";
+import { UpdateRole } from "../../src/auth/application/use-cases/role/update-role";
+import { DeleteRole } from "../../src/auth/application/use-cases/role/delete-role";
+import { FinderById } from "../../src/auth/application/use-cases/role/finder-by-id-role";
+import { FinderRole } from "../../src/auth/application/use-cases/role/finder-role";
 
 describe('ROLES: Use Cases', () => {
 

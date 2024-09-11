@@ -1,6 +1,5 @@
 import request from 'supertest';
 import { Server } from '../../src/server/server';
-import { syncDatabase } from '../../src/server/config/database/sequelize';
 import { sequelize } from '../../src/server/config/database/sequelize';
 
 import { prepareDatabase } from "./utils/db";
@@ -11,7 +10,6 @@ const server = new Server();
 
 beforeAll(async () => {
   await server.startServer();
-  await syncDatabase();
   await prepareDatabase();
 });
 

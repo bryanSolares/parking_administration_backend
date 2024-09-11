@@ -1,12 +1,12 @@
-import { mockUserRepository } from "./__mocks__/user-mocks";
-import { mockRoleRepository } from "./__mocks__/role-mocks";
-import { UserMother } from "./mother/user-mother";
+import { mockUserRepository } from "../__mocks__/user-mocks";
+import { mockRoleRepository } from "../__mocks__/role-mocks";
+import { UserMother } from "../mother/user-mother";
 
-import { CreateUser } from "../src/auth/application/use-cases/user/create-user";
-import { UpdateUser } from "../src/auth/application/use-cases/user/update-user";
-import { DeleteUser } from "../src/auth/application/use-cases/user/delete-user";
-import { FinderById } from "../src/auth/application/use-cases/user/finder-by-id-user";
-import { FinderUser } from "../src/auth/application/use-cases/user/finder-user";
+import { CreateUser } from "../../src/auth/application/use-cases/user/create-user";
+import { UpdateUser } from "../../src/auth/application/use-cases/user/update-user";
+import { DeleteUser } from "../../src/auth/application/use-cases/user/delete-user";
+import { FinderById } from "../../src/auth/application/use-cases/user/finder-by-id-user";
+import { FinderUser } from "../../src/auth/application/use-cases/user/finder-user";
 
 describe('USER: Use Cases', () => {
 

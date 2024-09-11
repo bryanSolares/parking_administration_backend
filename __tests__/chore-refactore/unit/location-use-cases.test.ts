@@ -1,11 +1,11 @@
-import { mockLocationRepository } from "./__mocks__/location-mocks";
-import { CreateLocation } from '../src/location/application/user-cases/create-location';
-import { CostType, SlotStatus, VehicleType } from "../src/location/core/entities/slot-entity";
-import { SlotType } from "../src/location/core/entities/slot-entity";
-import { LocationMother } from './mother/location-mother';
-import { UpdateLocation } from '../src/location/application/user-cases/update-location';
-import { ValidationsUseCases } from "../src/location/application/user-cases/validations";
-import { LocationEntity, LocationStatus } from "../src/location/core/entities/location-entity";
+import { mockLocationRepository } from "../__mocks__/location-mocks";
+import { CreateLocation } from '../../src/location/application/user-cases/create-location';
+import { CostType, SlotStatus, VehicleType } from "../../src/location/core/entities/slot-entity";
+import { SlotType } from "../../src/location/core/entities/slot-entity";
+import { LocationMother } from '../mother/location-mother';
+import { UpdateLocation } from '../../src/location/application/user-cases/update-location';
+import { ValidationsUseCases } from "../../src/location/application/user-cases/validations";
+import { LocationEntity, LocationStatus } from "../../src/location/core/entities/location-entity";
 
 describe('LOCATION: Use Cases', () => {
 

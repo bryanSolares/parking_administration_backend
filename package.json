@@ -73,7 +73,8 @@
     "prepare": "husky",
     "start": "node ./build/app.js",
     "test": "jest --config jest.config.js",
-    "test:integration": "cross-env NODE_ENV=test jest --config jest.config.js"
+    "test:integration": "cross-env NODE_ENV=test jest --config jest.config.js",
+    "test:e2e": "cross-env NODE_ENV=test jest --config jest.config.e2e.js"
   },
   "version": "0.1.0",
   "jest": {

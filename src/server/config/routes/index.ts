@@ -32,6 +32,8 @@ routes.use('/api/v1/assignment', /*validateAuth(),*/ assignmentRoutes);
 routes.use('/api/v1/parameter/tag', /*validateAuth(),*/ tagRoutes);
 routes.use('/api/v1/parameter/users', validateAuth(), userRoutes);
 routes.use('/api/v1/parameter/roles', validateAuth(), roleRoutes);
-routes.use('*', (req, res) => res.status(404).json({ message: 'Not found' }));
+routes.use('*', (req, res) =>
+  res.status(400).json({ message: 'You have an invalid endpoint' })
+);
 
 export default routes;

@@ -1,24 +1,24 @@
 import { Sequelize } from 'sequelize';
 import { logger } from '../logger/load-logger';
+import { config } from '../logger/load-envs';
 
-const isTestEnvironment = process.env.NODE_ENV === 'test';
+export const sequelize = new Sequelize(
+  `mysql://${config.DB_HOST}:${config.DB_PORT}/${config.DB_NAME}`,
+  {
+    dialect: 'mysql',
+    username: config.DB_USER,
+    password: config.DB_PASSWORD,
+    pool: {
+      max: 5,
+      min: 0,
+      acquire: 30000,
+      idle: 10000
+    },
+    logging: false
+  }
+);
 
-export const sequelize = new Sequelize({
-  dialect: 'mysql',
-  host: isTestEnvironment ? 'localhost' : process.env.DB_HOST,
-  username: isTestEnvironment ? 'administrator' : process.env.DB_USER,
-  password: isTestEnvironment ? 'administrator' : process.env.DB_PASSWORD,
-  database: isTestEnvironment ? 'parking_testing' : process.env.DB_NAME,
-  pool: {
-    max: 5,
-    min: 0,
-    acquire: 30000,
-    idle: 10000
-  },
-  logging: false
-});
-
-export const syncDatabase = () => {
+const syncDatabase = () => {
   return new Promise((resolve, reject) => {
     sequelize
       .sync({ force: false })
@@ -31,13 +31,14 @@ export const syncDatabase = () => {
   });
 };
 
+//TODO: Typo (startConnection)
 export const sequelizeConnection = () => {
   return new Promise((resolve, reject) => {
     sequelize
       .authenticate()
       .then(() => {
         resolve('Connection has been established successfully.');
-        if (isTestEnvironment || process.env.NODE_ENV === 'development') {
+        if (process.env.NODE_ENV === 'development') {
           syncDatabase()
             .then(message => logger().info(message))
             .catch(error => {
