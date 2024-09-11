@@ -28,7 +28,15 @@ export class ValidationsUseCases {
     const [location, locationHasActiveAssignment, activeAssignmentForLocation] =
       await this.loadData(dataRequest.locationId);
 
+    const newSlots = dataRequest.slots.filter(slot => !slot.id);
+    const oldSlots = dataRequest.slots.filter(slot => slot.id);
+
     this.validateLocationExists(location);
+    this.validateIfNewSlotsAreValid(newSlots);
+    this.validateIfSlotsToDeleteCanBeDeleted(
+      dataRequest.slotsToDelete,
+      location!.slots
+    );
 
     this.validateLocationStatus(
       dataRequest.locationStatus,
@@ -37,17 +45,64 @@ export class ValidationsUseCases {
     );
 
     this.validateSlotsBelongToLocation(
-      dataRequest.slots,
+      oldSlots,
       dataRequest.slotsToDelete,
       location!.slots
     );
 
-    this.validateOccupiedSlots(dataRequest.slots, location!.slots);
+    this.validateOccupiedSlots(oldSlots, location!.slots);
 
     this.validateIfChangeMaxNumberOfAssignments(
-      dataRequest.slots,
+      oldSlots,
       activeAssignmentForLocation
     );
+  }
+
+  private validateIfSlotsToDeleteCanBeDeleted(
+    slotsToDelete: Set<string>,
+    slots: SlotEntity[]
+  ): void {
+    const occupiedSlotsMap = new Map(
+      slots
+        .filter(slot => slot.status === SlotStatus.OCCUPIED)
+        .map(slot => [slot.id, slot])
+    );
+
+    const hasAnyInvalidSlotId = Array.from(slotsToDelete).some(slotId =>
+      occupiedSlotsMap.has(slotId)
+    );
+
+    if (hasAnyInvalidSlotId) {
+      throw new AppError(
+        'FOREIGN_KEY_CONSTRAINT',
+        400,
+        `You cannot delete a slot with active assignments`,
+        true
+      );
+    }
+  }
+
+  private validateIfNewSlotsAreValid(
+    slots: {
+      id: string;
+      slotType: SlotType;
+      vehicleType: VehicleType;
+      costType: CostType;
+      status: SlotStatus;
+      limitOfAssignments: number;
+      cost: number;
+    }[]
+  ) {
+    slots.forEach(slot => {
+      if (!slot.id && slot.status === SlotStatus.OCCUPIED) {
+        throw new AppError(
+          'SLOT_NOT_VALID',
+          400,
+          'You cannot create a slot with occupied status',
+          true
+        );
+      }
+    });
   }
 
   private async loadData(locationId: string) {

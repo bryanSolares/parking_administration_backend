@@ -46,7 +46,7 @@ export class UpdateLocation {
       await this.validationsUseCases.validateIfCanUpdate({
         locationId: data.id,
         locationStatus: data.status,
-        slots: data.slots.filter(slot => slot.id),
+        slots: data.slots,
         slotsToDelete: new Set(slotsToDelete)
       });
 

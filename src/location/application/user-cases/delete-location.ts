@@ -18,6 +18,20 @@ export class DeleteLocation {
         );
       }
 
+      if (
+        await this.locationRepository.executeFunction(
+          'location_has_active_assignment',
+          [id]
+        )
+      ) {
+        throw new AppError(
+          'FOREING_KEY_CONSTRAINT',
+          400,
+          'You cannot delete a location with active assignments',
+          true
+        );
+      }
+
       await this.locationRepository.deleteLocation(id);
     } catch (error) {
       if (error instanceof ForeignKeyConstraintError) {

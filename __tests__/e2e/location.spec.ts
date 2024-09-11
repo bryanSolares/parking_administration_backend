@@ -7,7 +7,13 @@ import { cleanDatabase } from '../utils/db';
 
 import { LocationModel } from '../../src/server/config/database/models/location.model';
 import { SlotModel } from '../../src/server/config/database/models/slot.model';
-import { SlotStatus } from '../../src/location/core/entities/slot-entity';
+import {
+  CostType,
+  SlotStatus,
+  SlotType,
+  VehicleType
+} from '../../src/location/core/entities/slot-entity';
+import { LocationStatus } from '../../src/location/core/entities/location-entity';
 
 const baseUrl = '/api/v1/parking/location';
 const server = new Server();
@@ -27,7 +33,7 @@ afterAll(async () => {
 
 describe('(e2e) Location and Slots', () => {
   describe('/parking/location', () => {
-    describe.skip('POST', () => {
+    describe('POST', () => {
       it('should return 201 and persist location and slots when the request is valid', async () => {
         const locationRequest = LocationMother.createLocationRequest();
 
@@ -162,7 +168,7 @@ describe('(e2e) Location and Slots', () => {
       });
     });
 
-    describe.skip('GET', () => {
+    describe('GET', () => {
       describe('/', () => {
         it('Con registros en BD se deberá recibir un arreglo de ubicaciones con su estadística de ocupación según el estado de los slots y un contador de páginas', async () => {
           const locationEntity = LocationMother.createLocationEntity();
@@ -376,7 +382,537 @@ describe('(e2e) Location and Slots', () => {
       });
     });
 
-    describe('PUT', () => {});
+    describe('PUT', () => {
+      it('Se actualiza una ubicación y slots correctamente a partir de request correcto', async () => {
+        const locationEntity = LocationMother.createLocationEntity();
+        const slotEntity = {
+          ...LocationMother.createSlotEntity().toPrimitives(),
+          locationId: locationEntity.id
+        };
+        await LocationModel.create(locationEntity.toPrimitives());
+        await SlotModel.create(slotEntity);
+        const locationRequest = LocationMother.createLocationRequest();
+        locationRequest.slots = [
+          { ...locationRequest.slots[0], id: slotEntity.id }
+        ];
+
+        const response = await request(server.getApp())
+          .put(`${baseUrl}/${locationEntity.id}`)
+          .send(locationRequest)
+          .expect(200);
+
+        expect(response.body).toEqual({ message: 'Location updated' });
+        const locationDatabase = await LocationModel.findAll({ raw: true });
+        const slotDatabase = await SlotModel.findAll({ raw: true });
+        expect(locationDatabase).toHaveLength(1);
+        expect(locationDatabase[0]).toMatchObject({
+          name: locationRequest.name,
+          address: locationRequest.address,
+          contactReference: locationRequest.contactReference,
+          phone: locationRequest.phone,
+          email: locationRequest.email,
+          comments: locationRequest.comments,
+          numberOfIdentifier: locationRequest.numberOfIdentifier
+        });
+        expect(slotDatabase).toHaveLength(1);
+        expect(slotDatabase[0]).toMatchObject({
+          slotNumber: locationRequest.slots[0].slotNumber,
+          slotType: locationRequest.slots[0].slotType,
+          limitOfAssignments: locationRequest.slots[0].limitOfAssignments,
+          costType: locationRequest.slots[0].costType,
+          cost: locationRequest.slots[0].cost,
+          vehicleType: locationRequest.slots[0].vehicleType,
+          status: locationRequest.slots[0].status
+        });
+      });
+
+      it('Si un slot no tiene id, se creará en base de datos', async () => {
+        const locationEntity = LocationMother.createLocationEntity();
+        await LocationModel.create(locationEntity.toPrimitives());
+        const locationRequest = LocationMother.createLocationRequest();
+        locationRequest.slots = [
+          LocationMother.createSlotRequest(),
+          LocationMother.createSlotRequest()
+        ];
+
+        const response = await request(server.getApp())
+          .put(`${baseUrl}/${locationEntity.id}`)
+          .send(locationRequest)
+          .expect(200);
+
+        console.log(response.body);
+
+        expect(response.body).toEqual({ message: 'Location updated' });
+        const locationDatabase = await LocationModel.findAll({ raw: true });
+        const slotDatabase = await SlotModel.findAll({ raw: true });
+        expect(locationDatabase).toHaveLength(1);
+        expect(locationDatabase[0]).toMatchObject({
+          name: locationRequest.name,
+          address: locationRequest.address,
+          contactReference: locationRequest.contactReference,
+          phone: locationRequest.phone,
+          email: locationRequest.email,
+          comments: locationRequest.comments,
+          numberOfIdentifier: locationRequest.numberOfIdentifier
+        });
+        expect(slotDatabase).toHaveLength(locationRequest.slots.length);
+      });
+
+      it('Se rechaza petición si un slot tiene id que no pertenece a la ubicación', async () => {
+        const locationEntity = LocationMother.createLocationEntity();
+        await LocationModel.create(locationEntity.toPrimitives());
+        const locationRequest = LocationMother.createLocationRequest();
+        const slotId = faker.string.uuid();
+        locationRequest.slots = [LocationMother.createSlotRequest(slotId)];
+
+        const response = await request(server.getApp())
+          .put(`${baseUrl}/${locationEntity.id}`)
+          .send(locationRequest)
+          .expect(400);
+
+        expect(response.body).toHaveProperty(
+          'message',
+          `You cannot update slot with id ${slotId} because it does not belong to location`
+        );
+
+        const locationDatabase = await LocationModel.findAll({ raw: true });
+        const slotDatabase = await SlotModel.findAll({ raw: true });
+        expect(locationDatabase).toHaveLength(1);
+        expect(slotDatabase).toHaveLength(0);
+        expect(locationDatabase[0]).not.toMatchObject({
+          name: locationRequest.name,
+          address: locationRequest.address,
+          contactReference: locationRequest.contactReference,
+          phone: locationRequest.phone,
+          email: locationRequest.email,
+          comments: locationRequest.comments,
+          numberOfIdentifier: locationRequest.numberOfIdentifier
+        });
+      });
+
+      it('No se permite poder crear slots nuevos con estado "OCUPADO"', async () => {
+        const locationEntity = LocationMother.createLocationEntity();
+        await LocationModel.create(locationEntity.toPrimitives());
+        const locationRequest = LocationMother.createLocationRequest();
+        locationRequest.slots = [
+          LocationMother.addNewStatusToSlot(
+            LocationMother.createSlotRequest(),
+            SlotStatus.OCCUPIED
+          )
+        ];
+
+        const response = await request(server.getApp())
+          .put(`${baseUrl}/${locationEntity.id}`)
+          .send(locationRequest)
+          .expect(400);
+
+        expect(response.body).toHaveProperty(
+          'message',
+          'You cannot create a slot with occupied status'
+        );
+
+        const locationDatabase = await LocationModel.findAll({ raw: true });
+        const slotDatabase = await SlotModel.findAll({ raw: true });
+        expect(locationDatabase).toHaveLength(1);
+        expect(slotDatabase).toHaveLength(0);
+        expect(locationDatabase[0]).not.toMatchObject({
+          name: locationRequest.name,
+          address: locationRequest.address,
+          contactReference: locationRequest.contactReference,
+          phone: locationRequest.phone,
+          email: locationRequest.email,
+          comments: locationRequest.comments,
+          numberOfIdentifier: locationRequest.numberOfIdentifier
+        });
+      });
+
+      it('No se permite crear un slot si su tipo es "MULTIPLE" y el número máximo de asignaciones es igual 1', async () => {
+        const locationEntity = LocationMother.createLocationEntity();
+        await LocationModel.create(locationEntity.toPrimitives());
+        const locationRequest = LocationMother.createLocationRequest();
+        locationRequest.slots = [
+          {
+            ...LocationMother.createSlotRequest(),
+            slotType: SlotType.MULTIPLE,
+            limitOfAssignments: 1
+          }
+        ];
+
+        const response = await request(server.getApp())
+          .put(`${baseUrl}/${locationEntity.id}`)
+          .send(locationRequest)
+          .expect(400);
+
+        expect(response.body).toHaveProperty(
+          'message',
+          'The number of schedules for a multiple space should be greater than 1.'
+        );
+
+        const locationDatabase = await LocationModel.findAll({ raw: true });
+        const slotDatabase = await SlotModel.findAll({ raw: true });
+        expect(locationDatabase).toHaveLength(1);
+        expect(slotDatabase).toHaveLength(0);
+        expect(locationDatabase[0]).not.toMatchObject({
+          name: locationRequest.name,
+          address: locationRequest.address,
+          contactReference: locationRequest.contactReference,
+          phone: locationRequest.phone,
+          email: locationRequest.email,
+          comments: locationRequest.comments,
+          numberOfIdentifier: locationRequest.numberOfIdentifier
+        });
+      });
+
+      it('No se permite crear un slot si su tipo es "SIMPLE" y el número máximo de asignaciones es mayor a 1', async () => {
+        const locationEntity = LocationMother.createLocationEntity();
+        await LocationModel.create(locationEntity.toPrimitives());
+        const locationRequest = LocationMother.createLocationRequest();
+        locationRequest.slots = [
+          {
+            ...LocationMother.createSlotRequest(),
+            slotType: SlotType.SIMPLE,
+            limitOfAssignments: 2
+          }
+        ];
+
+        const response = await request(server.getApp())
+          .put(`${baseUrl}/${locationEntity.id}`)
+          .send(locationRequest)
+          .expect(400);
+
+        expect(response.body).toHaveProperty(
+          'message',
+          'The number of schedules cannot be greater than 1 or less than 1 for SIMPLE type spaces.'
+        );
+
+        const locationDatabase = await LocationModel.findAll({ raw: true });
+        const slotDatabase = await SlotModel.findAll({ raw: true });
+        expect(locationDatabase).toHaveLength(1);
+        expect(slotDatabase).toHaveLength(0);
+        expect(locationDatabase[0]).not.toMatchObject({
+          name: locationRequest.name,
+          address: locationRequest.address,
+          contactReference: locationRequest.contactReference,
+          phone: locationRequest.phone,
+          email: locationRequest.email,
+          comments: locationRequest.comments,
+          numberOfIdentifier: locationRequest.numberOfIdentifier
+        });
+      });
+
+      it('No se permite crear slots si el número de asignaciones máximo es menor a 1', async () => {
+        const locationEntity = LocationMother.createLocationEntity();
+        await LocationModel.create(locationEntity.toPrimitives());
+        const locationRequest = LocationMother.createLocationRequest();
+        locationRequest.slots = [
+          { ...LocationMother.createSlotRequest(), limitOfAssignments: 0 }
+        ];
+
+        const response = await request(server.getApp())
+          .put(`${baseUrl}/${locationEntity.id}`)
+          .send(locationRequest)
+          .expect(400);
+
+        expect(response.body.message[0]).toHaveProperty(
+          'message',
+          'Number must be greater than or equal to 1'
+        );
+
+        const locationDatabase = await LocationModel.findAll({ raw: true });
+        const slotDatabase = await SlotModel.findAll({ raw: true });
+        expect(locationDatabase).toHaveLength(1);
+        expect(slotDatabase).toHaveLength(0);
+        expect(locationDatabase[0]).not.toMatchObject({
+          name: locationRequest.name,
+          address: locationRequest.address,
+          contactReference: locationRequest.contactReference,
+          phone: locationRequest.phone,
+          email: locationRequest.email,
+          comments: locationRequest.comments,
+          numberOfIdentifier: locationRequest.numberOfIdentifier
+        });
+      });
+
+      it('No se permite inactiva ubicación si tiene asignaciones activas', async () => {
+        const locationEntity = LocationMother.createLocationEntity();
+        await LocationModel.create({
+          ...locationEntity.toPrimitives(),
+          status: LocationStatus.ACTIVE
+        });
+        await SlotModel.create({
+          ...LocationMother.createSlotEntity().toPrimitives(),
+          locationId: locationEntity.id,
+          status: SlotStatus.OCCUPIED
+        });
+
+        const locationRequest = LocationMother.createLocationRequest();
+        locationRequest.status = LocationStatus.INACTIVE;
+
+        const response = await request(server.getApp())
+          .put(`${baseUrl}/${locationEntity.id}`)
+          .send(locationRequest)
+          .expect(400);
+
+        expect(response.body).toHaveProperty(
+          'message',
+          'You cannot inactivate a location with active assignments'
+        );
+
+        const locationDatabase = await LocationModel.findAll({ raw: true });
+        expect(locationDatabase[0]).not.toMatchObject({
+          name: locationRequest.name,
+          address: locationRequest.address,
+          contactReference: locationRequest.contactReference,
+          phone: locationRequest.phone,
+          email: locationRequest.email,
+          comments: locationRequest.comments,
+          numberOfIdentifier: locationRequest.numberOfIdentifier
+        });
+      });
+
+      it('No se permite cambiar la propiedad "COST_TYPE" de un slot si está ocupado', async () => {
+        const locationEntity = LocationMother.createLocationEntity();
+        await LocationModel.create(locationEntity.toPrimitives());
+        const slotEntity = {
+          ...LocationMother.createSlotEntity().toPrimitives(),
+          locationId: locationEntity.id,
+          status: SlotStatus.OCCUPIED,
+          costType: CostType.NO_COST,
+          cost: 0
+        };
+        await SlotModel.create(slotEntity);
+        const locationRequest = LocationMother.createLocationRequest();
+        locationRequest.slots = [
+          {
+            ...LocationMother.createSlotRequest(slotEntity.id),
+            costType: CostType.COMPLEMENT,
+            cost: 100
+          }
+        ];
+
+        const response = await request(server.getApp())
+          .put(`${baseUrl}/${locationEntity.id}`)
+          .send(locationRequest)
+          .expect(400);
+
+        expect(response.body).toHaveProperty(
+          'message',
+          'You cannot update properties slotType, vehicleType, costType, status, cost if it is occupied'
+        );
+
+        const locationDatabase = await LocationModel.findAll({ raw: true });
+        const slotDatabase = await SlotModel.findAll({ raw: true });
+        expect(locationDatabase).toHaveLength(1);
+        expect(slotDatabase).toHaveLength(1);
+        expect(locationDatabase[0]).not.toMatchObject({
+          name: locationRequest.name,
+          address: locationRequest.address,
+          contactReference: locationRequest.contactReference,
+          phone: locationRequest.phone,
+          email: locationRequest.email,
+          comments: locationRequest.comments,
+          numberOfIdentifier: locationRequest.numberOfIdentifier
+        });
+        expect(slotDatabase[0]).not.toMatchObject({
+          slotNumber: locationRequest.slots[0].slotNumber,
+          slotType: locationRequest.slots[0].slotType,
+          limitOfAssignments: locationRequest.slots[0].limitOfAssignments,
+          costType: locationRequest.slots[0].costType,
+          cost: locationRequest.slots[0].cost,
+          vehicleType: locationRequest.slots[0].vehicleType,
+          status: locationRequest.slots[0].status
+        });
+      });
+
+      it('No se permite cambiar las propiedades "TYPE_VEHICLE" de un slot si está ocupado', async () => {
+        const locationEntity = LocationMother.createLocationEntity();
+        await LocationModel.create(locationEntity.toPrimitives());
+        const slotEntity = {
+          ...LocationMother.createSlotEntity().toPrimitives(),
+          locationId: locationEntity.id,
+          status: SlotStatus.OCCUPIED,
+          costType: CostType.NO_COST,
+          vehicleType: VehicleType.CAR,
+          cost: 0
+        };
+        await SlotModel.create(slotEntity);
+        const locationRequest = LocationMother.createLocationRequest();
+        locationRequest.slots = [
+          {
+            ...LocationMother.createSlotRequest(slotEntity.id),
+            vehicleType: VehicleType.CYCLE
+          }
+        ];
+
+        const response = await request(server.getApp())
+          .put(`${baseUrl}/${locationEntity.id}`)
+          .send(locationRequest)
+          .expect(400);
+
+        expect(response.body).toHaveProperty(
+          'message',
+          'You cannot update properties slotType, vehicleType, costType, status, cost if it is occupied'
+        );
+
+        const locationDatabase = await LocationModel.findAll({ raw: true });
+        const slotDatabase = await SlotModel.findAll({ raw: true });
+        expect(locationDatabase).toHaveLength(1);
+        expect(slotDatabase).toHaveLength(1);
+        expect(locationDatabase[0]).not.toMatchObject({
+          name: locationRequest.name,
+          address: locationRequest.address,
+          contactReference: locationRequest.contactReference,
+          phone: locationRequest.phone,
+          email: locationRequest.email,
+          comments: locationRequest.comments,
+          numberOfIdentifier: locationRequest.numberOfIdentifier
+        });
+        expect(slotDatabase[0]).not.toMatchObject({
+          slotNumber: locationRequest.slots[0].slotNumber,
+          slotType: locationRequest.slots[0].slotType,
+          limitOfAssignments: locationRequest.slots[0].limitOfAssignments,
+          costType: locationRequest.slots[0].costType,
+          cost: locationRequest.slots[0].cost,
+          vehicleType: locationRequest.slots[0].vehicleType,
+          status: locationRequest.slots[0].status
+        });
+      });
+
+      it.skip('No se permite modificar el número máximo de asignaciones de un slot por debajo de las asignaciones actuales', async () => {
+        const locationEntity = LocationMother.createLocationEntity();
+        await LocationModel.create(locationEntity.toPrimitives());
+        const slotEntity = {
+          ...LocationMother.createSlotEntity().toPrimitives(),
+          status: SlotStatus.OCCUPIED,
+          slotType: SlotType.MULTIPLE,
+          limitOfAssignments: 2
+        };
+        await SlotModel.create(slotEntity);
+      });
+
+      it('Al enviar ids de slos para eliminar, se eliminan correctamente', async () => {
+        const locationEntity = LocationMother.createLocationEntity();
+        await LocationModel.create(locationEntity.toPrimitives());
+        const slotEntity = {
+          ...LocationMother.createSlotEntity().toPrimitives(),
+          locationId: locationEntity.id
+        };
+        const slotEntity2 = {
+          ...LocationMother.createSlotEntity().toPrimitives(),
+          locationId: locationEntity.id
+        };
+        const slotEntity3 = {
+          ...LocationMother.createSlotEntity().toPrimitives(),
+          locationId: locationEntity.id
+        };
+        await SlotModel.create(slotEntity);
+        await SlotModel.create(slotEntity2);
+        await SlotModel.create(slotEntity3);
+
+        const locationRequest = LocationMother.createLocationRequest();
+        locationRequest.slots = [];
+
+        const response = await request(server.getApp())
+          .put(`${baseUrl}/${locationEntity.id}`)
+          .send({
+            ...locationRequest,
+            slotsToDelete: [slotEntity.id, slotEntity2.id]
+          })
+          .expect(200);
+
+        expect(response.body).toEqual({ message: 'Location updated' });
+        const slotDatabase = await SlotModel.findAll({ raw: true });
+        expect(slotDatabase).toHaveLength(1);
+      });
+
+      it('Si algun slot a eliminar no pertenece a la ubicación se rechaza la petición', async () => {
+        const locationEntity = LocationMother.createLocationEntity();
+        await LocationModel.create(locationEntity.toPrimitives());
+        const slotEntity = {
+          ...LocationMother.createSlotEntity().toPrimitives(),
+          locationId: locationEntity.id
+        };
+        const slotEntity2 = {
+          ...LocationMother.createSlotEntity().toPrimitives(),
+          locationId: locationEntity.id
+        };
+        await SlotModel.create(slotEntity);
+        await SlotModel.create(slotEntity2);
+
+        const locationRequest = LocationMother.createLocationRequest();
+        locationRequest.slots = [];
+
+        const randomSlotId = faker.string.uuid();
+        const response = await request(server.getApp())
+          .put(`${baseUrl}/${locationEntity.id}`)
+          .send({
+            ...locationRequest,
+            slotsToDelete: [slotEntity.id, slotEntity2.id, randomSlotId]
+          })
+          .expect(400);
+
+        expect(response.body).toHaveProperty(
+          'message',
+          `You cannot delete slot with id ${randomSlotId} because it does not belong to location`
+        );
+
+        const slotDatabase = await SlotModel.findAll({ raw: true });
+        expect(slotDatabase).toHaveLength(2);
+      });
+
+      it('Si un slot con estado "OCUPADO" es enviado para eliminar se rechaza la petición', async () => {
+        const locationEntity = LocationMother.createLocationEntity();
+        await LocationModel.create(locationEntity.toPrimitives());
+        const slotEntity = {
+          ...LocationMother.createSlotEntity().toPrimitives(),
+          locationId: locationEntity.id,
+          status: SlotStatus.OCCUPIED
+        };
+        await SlotModel.create(slotEntity);
+
+        const locationRequest = LocationMother.createLocationRequest();
+        locationRequest.slots = [];
+
+        const response = await request(server.getApp())
+          .put(`${baseUrl}/${locationEntity.id}`)
+          .send({ ...locationRequest, slotsToDelete: [slotEntity.id] })
+          .expect(400);
+
+        expect(response.body).toHaveProperty(
+          'message',
+          'You cannot delete a slot with active assignments'
+        );
+
+        const slotDatabase = await SlotModel.findAll({ raw: true });
+        expect(slotDatabase).toHaveLength(1);
+      });
+
+      it('Se rechaza la petición si se envía un id para eliminar que no sea uuid', async () => {
+        const locationEntity = LocationMother.createLocationEntity();
+        await LocationModel.create(locationEntity.toPrimitives());
+        const slotEntity = {
+          ...LocationMother.createSlotEntity().toPrimitives(),
+          locationId: locationEntity.id
+        };
+        await SlotModel.create(slotEntity);
+
+        const locationRequest = LocationMother.createLocationRequest();
+        locationRequest.slots = [];
+
+        const response = await request(server.getApp())
+          .put(`${baseUrl}/${locationEntity.id}`)
+          .send({ ...locationRequest, slotsToDelete: ['abc'] })
+          .expect(400);
+
+        expect(response.body.message[0]).toHaveProperty(
+          'message',
+          'Invalid uuid'
+        );
+
+        const slotDatabase = await SlotModel.findAll({ raw: true });
+        expect(slotDatabase).toHaveLength(1);
+      });
+    });
 
     describe('DELETE', () => {
       it('Se elimina una ubicación y sus slots asociados con un id (uuid) válido', async () => {
@@ -400,7 +936,7 @@ describe('(e2e) Location and Slots', () => {
         expect(locationDatabase).toHaveLength(0);
       });
 
-      it('Si la ubicación tiene un slot "OCUPADO" no se puede eliminar', async () => {
+      it('Si la ubicación tiene al menos un slot "OCUPADO" no se puede eliminar', async () => {
         const locationEntity = LocationMother.createLocationEntity();
         await LocationModel.create(locationEntity.toPrimitives());
         await SlotModel.create({
@@ -409,14 +945,16 @@ describe('(e2e) Location and Slots', () => {
           status: SlotStatus.OCCUPIED
         });
 
+        const locationDatabase = await LocationModel.findAll({ raw: true });
         const response = await request(server.getApp())
           .delete(`${baseUrl}/${locationEntity.id}`)
           .expect(400);
-        expect(response.body).toHaveProperty('message');
-        expect(response.body.message[0]).toHaveProperty(
+
+        expect(response.body).toHaveProperty(
           'message',
-          'You cannot inactivate a location with active assignments'
+          'You cannot delete a location with active assignments'
         );
+        expect(locationDatabase).toHaveLength(1);
       });
 
       it('Cuando un id (uuid) no cumple con el formato uuid se debería recibir un 400 solicitando la estructura de id correcta', async () => {
