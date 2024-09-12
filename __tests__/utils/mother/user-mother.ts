@@ -1,9 +1,8 @@
 import { faker } from "@faker-js/faker";
-import { UserEntity } from "../../src/auth/domain/entities/user-entity";
-import { UserStatus } from "../../src/auth/domain/entities/user-entity";
+import { UserEntity, UserStatus } from "../../../src/auth/domain/entities/user-entity";
 
 export class UserMother{
-  static createUser({
+  static createUserEntity({
     id = faker.string.uuid(),
     name = faker.person.fullName(),
     email = faker.internet.email(),

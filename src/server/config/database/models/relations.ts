@@ -9,10 +9,10 @@ import { DiscountNoteModel } from './discount-note.model';
 import { AssignmentLoanModel } from './assignment-loan';
 import { DeAssignmentModel } from './de-assignment.model';
 
-// import { RoleModel } from './auth/role.model';
-// import { RoleDetailModel } from './auth/role.detail.model';
-// import { ResourceModel } from './auth/resource.model';
-// import { UserModel } from './auth/user.model';
+import { RoleModel } from './auth/role.model';
+import { RoleDetailModel } from './auth/role.detail.model';
+import { ResourceModel } from './auth/resource.model';
+import { UserModel } from './auth/user.model';
 
 LocationModel.hasMany(SlotModel, {
   foreignKey: 'location_id',
@@ -80,23 +80,23 @@ AssignmentModel.hasOne(DeAssignmentModel, {
   onDelete: 'RESTRICT'
 });
 
-// RoleModel.belongsToMany(ResourceModel, {
-//   through: RoleDetailModel,
-//   foreignKey: 'role_id',
-//   onUpdate: 'CASCADE',
-//   onDelete: 'CASCADE'
-// });
+RoleModel.belongsToMany(ResourceModel, {
+  through: RoleDetailModel,
+  foreignKey: 'role_id',
+  onUpdate: 'CASCADE',
+  onDelete: 'CASCADE'
+});
 
-// ResourceModel.belongsToMany(RoleModel, {
-//   through: RoleDetailModel,
-//   foreignKey: 'resource_id',
-//   onUpdate: 'CASCADE',
-//   onDelete: 'CASCADE'
-// });
+ResourceModel.belongsToMany(RoleModel, {
+  through: RoleDetailModel,
+  foreignKey: 'resource_id',
+  onUpdate: 'CASCADE',
+  onDelete: 'CASCADE'
+});
 
-// RoleModel.hasMany(UserModel, {
-//   foreignKey: 'role_id',
-//   onUpdate: 'RESTRICT',
-//   onDelete: 'RESTRICT'
-// });
-// UserModel.belongsTo(RoleModel, { foreignKey: 'role_id' });
+RoleModel.hasMany(UserModel, {
+  foreignKey: 'role_id',
+  onUpdate: 'RESTRICT',
+  onDelete: 'RESTRICT'
+});
+UserModel.belongsTo(RoleModel, { foreignKey: 'role_id' });
