@@ -24,8 +24,8 @@ export enum AssignmentStatus {
 export class AssignmentEntity {
   constructor(
     public readonly id: string,
-    public readonly slot: SlotEntity,
-    public readonly employee: EmployeeEntity,
+    public slot: SlotEntity,
+    public employee: EmployeeEntity,
     public readonly parkingCardNumber: string,
     public readonly benefitType: CostType,
     public readonly status: AssignmentStatus,
@@ -73,8 +73,8 @@ export class AssignmentEntity {
       address: string;
       email: string;
       phone: string;
-      accessToken: string;
-      accessTokenStatus: TokenStatus;
+      accessToken?: string;
+      accessTokenStatus?: TokenStatus;
       vehicles: {
         id: string;
         vehicleBadge: string;

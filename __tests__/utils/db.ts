@@ -26,16 +26,18 @@ export const prepareDatabase = async () => {
 }
 
 
-// export const cleanDatabase = async () => {
-//   try {
-//     await sequelize.query('DELETE FROM assignment');
-//     await sequelize.query('DELETE FROM vehicle');
-//     await sequelize.query('DELETE FROM employee');
-//     await sequelize.query('DELETE FROM tag');
-//   } catch (error) {
-//     console.log('Error cleaning database:', error);
-//   }
-// };
+export const cleanDatabaseAssignmentTesting = async () => {
+  try {
+    await sequelize.query('DELETE FROM assignment_loan');
+    await sequelize.query('DELETE FROM de_assignment');
+    await sequelize.query('DELETE FROM assignment_tag_detail');
+    await sequelize.query('DELETE FROM assignment');
+    await sequelize.query('DELETE FROM vehicle');
+    await sequelize.query('DELETE FROM employee');
+  } catch (error) {
+    console.log('Error cleaning database:', error);
+  }
+};
 
 export const cleanDatabaseLocationTesting = async () => {
   try {
