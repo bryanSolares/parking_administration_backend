@@ -49,16 +49,19 @@ export class AssignmentBuilder {
     );
   }
 
-  public async buildWithStatusAssigned(): Promise<AssignmentEntity> {
+  public async buildWithActiveStatus(status: AssignmentStatus.ASSIGNED | AssignmentStatus.IN_PROGRESS | AssignmentStatus.ACCEPTED): Promise<AssignmentEntity> {
     const location = await new LocationBuilder().withActiveStatus().build();
-    await new SlotBuilder()
+    const slot = await new SlotBuilder()
       .withTypeSingle()
       .withOccupiedStatus()
       .build(location.id);
     const employee = await new EmployeeBuilder().build();
+    await new VehicleBuilder().build(employee.id);
+        this._assignmentEntity.employee = employee;
+        this._assignmentEntity.slot = slot
     await AssignmentModel.create({
       ...this._assignmentEntity.toPrimitive(),
-      status: AssignmentStatus.ASSIGNED,
+      status,
       employeeId: employee.id,
       slotId: this._assignmentEntity.slot.id
     });
@@ -66,10 +69,28 @@ export class AssignmentBuilder {
     return this._assignmentEntity;
   }
 
-  public async buildWithStatusDeAssigned(): Promise<AssignmentEntity> {
-    try {
+  public async buildWithCancelledOrRejectStatus(status: AssignmentStatus.CANCELLED | AssignmentStatus.REJECTED): Promise<AssignmentEntity> {
+    const location = await new LocationBuilder().withActiveStatus().build();
+    const slot = await new SlotBuilder()
+      .withTypeSingle()
+      .withAvailableStatus()
+      .build(location.id);
+    const employee = await new EmployeeBuilder().build();
+    await new VehicleBuilder().build(employee.id);
+        this._assignmentEntity.employee = employee;
+        this._assignmentEntity.slot = slot
+    await AssignmentModel.create({
+      ...this._assignmentEntity.toPrimitive(),
+      status,
+      employeeId: employee.id,
+      slotId: this._assignmentEntity.slot.id
+    });
+    this._assignmentEntity.employee = employee;
+    return this._assignmentEntity;
+  }
 
-      const location = await new LocationBuilder().withActiveStatus().build();
+  public async buildWithDeAssignedStatus(status: AssignmentStatus.MANUAL_DE_ASSIGNMENT | AssignmentStatus.AUTO_DE_ASSIGNMENT): Promise<AssignmentEntity> {
+    const location = await new LocationBuilder().withActiveStatus().build();
       const slot = await new SlotBuilder()
         .withTypeSingle()
         .withAvailableStatus()
@@ -81,13 +102,10 @@ export class AssignmentBuilder {
 
       await AssignmentModel.create({
         ...this._assignmentEntity.toPrimitive(),
-        status: AssignmentStatus.MANUAL_DE_ASSIGNMENT,
+        status,
         employeeId: employee.id,
         slotId: this._assignmentEntity.slot.id
       });
-    } catch (error) {
-      console.log(error);
-    }
 
     return this._assignmentEntity;
   }

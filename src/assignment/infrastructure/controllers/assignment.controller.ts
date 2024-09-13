@@ -204,7 +204,7 @@ export class AssignmentController {
     const data = req.body;
     try {
       await this.createAcceptanceProcessUseCase.run(data, assignmentId);
-      res.status(200).json({ message: 'Acceptance form created' });
+      res.status(200).json({ message: 'The assignment is being processed' });
     } catch (error) {
       next(error);
     }

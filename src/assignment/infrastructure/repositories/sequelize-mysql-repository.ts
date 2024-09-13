@@ -439,16 +439,16 @@ export class SequelizeAssignmentRepository implements AssignmentRepository {
       {
         fields: [
           'id',
-          'code_employee',
+          'codeEmployee',
           'name',
           'workplace',
-          'identifier_document',
+          'identifierDocument',
           'company',
           'department',
-          'sub_management',
+          'subManagement',
           'management1',
           'management2',
-          'work_site',
+          'workSite',
           'address',
           'email',
           'phone'
