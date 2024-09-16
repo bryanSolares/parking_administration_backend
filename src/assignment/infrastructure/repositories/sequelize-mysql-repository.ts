@@ -149,7 +149,7 @@ export class SequelizeAssignmentRepository implements AssignmentRepository {
     const assignment: FinderResultById = {
       id: plainData.id,
       assignmentDate: plainData.assignmentDate ?? '',
-      decisionDate: plainData.decisionDate ?? '',
+      formDecisionDate: plainData.formDecisionDate ?? '',
       parkingCardNumber: plainData.parkingCardNumber,
       benefitType: plainData.benefitType,
       status: plainData.status as AssignmentStatus,
@@ -219,7 +219,7 @@ export class SequelizeAssignmentRepository implements AssignmentRepository {
         id: plainResult.id,
         status: plainResult.status as AssignmentStatus,
         assignmentDate: plainResult.assignmentDate ?? '',
-        decisionDate: plainResult.decisionDate ?? '',
+        formDecisionDate: plainResult.decisionDate ?? '',
         parkingCardNumber: plainResult.parkingCardNumber,
         benefitType: plainResult.benefitType,
         employee: EmployeeEntity.fromPrimitive(plainResult.employee),
@@ -547,7 +547,7 @@ export class SequelizeAssignmentRepository implements AssignmentRepository {
     return {
       id: plainData.id,
       benefitType: plainData.benefitType,
-      decisionDate: plainData.decisionDate,
+      formDecisionDate: plainData.decisionDate,
       parkingCardNumber: plainData.parkingCardNumber,
       status: plainData.status,
       assignmentDate: plainData.assignmentDate,

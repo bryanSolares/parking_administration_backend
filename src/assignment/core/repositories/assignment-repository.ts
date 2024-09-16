@@ -12,7 +12,7 @@ import { CostType } from '@src/location/core/entities/slot-entity';
 export type FinderResultById = {
   id: string;
   assignmentDate: string;
-  decisionDate: string;
+  formDecisionDate: string;
   parkingCardNumber: string;
   benefitType: CostType;
   status: AssignmentStatus;

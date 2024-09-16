@@ -6,7 +6,7 @@ import { EmployeeModel } from '../../../src/server/config/database/models/employ
 import { VehicleModel } from '../../../src/server/config/database/models/vehicle.model';
 
 interface AssignmentTableResult {
-  id: number;
+  id: string;
   slotId: number;
   employeeId: number;
   parkingCardNumber: string;
@@ -20,7 +20,7 @@ interface AssignmentTableResult {
 
 interface EmployeeTableResult {
 
-  id: number;
+  id: string;
   employeeCode: string;
   name: string;
   workplace: string;
@@ -41,7 +41,7 @@ interface EmployeeTableResult {
 }
 
 export interface VehicleTableResult {
-  id: number;
+  id: string;
   vehicleBadge: string;
   color: string;
   brand: string;

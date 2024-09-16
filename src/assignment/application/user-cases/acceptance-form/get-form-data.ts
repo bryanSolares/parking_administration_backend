@@ -43,7 +43,7 @@ export class GetFormDataOfAcceptanceUseCase {
     if (!signatures) {
       throw new AppError(
         'SETTING_NOT_FOUND',
-        404,
+        400,
         'Data signatures for acceptance form not found',
         true
       );
@@ -78,7 +78,7 @@ export class GetFormDataOfAcceptanceUseCase {
             assignment: {
               id: previousAssignment.id,
               benefitType: previousAssignment.benefitType,
-              decisionDate: previousAssignment.decisionDate,
+              formDecisionDate: previousAssignment.formDecisionDate,
               parkingCardNumber: previousAssignment.parkingCardNumber,
               status: previousAssignment.status,
               assignmentDate: previousAssignment.assignmentDate

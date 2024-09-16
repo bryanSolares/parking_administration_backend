@@ -66,3 +66,11 @@ export const cleanDatabaseAuthTesting = async () => {
     console.log('Error cleaning database:', error);
   }
 };
+
+export const cleanDatabaseParameterTesting = async () => {
+  try {
+    await sequelize.query('DELETE FROM setting');
+  } catch (error) {
+    console.log('Error cleaning database:', error);
+  }
+};

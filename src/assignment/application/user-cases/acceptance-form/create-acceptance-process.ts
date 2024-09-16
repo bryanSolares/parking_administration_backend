@@ -59,7 +59,12 @@ export class CreateAcceptanceProcessUseCase {
     );
 
     if (!signatures) {
-      throw new Error('Data signatures for acceptance form not found');
+      throw new AppError(
+        'SETTING_NOT_FOUND',
+        400,
+        'Data signatures for acceptance form not found',
+        true
+      );
     }
 
     //get employee of assignment

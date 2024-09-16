@@ -28,11 +28,11 @@ export class AssignmentEntity {
     public employee: EmployeeEntity,
     public readonly parkingCardNumber: string,
     public readonly benefitType: CostType,
-    public readonly status: AssignmentStatus,
+    public status: AssignmentStatus,
     public readonly tags: TagEntity[],
     public readonly discountNote?: DiscountNoteEntity,
     public readonly assignmentDate?: string,
-    public readonly formDecisionDate?: string
+    public formDecisionDate?: string
   ) {
     this.id = id;
     this.slot = slot;
