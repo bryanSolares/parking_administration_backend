@@ -278,10 +278,23 @@ export class SequelizeAssignmentRepository implements AssignmentRepository {
     functionName: ListOfFunctions,
     parameters: string[]
   ): Promise<ReturnType> {
+    const paramPlaceholders = parameters
+      .map((_, index) => `:param${index}`)
+      .join(',');
+    const query = `SELECT ${functionName}(${paramPlaceholders})`;
+
+    const paramReplacements = parameters.reduce(
+      (acc, param, index) => {
+        acc[`param${index}`] = param;
+        return acc;
+      },
+      {} as Record<string, string>
+    );
+
     const [result]: { [key: string]: ReturnType }[] = await sequelize.query(
-      `select ${functionName}(?)`,
+      query,
       {
-        replacements: parameters,
+        replacements: paramReplacements,
         type: QueryTypes.SELECT
       }
     );

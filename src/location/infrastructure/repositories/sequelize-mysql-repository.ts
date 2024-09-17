@@ -18,7 +18,11 @@ import { sequelize } from '@config/database/sequelize';
 import { LocationModel } from '@config/database/models/location.model';
 import { SlotModel } from '@config/database/models/slot.model';
 
-import { LocationRepository } from '@location-module-core/repositories/location-repository';
+import {
+  FunctionNames,
+  LocationRepository,
+  ProcedureNames
+} from '@location-module-core/repositories/location-repository';
 import { OverviewDataResult } from '@location-module-core/repositories/location-repository';
 import { TrendDataResult } from '@location-module-core/repositories/location-repository';
 import { TrendDataType } from '@location-module-core/repositories/location-repository';
@@ -252,13 +256,26 @@ export class SequelizeMYSQLLocationRepository implements LocationRepository {
   }
 
   async executeFunction<TypeFunctionResult = boolean | number>(
-    functionName: 'location_has_active_assignment',
+    functionName: FunctionNames,
     params: string[]
   ): Promise<TypeFunctionResult> {
+    const paramPlaceholders = params
+      .map((_, index) => `:param${index}`)
+      .join(',');
+    const query = `SELECT ${functionName}(${paramPlaceholders})`;
+
+    const paramReplacements = params.reduce(
+      (acc, param, index) => {
+        acc[`param${index}`] = param;
+        return acc;
+      },
+      {} as Record<string, string>
+    );
+
     const [resultFunction]: {
       [key: string]: boolean;
-    }[] = await sequelize.query(`select ${functionName}(?)`, {
-      replacements: params,
+    }[] = await sequelize.query(query, {
+      replacements: paramReplacements,
       type: QueryTypes.SELECT
     });
 
@@ -266,11 +283,24 @@ export class SequelizeMYSQLLocationRepository implements LocationRepository {
   }
 
   async callProcedure<TypeProcedureResult>(
-    procedureName: string,
+    procedureName: ProcedureNames,
     params: string[]
   ): Promise<TypeProcedureResult> {
-    const [result] = await sequelize.query(`call ${procedureName}(?)`, {
-      replacements: params,
+    const paramPlaceholders = params
+      .map((_, index) => `:param${index}`)
+      .join(',');
+    const query = `call ${procedureName}(${paramPlaceholders})`;
+
+    const paramReplacements = params.reduce(
+      (acc, param, index) => {
+        acc[`param${index}`] = param;
+        return acc;
+      },
+      {} as Record<string, string>
+    );
+
+    const [result] = await sequelize.query(query, {
+      replacements: paramReplacements,
       type: QueryTypes.SELECT
     });
 
