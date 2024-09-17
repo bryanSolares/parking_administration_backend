@@ -153,6 +153,15 @@ export class SlotBuilder{
     return this;
   }
 
+  public withVehicleType(vehicleType: VehicleType): SlotBuilder{
+    this._slotEntity =  SlotEntity.fromPrimitives({
+      ...this._slotEntity.toPrimitives(),
+      vehicleType
+    })
+
+    return this;
+  }
+
   public get slotEntity(): SlotEntity{
     return this._slotEntity;
   }

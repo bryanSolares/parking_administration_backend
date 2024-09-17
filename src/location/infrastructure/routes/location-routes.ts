@@ -7,6 +7,7 @@ import { locationDeleteParamsSchema } from '../utils/location-zod-schemas';
 import { getLocationByIdSchema } from '../utils/location-zod-schemas';
 import { getLocationsSchemaForQuery } from '../utils/location-zod-schemas';
 import { trendSchema } from '../utils/location-zod-schemas';
+import { getAvailableSlotsSchema } from '../utils/location-zod-schemas';
 
 import { locationController } from '@src/location/infrastructure/repositories/dependecies';
 import { validateRequest } from '@shared/zod-validator';
@@ -23,6 +24,11 @@ routes
     '/location',
     validateRequest(getLocationsSchemaForQuery, 'query'),
     locationController.locationFinder.bind(locationController)
+  )
+  .get(
+    '/location/available-slots/',
+    validateRequest(getAvailableSlotsSchema, 'body'),
+    locationController.getSlotsAvailable.bind(locationController)
   )
   .get(
     '/location/:id',

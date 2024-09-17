@@ -1,5 +1,10 @@
 import { LocationEntity } from '../entities/location-entity';
-import { SlotEntity } from '../entities/slot-entity';
+import {
+  CostType,
+  SlotEntity,
+  SlotType,
+  VehicleType
+} from '../entities/slot-entity';
 
 export interface LocationFinderResultWithStatusCounterSlots {
   id: string;
@@ -38,6 +43,13 @@ export interface TrendDataResult extends OverviewDataResult {
   startDate: string;
 }
 
+export interface ResponseAvailableSlots {
+  id: string;
+  slotNumber: string;
+  slotType: SlotType;
+  costType: CostType;
+}
+
 export type TrendDataType = 'daily' | 'weekly' | 'monthly';
 
 export interface LocationRepository {
@@ -64,4 +76,9 @@ export interface LocationRepository {
   ): Promise<TypeProcedureResult>;
   overviewData(): Promise<OverviewDataResult>;
   trendData(type: TrendDataType): Promise<TrendDataResult[] | []>;
+
+  getAvailableSlotsByTypeVehicleAndLocationId(
+    locationId: string,
+    vehicleType: VehicleType
+  ): Promise<ResponseAvailableSlots[]>;
 }

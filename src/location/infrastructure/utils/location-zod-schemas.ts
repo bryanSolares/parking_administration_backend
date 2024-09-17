@@ -88,3 +88,8 @@ export const deleteSlotsSchema = z.object({
 export const trendSchema = z.object({
   type: z.enum(['daily', 'weekly', 'monthly'])
 });
+
+export const getAvailableSlotsSchema = z.object({
+  locationId: z.string().uuid(),
+  vehicleType: z.enum(['CARRO', 'MOTO', 'CAMION'])
+});

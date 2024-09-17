@@ -21,7 +21,8 @@ import { SlotModel } from '@config/database/models/slot.model';
 import {
   FunctionNames,
   LocationRepository,
-  ProcedureNames
+  ProcedureNames,
+  ResponseAvailableSlots
 } from '@location-module-core/repositories/location-repository';
 import { OverviewDataResult } from '@location-module-core/repositories/location-repository';
 import { TrendDataResult } from '@location-module-core/repositories/location-repository';
@@ -29,7 +30,12 @@ import { TrendDataType } from '@location-module-core/repositories/location-repos
 import { LocationFinderResult } from '@location-module-core/repositories/location-repository';
 
 import { LocationEntity } from '@location-module-core/entities/location-entity';
-import { SlotEntity } from '@location-module-core/entities/slot-entity';
+import {
+  CostType,
+  SlotEntity,
+  SlotType,
+  VehicleType
+} from '@location-module-core/entities/slot-entity';
 import { SlotStatus } from '@location-module-core/entities/slot-entity';
 import { ParkingTrendsModel } from '@src/server/config/database/models/parking/parking-trends';
 
@@ -416,5 +422,37 @@ export class SequelizeMYSQLLocationRepository implements LocationRepository {
         occupiedSlots: trend.occupiedSlots
       };
     });
+  }
+
+  async getAvailableSlotsByTypeVehicleAndLocationId(
+    locationId: string,
+    vehicleType: VehicleType
+  ): Promise<ResponseAvailableSlots[]> {
+    const query = `
+    select id, slot_number, slot_type, cost_type
+      from slot
+      where location_id = :locationId
+      and ((slot_type = 'SIMPLE' and status = 'DISPONIBLE')
+      or (slot_type = 'MULTIPLE' and status in ('DISPONIBLE', 'OCUPADO') and
+        get_active_assignments_by_slot(id) < slot.limit_of_assignments))
+      and vehicle_type = :vehicleType;
+    `;
+
+    const result = await sequelize.query<{
+      id: string;
+      slot_number: string;
+      slot_type: SlotType;
+      cost_type: CostType;
+    }>(query, {
+      replacements: { locationId, vehicleType },
+      type: QueryTypes.SELECT
+    });
+
+    return result.map<ResponseAvailableSlots>(slot => ({
+      id: slot.id,
+      slotNumber: slot.slot_number,
+      slotType: slot.slot_type,
+      costType: slot.cost_type
+    }));
   }
 }

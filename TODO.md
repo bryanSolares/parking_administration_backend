@@ -127,3 +127,5 @@ TODO:
 - [ ] extract functions date to utils
 - [ ] error to create assignment into single slot
 - [ ] verify if can create assignment if location is inactive
+
+- [ ] add filter (active - inactive) in location finder

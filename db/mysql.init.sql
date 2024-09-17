@@ -349,6 +349,23 @@ begin
 end ;;
 delimiter ;
 
+delimiter ;;
+create function get_active_assignments_by_slot(slotIdentifier varchar(255))
+    returns integer
+    reads sql data
+begin
+    declare counterAssignments int default 0;
+
+    select count(*) into counterAssignments
+    from assignment
+             inner join slot on assignment.slot_id = slot.id
+    where assignment.slot_id = slotIdentifier
+      and assignment.status in ('ASIGNADO', 'EN_PROGRESO', 'ACEPTADO');
+
+    return counterAssignments;
+end;;
+delimiter ;
+
 
 
 delimiter ;;

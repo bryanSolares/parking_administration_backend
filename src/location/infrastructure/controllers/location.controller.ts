@@ -11,6 +11,8 @@ import { LocationFinder } from '@src/location/application/user-cases/location-fi
 import { StatisticsDataUseCase } from '../../application/user-cases/statistics-data';
 import { TrendDataType } from '@src/location/core/repositories/location-repository';
 
+import { SlotsAvailableFinderUseCase } from '@src/location/application/user-cases/finder/slots-available';
+
 export class LocationController {
   constructor(
     private readonly createLocationUseCase: CreateLocation,
@@ -18,7 +20,8 @@ export class LocationController {
     private readonly deleteLocationUseCase: DeleteLocation,
     private readonly getLocationByIdFinderUseCase: GetLocationByIdFinder,
     private readonly locationFinderUseCase: LocationFinder,
-    private readonly statisticsDataUseCase: StatisticsDataUseCase
+    private readonly statisticsDataUseCase: StatisticsDataUseCase,
+    private readonly slotsAvailableFinderUseCase: SlotsAvailableFinderUseCase
   ) {}
 
   async createLocation(req: Request, res: Response, next: NextFunction) {
@@ -106,6 +109,20 @@ export class LocationController {
         type as TrendDataType
       );
 
+      res.status(200).send({ data });
+    } catch (error) {
+      console.log(error);
+      next(error);
+    }
+  }
+
+  async getSlotsAvailable(req: Request, res: Response, next: NextFunction) {
+    const { locationId, vehicleType } = req.body;
+    try {
+      const data = await this.slotsAvailableFinderUseCase.run(
+        locationId,
+        vehicleType
+      );
       res.status(200).send({ data });
     } catch (error) {
       console.log(error);

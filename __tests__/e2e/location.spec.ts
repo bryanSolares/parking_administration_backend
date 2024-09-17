@@ -3,7 +3,10 @@ import { faker } from '@faker-js/faker';
 
 import { Server } from '../../src/server/server';
 import { LocationMother } from '../utils/mother/location-mother';
-import { cleanDatabaseLocationTesting } from '../utils/db';
+import {
+  cleanDatabaseAssignmentTesting,
+  cleanDatabaseLocationTesting
+} from '../utils/db';
 
 import { LocationModel } from '../../src/server/config/database/models/location.model';
 import { SlotModel } from '../../src/server/config/database/models/slot.model';
@@ -14,16 +17,24 @@ import {
   VehicleType
 } from '../../src/location/core/entities/slot-entity';
 import { LocationStatus } from '../../src/location/core/entities/location-entity';
+import { AssignmentBuilder } from '../utils/builders/assignment-builder';
+import {
+  LocationBuilder,
+  SlotBuilder
+} from '../utils/builders/location-builder';
+import { AssignmentStatus } from '../../src/assignment/core/entities/assignment-entity';
 
 const baseUrl = '/api/v1/parking/location';
 const server = new Server();
 
 beforeAll(async () => {
   await server.startServer();
+  await cleanDatabaseAssignmentTesting();
   await cleanDatabaseLocationTesting();
 });
 
 afterEach(async () => {
+  await cleanDatabaseAssignmentTesting();
   await cleanDatabaseLocationTesting();
 });
 
@@ -377,6 +388,135 @@ describe('(e2e) Location and Slots', () => {
           expect(response.body.message[0]).toHaveProperty(
             'message',
             "Invalid enum value. Expected 'daily' | 'weekly' | 'monthly', received 'abc'"
+          );
+        });
+      });
+
+      describe('/available-slots', () => {
+        it('Se recibe un arreglo de slots disponibles según tipo de vehículo y ubicación indicada', async () => {
+          const location = await new LocationBuilder()
+            .withActiveStatus()
+            .build();
+          const slot1 = await new SlotBuilder()
+            .withAvailableStatus()
+            .withTypeSingle()
+            .withVehicleType(VehicleType.CAR)
+            .build(location.id);
+          const slot2 = await new SlotBuilder()
+            .withAvailableStatus()
+            .withTypeSingle()
+            .withVehicleType(VehicleType.CAR)
+            .build(location.id);
+          const slot3 = await new SlotBuilder()
+            .withTypeSingle()
+            .withOccupiedStatus()
+            .withVehicleType(VehicleType.CAR)
+            .build(location.id);
+          const slot4 = await new SlotBuilder()
+            .withOccupiedStatus()
+            .withTypeMultiple(2)
+            .withVehicleType(VehicleType.CAR)
+            .build(location.id);
+          await new AssignmentBuilder().buildWithActiveStatusFromSlotProvided(
+            AssignmentStatus.ASSIGNED,
+            slot4
+          );
+          const slot5 = await new SlotBuilder()
+            .withOccupiedStatus()
+            .withTypeMultiple(2)
+            .withVehicleType(VehicleType.CAR)
+            .build(location.id);
+          await new AssignmentBuilder().buildWithActiveStatusFromSlotProvided(
+            AssignmentStatus.ASSIGNED,
+            slot5
+          );
+
+          const response = await request(server.getApp())
+            .get(`${baseUrl}/available-slots`)
+            .send({
+              locationId: location.id,
+              vehicleType: VehicleType.CAR
+            })
+            .expect(200);
+
+          expect(response.body).toHaveProperty('data');
+          expect(response.body.data).toHaveLength(4);
+          const validateSchema = (data: any[], slot: any) => {
+            expect(data.find((s: any) => s.id === slot.id)).toMatchObject({
+              id: slot.id,
+              slotNumber: slot.slotNumber,
+              slotType: slot.slotType,
+              costType: slot.costType
+            });
+          };
+          validateSchema(response.body.data, slot1);
+          validateSchema(response.body.data, slot2);
+          validateSchema(response.body.data, slot4);
+          validateSchema(response.body.data, slot5);
+
+          expect(
+            response.body.data.some((slot: any) => slot.id === slot3.id)
+          ).toBeFalsy();
+        });
+
+        it('Se obtiene un arreglo vacio si la ubicación está inactiva', async () => {
+          const location = await new LocationBuilder().withInactiveStatus().build();
+          await new SlotBuilder()
+            .withAvailableStatus()
+            .withTypeSingle()
+            .withVehicleType(VehicleType.CAR)
+            .build(location.id);
+            await new SlotBuilder()
+            .withAvailableStatus()
+            .withTypeMultiple(2)
+            .withVehicleType(VehicleType.CAR)
+            .build(location.id);
+
+           const response = await request(server.getApp())
+            .get(`${baseUrl}/available-slots`)
+            .send({
+              locationId: location.id,
+              vehicleType: VehicleType.CAR
+            })
+            .expect(200);
+
+          expect(response.body.data).toHaveLength(0);
+        });
+
+        it('No se acepta la petición si el id de ubicación no existe', async () => {
+          const response = await request(server.getApp())
+            .get(`${baseUrl}/available-slots`)
+            .send({
+              locationId: faker.string.uuid(),
+              vehicleType: VehicleType.CAR
+            })
+            .expect(404);
+          expect(response.body).toHaveProperty('message', 'Location not found');
+        });
+
+        it('Se valida correctamente estructura de petición', async () => {
+          const response1 = await request(server.getApp())
+            .get(`${baseUrl}/available-slots`)
+            .send({
+              locationId: faker.string.uuid(),
+              vehicleType: 'abc'
+            })
+            .expect(400);
+          const response2 = await request(server.getApp())
+            .get(`${baseUrl}/available-slots`)
+            .send({
+              locationId: 'abc',
+              vehicleType: VehicleType.CAR
+            })
+            .expect(400);
+
+          expect(response1.body.message[0]).toHaveProperty(
+            'message',
+            "Invalid enum value. Expected 'CARRO' | 'MOTO' | 'CAMION', received 'abc'"
+          );
+          expect(response2.body.message[0]).toHaveProperty(
+            'message',
+            'Invalid uuid'
           );
         });
       });

@@ -8,6 +8,8 @@ import { GetLocationByIdFinder } from '@src/location/application/user-cases/loca
 import { LocationFinder } from '@src/location/application/user-cases/location-finder';
 import { StatisticsDataUseCase } from '@src/location/application/user-cases/statistics-data';
 
+import { SlotsAvailableFinderUseCase } from '@location-module-application/user-cases/finder/slots-available';
+
 const locationRepository = new SequelizeMYSQLLocationRepository();
 
 import { ValidationsUseCases } from '@location-module-application/user-cases/validations';
@@ -24,6 +26,9 @@ const deleteLocation = new DeleteLocation(locationRepository);
 const locationFinder = new LocationFinder(locationRepository);
 const locationFinderById = new GetLocationByIdFinder(locationRepository);
 const statisticsDataUseCase = new StatisticsDataUseCase(locationRepository);
+const slotsAvailableFinderUseCase = new SlotsAvailableFinderUseCase(
+  locationRepository
+);
 
 //Controllers
 const locationController = new LocationController(
@@ -32,7 +37,8 @@ const locationController = new LocationController(
   deleteLocation,
   locationFinderById,
   locationFinder,
-  statisticsDataUseCase
+  statisticsDataUseCase,
+  slotsAvailableFinderUseCase
 );
 
 export { locationController };
