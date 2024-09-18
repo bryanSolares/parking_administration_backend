@@ -6,7 +6,7 @@ import { SlotEntity } from '@src/location/core/entities/slot-entity';
 import { SlotStatus } from '@src/location/core/entities/slot-entity';
 import { SlotType } from '@src/location/core/entities/slot-entity';
 import { VehicleType } from '@src/location/core/entities/slot-entity';
-import { CostType } from '@src/location/core/entities/slot-entity';
+import { BenefitType } from '@src/location/core/entities/slot-entity';
 
 export class ValidationsUseCases {
   constructor(private readonly locationRepository: LocationRepository) {}
@@ -18,10 +18,10 @@ export class ValidationsUseCases {
       id: string;
       slotType: SlotType;
       vehicleType: VehicleType;
-      costType: CostType;
+      benefitType: BenefitType;
       status: SlotStatus;
       limitOfAssignments: number;
-      cost: number;
+      amount: number;
     }[];
     slotsToDelete: Set<string>;
   }): Promise<void> {
@@ -87,10 +87,10 @@ export class ValidationsUseCases {
       id: string;
       slotType: SlotType;
       vehicleType: VehicleType;
-      costType: CostType;
+      benefitType: BenefitType;
       status: SlotStatus;
       limitOfAssignments: number;
-      cost: number;
+      amount: number;
     }[]
   ) {
     slots.forEach(slot => {
@@ -153,10 +153,10 @@ export class ValidationsUseCases {
       id: string;
       slotType: SlotType;
       vehicleType: VehicleType;
-      costType: CostType;
+      benefitType: BenefitType;
       status: SlotStatus;
       limitOfAssignments: number;
-      cost: number;
+      amount: number;
     }[],
     slotsToDelete: Set<string>,
     locationSlots: SlotEntity[]
@@ -191,10 +191,10 @@ export class ValidationsUseCases {
       id: string;
       slotType: SlotType;
       vehicleType: VehicleType;
-      costType: CostType;
+      benefitType: BenefitType;
       status: SlotStatus;
       limitOfAssignments: number;
-      cost: number;
+      amount: number;
     }[],
     locationSlots: SlotEntity[]
   ): void {
@@ -217,8 +217,8 @@ export class ValidationsUseCases {
         slotCurrentData.status === SlotStatus.OCCUPIED &&
         (slotCurrentData.slotType !== slotRequest.slotType ||
           slotCurrentData.vehicleType !== slotRequest.vehicleType ||
-          slotCurrentData.costType !== slotRequest.costType ||
-          slotCurrentData.cost !== slotRequest.cost);
+          slotCurrentData.benefitType !== slotRequest.benefitType ||
+          slotCurrentData.amount !== slotRequest.amount);
 
       if (
         isStatusChangingToOccupied ||
@@ -228,7 +228,7 @@ export class ValidationsUseCases {
         throw new AppError(
           'SLOT_OCCUPIED',
           400,
-          'You cannot update properties slotType, vehicleType, costType, status, cost if it is occupied',
+          'You cannot update properties slotType, vehicleType, benefitType, status, amount if it is occupied',
           true
         );
       }
@@ -240,10 +240,10 @@ export class ValidationsUseCases {
       id: string;
       slotType: SlotType;
       vehicleType: VehicleType;
-      costType: CostType;
+      benefitType: BenefitType;
       status: SlotStatus;
       limitOfAssignments: number;
-      cost: number;
+      amount: number;
     }[],
     schedulesOfSlots: {
       slot_id: string;

@@ -5,7 +5,7 @@ import { LocationStatus } from '@location-module-core/entities/location-entity';
 import { AppError } from '@src/server/config/err/AppError';
 import { SlotType } from '@src/location/core/entities/slot-entity';
 import { SlotStatus } from '@src/location/core/entities/slot-entity';
-import { CostType } from '@src/location/core/entities/slot-entity';
+import { BenefitType } from '@src/location/core/entities/slot-entity';
 import { VehicleType } from '@src/location/core/entities/slot-entity';
 
 import { ValidationsUseCases } from './validations';
@@ -33,9 +33,9 @@ export class UpdateLocation {
         slotType: SlotType;
         limitOfAssignments: number;
         status: SlotStatus;
-        costType: CostType;
+        benefitType: BenefitType;
         vehicleType: VehicleType;
-        cost: number;
+        amount: number;
       }[];
     },
     slotsToDelete: Set<string>

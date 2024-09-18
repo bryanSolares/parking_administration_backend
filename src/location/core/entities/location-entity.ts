@@ -1,5 +1,5 @@
 import {
-  CostType,
+  BenefitType,
   SlotEntity,
   SlotStatus,
   SlotType,
@@ -15,11 +15,11 @@ export class LocationEntity {
   readonly id: string;
   readonly name: string;
   readonly address: string;
-  readonly contactReference: string;
-  readonly phone: string;
+  readonly contactReference: string; //optional
+  readonly phone: string; //optional
   readonly email: string;
-  readonly comments: string;
-  readonly numberOfIdentifier: string;
+  readonly comments: string; //optional
+  readonly numberOfIdentifier: string; //optional
   readonly status: LocationStatus;
   readonly slots: SlotEntity[];
 
@@ -63,8 +63,8 @@ export class LocationEntity {
       slotNumber: string;
       slotType: SlotType;
       limitOfAssignments: number;
-      costType: CostType;
-      cost: number;
+      benefitType: BenefitType;
+      amount: number;
       vehicleType: VehicleType;
       status: SlotStatus;
     }[];

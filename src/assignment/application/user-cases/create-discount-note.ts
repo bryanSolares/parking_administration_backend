@@ -2,7 +2,7 @@ import { v4 as uuid } from 'uuid';
 import { AssignmentRepository } from '@assignment-module-core/repositories/assignment-repository';
 import { AssignmentStatus } from '@src/assignment/core/entities/assignment-entity';
 import { AppError } from '@src/server/config/err/AppError';
-import { CostType } from '@src/location/core/entities/slot-entity';
+import { BenefitType } from '@src/location/core/entities/slot-entity';
 import { DiscountNoteEntity } from '@src/assignment/core/entities/discount-note-entity';
 
 export class CreateDiscountNote {
@@ -21,11 +21,11 @@ export class CreateDiscountNote {
       );
     }
 
-    if (assignment.location.slots[0].costType !== CostType.DISCOUNT) {
+    if (assignment.location.slots[0].benefitType !== BenefitType.DISCOUNT) {
       throw new AppError(
         'CANT_CREATE_DISCOUNT_NOTE',
         400,
-        `Cant create discount note for assignments type "${CostType.COMPLEMENT}" or "${CostType.NO_COST}"`,
+        `Cant create discount note for assignments type "${BenefitType.COMPLEMENT}" or "${BenefitType.NO_COST}"`,
         true
       );
     }

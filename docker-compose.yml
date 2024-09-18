@@ -16,7 +16,7 @@ services:
   server:
     build: .
     container_name: server
-    image: backend-parking:0.3.0
+    image: backend-parking:0.4.0
     restart: always
     healthcheck:
       test: curl --fail http://localhost:3500/api/v1/health || exit 1

@@ -7,14 +7,14 @@ import { EmployeeEntity } from '../entities/employee-entity';
 import { AssignmentLoadEntity } from '../entities/assignment-load-entity';
 import { TagEntity } from '@src/parameters/core/entities/tag-entity';
 import { LocationEntity } from '@src/location/core/entities/location-entity';
-import { CostType } from '@src/location/core/entities/slot-entity';
+import { BenefitType } from '@src/location/core/entities/slot-entity';
 
 export type FinderResultById = {
   id: string;
   assignmentDate: string;
   formDecisionDate: string;
   parkingCardNumber: string;
-  benefitType: CostType;
+  benefitType: BenefitType;
   status: AssignmentStatus;
   location: LocationEntity;
   employee: EmployeeEntity;

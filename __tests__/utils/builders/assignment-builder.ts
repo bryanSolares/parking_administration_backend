@@ -7,7 +7,7 @@ import { AssignmentModel } from '../../../src/server/config/database/models/assi
 import { LocationBuilder, SlotBuilder } from './location-builder';
 import { EmployeeBuilder } from './employee-builder';
 import {
-  CostType,
+  BenefitType,
   SlotEntity
 } from '../../../src/location/core/entities/slot-entity';
 import { EmployeeEntity } from '../../../src/assignment/core/entities/employee-entity';
@@ -26,7 +26,7 @@ export class AssignmentBuilder {
     slot = new SlotBuilder().slotEntity,
     employee = new EmployeeBuilder().employeeEntity,
     parkingCardNumber = faker.finance.accountNumber(),
-    benefitType = CostType.NO_COST,
+    benefitType = BenefitType.NO_COST,
     status = AssignmentStatus.ASSIGNED,
     tags = []
   }: {
@@ -34,7 +34,7 @@ export class AssignmentBuilder {
     slot?: SlotEntity;
     employee?: EmployeeEntity;
     parkingCardNumber?: string;
-    benefitType?: CostType;
+    benefitType?: BenefitType;
     status?: AssignmentStatus;
     tags?: TagEntity[];
   }): AssignmentEntity {

@@ -21,8 +21,8 @@ export interface SlotTableResult {
   slotNumber: string;
   slotType: string;
   limitOfAssignments: number;
-  costType: string;
-  cost: number;
+  benefitType: string;
+  amount: number;
   vehicleType: string;
   status: string;
   created_at: Date;

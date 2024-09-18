@@ -81,7 +81,7 @@ export class CreateAssignment {
       slot!,
       employee,
       data.parkingCardNumber,
-      slot!.costType,
+      slot!.benefitType,
       AssignmentStatus.ASSIGNED,
       tags
     );

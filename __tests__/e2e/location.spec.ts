@@ -11,7 +11,7 @@ import {
 import { LocationModel } from '../../src/server/config/database/models/location.model';
 import { SlotModel } from '../../src/server/config/database/models/slot.model';
 import {
-  CostType,
+  BenefitType,
   SlotStatus,
   SlotType,
   VehicleType
@@ -23,6 +23,7 @@ import {
   SlotBuilder
 } from '../utils/builders/location-builder';
 import { AssignmentStatus } from '../../src/assignment/core/entities/assignment-entity';
+import { LocationHelper } from '../utils/helpers/location-helper';
 
 const baseUrl = '/api/v1/parking/location';
 const server = new Server();
@@ -139,15 +140,15 @@ describe('(e2e) Location and Slots', () => {
         expect(slots).toHaveLength(0);
       });
 
-      it('should return 400 if costType is DESCUENTO or COMPLEMENTO and cost is invalid', async () => {
+      it('should return 400 if benefitType is DESCUENTO or COMPLEMENTO and amount is invalid', async () => {
         const locationRequestDiscount = LocationMother.createLocationRequest();
-        locationRequestDiscount.slots[0].costType = 'DESCUENTO';
-        locationRequestDiscount.slots[0].cost = -1;
+        locationRequestDiscount.slots[0].benefitType = 'DESCUENTO';
+        locationRequestDiscount.slots[0].amount = -1;
 
         const locationRequestComplement =
           LocationMother.createLocationRequest();
-        locationRequestComplement.slots[0].costType = 'COMPLEMENTO';
-        locationRequestComplement.slots[0].cost = -1;
+        locationRequestComplement.slots[0].benefitType = 'COMPLEMENTO';
+        locationRequestComplement.slots[0].amount = -1;
 
         const responseDiscount = await request(server.getApp())
           .post(`${baseUrl}`)
@@ -164,15 +165,8 @@ describe('(e2e) Location and Slots', () => {
         const locations = await LocationModel.findAll({ raw: true });
         const slots = await SlotModel.findAll({ raw: true });
 
-        expect(responseDiscount.body).toHaveProperty('message');
-        expect(responseDiscount.body.message).toEqual(
-          'You must assign a value of whether the type of space is DESCUENTO or COMPLEMENTO.'
-        );
-
-        expect(responseComplement.body).toHaveProperty('message');
-        expect(responseComplement.body.message).toEqual(
-          'You must assign a value of whether the type of space is DESCUENTO or COMPLEMENTO.'
-        );
+        expect(responseDiscount.body.message[0]).toHaveProperty('message', 'Number must be greater than or equal to 0');
+        expect(responseComplement.body.message[0]).toHaveProperty('message', 'Number must be greater than or equal to 0');
 
         expect(locations).toHaveLength(0);
         expect(slots).toHaveLength(0);
@@ -300,8 +294,8 @@ describe('(e2e) Location and Slots', () => {
             slotNumber: body.data.slots[0].slotNumber,
             slotType: body.data.slots[0].slotType,
             limitOfAssignments: body.data.slots[0].limitOfAssignments,
-            costType: body.data.slots[0].costType,
-            cost: body.data.slots[0].cost,
+            benefitType: body.data.slots[0].benefitType,
+            amount: body.data.slots[0].amount,
             vehicleType: body.data.slots[0].vehicleType,
             status: body.data.slots[0].status
           });
@@ -446,7 +440,7 @@ describe('(e2e) Location and Slots', () => {
               id: slot.id,
               slotNumber: slot.slotNumber,
               slotType: slot.slotType,
-              costType: slot.costType
+              benefitType: slot.benefitType
             });
           };
           validateSchema(response.body.data, slot1);
@@ -460,19 +454,21 @@ describe('(e2e) Location and Slots', () => {
         });
 
         it('Se obtiene un arreglo vacio si la ubicación está inactiva', async () => {
-          const location = await new LocationBuilder().withInactiveStatus().build();
+          const location = await new LocationBuilder()
+            .withInactiveStatus()
+            .build();
           await new SlotBuilder()
             .withAvailableStatus()
             .withTypeSingle()
             .withVehicleType(VehicleType.CAR)
             .build(location.id);
-            await new SlotBuilder()
+          await new SlotBuilder()
             .withAvailableStatus()
             .withTypeMultiple(2)
             .withVehicleType(VehicleType.CAR)
             .build(location.id);
 
-           const response = await request(server.getApp())
+          const response = await request(server.getApp())
             .get(`${baseUrl}/available-slots`)
             .send({
               locationId: location.id,
@@ -559,8 +555,8 @@ describe('(e2e) Location and Slots', () => {
           slotNumber: locationRequest.slots[0].slotNumber,
           slotType: locationRequest.slots[0].slotType,
           limitOfAssignments: locationRequest.slots[0].limitOfAssignments,
-          costType: locationRequest.slots[0].costType,
-          cost: locationRequest.slots[0].cost,
+          benefitType: locationRequest.slots[0].benefitType,
+          amount: locationRequest.slots[0].amount,
           vehicleType: locationRequest.slots[0].vehicleType,
           status: locationRequest.slots[0].status
         });
@@ -810,23 +806,23 @@ describe('(e2e) Location and Slots', () => {
         });
       });
 
-      it('No se permite cambiar la propiedad "COST_TYPE" de un slot si está ocupado', async () => {
+      it('No se permite cambiar la propiedad "BENEFIT_TYPE" de un slot si está ocupado', async () => {
         const locationEntity = LocationMother.createLocationEntity();
         await LocationModel.create(locationEntity.toPrimitives());
         const slotEntity = {
           ...LocationMother.createSlotEntity().toPrimitives(),
           locationId: locationEntity.id,
           status: SlotStatus.OCCUPIED,
-          costType: CostType.NO_COST,
-          cost: 0
+          benefitType: BenefitType.NO_COST,
+          amount: 0
         };
         await SlotModel.create(slotEntity);
         const locationRequest = LocationMother.createLocationRequest();
         locationRequest.slots = [
           {
             ...LocationMother.createSlotRequest(slotEntity.id),
-            costType: CostType.COMPLEMENT,
-            cost: 100
+            benefitType: BenefitType.COMPLEMENT,
+            amount: 100
           }
         ];
 
@@ -837,7 +833,7 @@ describe('(e2e) Location and Slots', () => {
 
         expect(response.body).toHaveProperty(
           'message',
-          'You cannot update properties slotType, vehicleType, costType, status, cost if it is occupied'
+          'You cannot update properties slotType, vehicleType, benefitType, status, amount if it is occupied'
         );
 
         const locationDatabase = await LocationModel.findAll({ raw: true });
@@ -857,8 +853,8 @@ describe('(e2e) Location and Slots', () => {
           slotNumber: locationRequest.slots[0].slotNumber,
           slotType: locationRequest.slots[0].slotType,
           limitOfAssignments: locationRequest.slots[0].limitOfAssignments,
-          costType: locationRequest.slots[0].costType,
-          cost: locationRequest.slots[0].cost,
+          benefitType: locationRequest.slots[0].benefitType,
+          amount: locationRequest.slots[0].amount,
           vehicleType: locationRequest.slots[0].vehicleType,
           status: locationRequest.slots[0].status
         });
@@ -871,9 +867,9 @@ describe('(e2e) Location and Slots', () => {
           ...LocationMother.createSlotEntity().toPrimitives(),
           locationId: locationEntity.id,
           status: SlotStatus.OCCUPIED,
-          costType: CostType.NO_COST,
+          benefitType: BenefitType.NO_COST,
           vehicleType: VehicleType.CAR,
-          cost: 0
+          amount: 0
         };
         await SlotModel.create(slotEntity);
         const locationRequest = LocationMother.createLocationRequest();
@@ -891,7 +887,7 @@ describe('(e2e) Location and Slots', () => {
 
         expect(response.body).toHaveProperty(
           'message',
-          'You cannot update properties slotType, vehicleType, costType, status, cost if it is occupied'
+          'You cannot update properties slotType, vehicleType, benefitType, status, amount if it is occupied'
         );
 
         const locationDatabase = await LocationModel.findAll({ raw: true });
@@ -911,14 +907,14 @@ describe('(e2e) Location and Slots', () => {
           slotNumber: locationRequest.slots[0].slotNumber,
           slotType: locationRequest.slots[0].slotType,
           limitOfAssignments: locationRequest.slots[0].limitOfAssignments,
-          costType: locationRequest.slots[0].costType,
-          cost: locationRequest.slots[0].cost,
+          benefitType: locationRequest.slots[0].benefitType,
+          amount: locationRequest.slots[0].amount,
           vehicleType: locationRequest.slots[0].vehicleType,
           status: locationRequest.slots[0].status
         });
       });
 
-      it.skip('No se permite modificar el número máximo de asignaciones de un slot por debajo de las asignaciones actuales', async () => {
+      it.skip('No se permite modificar el número máximo de asignaciones de un slot por debajo del número de asignaciones activas', async () => {
         const locationEntity = LocationMother.createLocationEntity();
         await LocationModel.create(locationEntity.toPrimitives());
         const slotEntity = {
@@ -1058,6 +1054,7 @@ describe('(e2e) Location and Slots', () => {
       it('Se elimina una ubicación y sus slots asociados con un id (uuid) válido', async () => {
         const locationEntity = LocationMother.createLocationEntity();
         await LocationModel.create(locationEntity.toPrimitives());
+
         await SlotModel.create({
           ...LocationMother.createSlotEntity().toPrimitives(),
           locationId: locationEntity.id
@@ -1079,12 +1076,12 @@ describe('(e2e) Location and Slots', () => {
       it('Si la ubicación tiene al menos un slot "OCUPADO" no se puede eliminar', async () => {
         const locationEntity = LocationMother.createLocationEntity();
         await LocationModel.create(locationEntity.toPrimitives());
+
         await SlotModel.create({
           ...LocationMother.createSlotEntity().toPrimitives(),
           locationId: locationEntity.id,
           status: SlotStatus.OCCUPIED
         });
-
         const locationDatabase = await LocationModel.findAll({ raw: true });
         const response = await request(server.getApp())
           .delete(`${baseUrl}/${locationEntity.id}`)

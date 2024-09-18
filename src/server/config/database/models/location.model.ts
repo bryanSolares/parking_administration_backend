@@ -1,8 +1,11 @@
 import { Model } from 'sequelize';
 import { DataTypes } from 'sequelize';
 import { sequelize } from '../sequelize';
+import { LocationStatus } from '@src/location/core/entities/location-entity';
 
 export class LocationModel extends Model {}
+
+const locationStatus = [LocationStatus.ACTIVE, LocationStatus.INACTIVE];
 
 LocationModel.init(
   {
@@ -12,32 +15,33 @@ LocationModel.init(
       unique: true
     },
     name: {
-      type: DataTypes.STRING,
+      type: DataTypes.STRING(75),
       allowNull: false
     },
     address: {
-      type: DataTypes.STRING,
+      type: DataTypes.STRING(75),
       allowNull: false
     },
     contactReference: {
-      type: DataTypes.STRING
+      type: DataTypes.STRING(60)
     },
     phone: {
-      type: DataTypes.STRING
+      type: DataTypes.STRING(50)
     },
     email: {
-      type: DataTypes.STRING
-    },
-    comments: {
-      type: DataTypes.STRING
-    },
-    numberOfIdentifier: {
-      type: DataTypes.STRING,
+      type: DataTypes.STRING(50),
       allowNull: false
     },
+    comments: {
+      type: DataTypes.STRING(255)
+    },
+    numberOfIdentifier: {
+      type: DataTypes.STRING(25)
+    },
     status: {
-      type: DataTypes.ENUM('ACTIVO', 'INACTIVO'),
-      defaultValue: 'ACTIVO'
+      type: DataTypes.ENUM,
+      values: locationStatus,
+      allowNull: false
     }
   },
   {

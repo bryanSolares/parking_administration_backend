@@ -31,7 +31,7 @@ import { LocationFinderResult } from '@location-module-core/repositories/locatio
 
 import { LocationEntity } from '@location-module-core/entities/location-entity';
 import {
-  CostType,
+  BenefitType,
   SlotEntity,
   SlotType,
   VehicleType
@@ -109,8 +109,8 @@ export class SequelizeMYSQLLocationRepository implements LocationRepository {
                 'slotType',
                 'limitOfAssignments',
                 'vehicleType',
-                'costType',
-                'cost',
+                'benefitType',
+                'amount',
                 'status'
               ],
               transaction
@@ -429,7 +429,7 @@ export class SequelizeMYSQLLocationRepository implements LocationRepository {
     vehicleType: VehicleType
   ): Promise<ResponseAvailableSlots[]> {
     const query = `
-    select id, slot_number, slot_type, cost_type
+    select id, slot_number, slot_type, benefit_type
       from slot
       where location_id = :locationId
       and ((slot_type = 'SIMPLE' and status = 'DISPONIBLE')
@@ -442,7 +442,7 @@ export class SequelizeMYSQLLocationRepository implements LocationRepository {
       id: string;
       slot_number: string;
       slot_type: SlotType;
-      cost_type: CostType;
+      benefit_type: BenefitType;
     }>(query, {
       replacements: { locationId, vehicleType },
       type: QueryTypes.SELECT
@@ -452,7 +452,7 @@ export class SequelizeMYSQLLocationRepository implements LocationRepository {
       id: slot.id,
       slotNumber: slot.slot_number,
       slotType: slot.slot_type,
-      costType: slot.cost_type
+      benefitType: slot.benefit_type
     }));
   }
 }

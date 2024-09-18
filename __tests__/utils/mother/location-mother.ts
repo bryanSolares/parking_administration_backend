@@ -1,7 +1,7 @@
 import { v4 as uuid } from 'uuid';
 import { faker } from '@faker-js/faker';
 import {
-  CostType,
+  BenefitType,
   SlotEntity,
   SlotStatus,
   SlotType,
@@ -14,52 +14,53 @@ import {
 
 export class LocationMother {
   static createLocationRequest(
-    name: string = faker.company.name(),
-    address: string = faker.location.streetAddress(),
-    contactReference: string = faker.person.fullName(),
-    phone: string = '+(502) 45573001',
+    name: string = faker.lorem.word(70),
+    address: string = faker.lorem.word(70),
+    contactReference: string = faker.lorem.word(60),
+    phone: string = faker.phone.number(),
     email: string = faker.internet.email(),
-    comments: string = faker.lorem.sentence(),
-    numberOfIdentifier: string = faker.finance.iban(),
+    comments: string = faker.lorem.word(200),
+    numberOfIdentifier: string = faker.lorem.word(20),
     status: string = 'ACTIVO',
     slots: {
       slotNumber: string;
       slotType: string;
       limitOfAssignments: number;
       status: string;
-      costType: string;
+      benefitType: string;
       vehicleType: string;
-      cost: number;
+      amount: number;
       id?: string;
     }[] = [
       {
-        slotNumber: faker.finance.iban(),
+        slotNumber: faker.lorem.word(20),
         slotType: 'SIMPLE',
         limitOfAssignments: 1,
         status: 'DISPONIBLE',
-        costType: 'SIN_COSTO',
+        benefitType: 'SIN_COSTO',
         vehicleType: 'CARRO',
-        cost: 0
+        amount: 0
       },
       {
-        slotNumber: faker.finance.iban(),
+        slotNumber: faker.lorem.word(20),
         slotType: 'MULTIPLE',
         limitOfAssignments: 5,
         status: 'DISPONIBLE',
-        costType: 'DESCUENTO',
+        benefitType: 'DESCUENTO',
         vehicleType: 'CARRO',
-        cost: 100
+        amount: 100
       },
       {
-        slotNumber: faker.finance.iban(),
+        slotNumber: faker.lorem.word(20),
         slotType: 'SIMPLE',
         limitOfAssignments: 1,
         status: 'DISPONIBLE',
-        costType: 'COMPLEMENTO',
+        benefitType: 'COMPLEMENTO',
         vehicleType: 'CARRO',
-        cost: 100
+        amount: 100
       }
-    ]
+    ],
+    slotsToDelete: string[] = []
   ) {
     return {
       name,
@@ -70,19 +71,20 @@ export class LocationMother {
       comments,
       numberOfIdentifier,
       status,
-      slots
+      slots,
+      slotsToDelete
     };
   }
 
   static createSlotRequest(
     id?: string,
-    slotNumber = faker.finance.iban(),
+    slotNumber = faker.lorem.word(20),
     slotType = SlotType.SIMPLE,
     limitOfAssignments = 1,
     status = SlotStatus.ACTIVE,
-    costType = CostType.NO_COST,
+    benefitType = BenefitType.NO_COST,
     vehicleType = VehicleType.CAR,
-    cost = 0,
+    amount = 0,
   ) {
     return {
       id,
@@ -90,9 +92,9 @@ export class LocationMother {
       slotType,
       limitOfAssignments,
       status,
-      costType,
+      benefitType,
       vehicleType,
-      cost,
+      amount,
     };
   }
 
@@ -105,11 +107,11 @@ export class LocationMother {
 
   static createSlotEntity(
     id: string = uuid(),
-    slotNumber: string = faker.lorem.slug({ min: 1, max: 10 }),
+    slotNumber: string = faker.lorem.word(20),
     slotType: SlotType = SlotType.SIMPLE,
     limitOfAssignments: number = 1,
-    costType: CostType = CostType.NO_COST,
-    cost: number = 0,
+    benefitType: BenefitType = BenefitType.NO_COST,
+    amount: number = 0,
     vehicleType: VehicleType = VehicleType.CAR,
     status: SlotStatus = SlotStatus.ACTIVE
   ): SlotEntity {
@@ -118,8 +120,8 @@ export class LocationMother {
       slotNumber,
       slotType,
       limitOfAssignments,
-      costType,
-      cost,
+      benefitType,
+      amount,
       vehicleType,
       status
     );
@@ -127,13 +129,13 @@ export class LocationMother {
 
   static createLocationEntity(
     id: string = uuid(),
-    name: string = faker.location.secondaryAddress(),
-    address: string = faker.location.streetAddress(),
-    contactReference: string = faker.person.fullName(),
-    phone: string = '+(502) 45456595',
+    name: string = faker.lorem.word(70),
+    address: string = faker.lorem.word(70),
+    contactReference: string = faker.lorem.word(60),
+    phone: string = faker.phone.number(),
     email: string = faker.internet.email(),
-    comments: string = faker.lorem.sentence(),
-    numberOfIdentifier: string = faker.lorem.slug({ min: 1, max: 5 }),
+    comments: string = faker.lorem.word(200),
+    numberOfIdentifier: string = faker.lorem.word(20),
     status: LocationStatus = LocationStatus.ACTIVE,
     slots: SlotEntity[] = []
   ): LocationEntity {
@@ -153,11 +155,11 @@ export class LocationMother {
 
   static createSlotPrimitive(
     id: string = uuid(),
-    slotNumber: string = faker.lorem.slug({ min: 1, max: 10 }),
+    slotNumber: string = faker.lorem.word(20),
     slotType: SlotType = SlotType.SIMPLE,
     limitOfAssignments: number = 1,
-    costType: CostType = CostType.NO_COST,
-    cost: number = 0,
+    benefitType: BenefitType = BenefitType.NO_COST,
+    amount: number = 0,
     vehicleType: VehicleType = VehicleType.CAR,
     status: SlotStatus = SlotStatus.ACTIVE
   ) {
@@ -166,8 +168,8 @@ export class LocationMother {
       slotNumber,
       slotType,
       limitOfAssignments,
-      costType,
-      cost,
+      benefitType,
+      amount,
       vehicleType,
       status
     };
@@ -175,13 +177,13 @@ export class LocationMother {
 
   static createLocationPrimitive(
     id: string = uuid(),
-    name: string = faker.location.secondaryAddress(),
-    address: string = faker.location.streetAddress(),
-    contactReference: string = faker.person.fullName(),
-    phone: string = '+(502) 45456595',
+    name: string = faker.lorem.word(70),
+    address: string = faker.lorem.word(70),
+    contactReference: string = faker.lorem.word(60),
+    phone: string = faker.phone.number(),
     email: string = faker.internet.email(),
-    comments: string = faker.lorem.sentence(),
-    numberOfIdentifier: string = faker.lorem.slug({ min: 1, max: 20 }),
+    comments: string = faker.lorem.word(200),
+    numberOfIdentifier: string = faker.lorem.word(20),
     status: LocationStatus = LocationStatus.ACTIVE
   ) {
     return {

@@ -1,7 +1,7 @@
 import { EmployeeEntity } from './employee-entity';
 
 import { TokenStatus } from './employee-entity';
-import { CostType } from '@location-module-core/entities/slot-entity';
+import { BenefitType } from '@location-module-core/entities/slot-entity';
 import { SlotEntity } from '@location-module-core/entities/slot-entity';
 import { SlotStatus } from '@location-module-core/entities/slot-entity';
 import { SlotType } from '@location-module-core/entities/slot-entity';
@@ -27,7 +27,7 @@ export class AssignmentEntity {
     public slot: SlotEntity,
     public employee: EmployeeEntity,
     public readonly parkingCardNumber: string,
-    public readonly benefitType: CostType,
+    public readonly benefitType: BenefitType,
     public status: AssignmentStatus,
     public readonly tags: TagEntity[],
     public readonly discountNote?: DiscountNoteEntity,
@@ -53,8 +53,8 @@ export class AssignmentEntity {
       slotNumber: string;
       slotType: SlotType;
       limitOfAssignments: number;
-      costType: CostType;
-      cost: number;
+      benefitType: BenefitType;
+      amount: number;
       vehicleType: VehicleType;
       status: SlotStatus;
     };
@@ -85,7 +85,7 @@ export class AssignmentEntity {
       }[];
     };
     parkingCardNumber: string;
-    benefitType: CostType;
+    benefitType: BenefitType;
     status: AssignmentStatus;
     tags: {
       id: string;

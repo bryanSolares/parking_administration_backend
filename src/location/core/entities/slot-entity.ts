@@ -9,7 +9,7 @@ export enum SlotType {
   SIMPLE = 'SIMPLE',
   MULTIPLE = 'MULTIPLE'
 }
-export enum CostType {
+export enum BenefitType {
   NO_COST = 'SIN_COSTO',
   DISCOUNT = 'DESCUENTO',
   COMPLEMENT = 'COMPLEMENTO'
@@ -25,8 +25,8 @@ export class SlotEntity {
   readonly slotNumber: string;
   readonly slotType: SlotType;
   readonly limitOfAssignments: number;
-  readonly costType: CostType;
-  readonly cost: number;
+  readonly benefitType: BenefitType;
+  readonly amount: number;
   readonly vehicleType: VehicleType;
   readonly status: SlotStatus;
 
@@ -35,18 +35,18 @@ export class SlotEntity {
     slotNumber: string,
     slotType: SlotType,
     limitOfAssignments: number,
-    costType: CostType,
-    cost: number,
+    benefitType: BenefitType,
+    amount: number,
     vehicleType: VehicleType,
     status: SlotStatus
   ) {
-    this.validateData({ slotType, limitOfAssignments, costType, cost });
+    this.validateData({ slotType, limitOfAssignments, benefitType, amount });
     this.id = id;
     this.slotNumber = slotNumber;
     this.slotType = slotType;
     this.limitOfAssignments = limitOfAssignments;
-    this.costType = costType;
-    this.cost = cost;
+    this.benefitType = benefitType;
+    this.amount = amount;
     this.vehicleType = vehicleType;
     this.status = status;
   }
@@ -56,8 +56,8 @@ export class SlotEntity {
     slotNumber: string;
     slotType: SlotType;
     limitOfAssignments: number;
-    costType: CostType;
-    cost: number;
+    benefitType: BenefitType;
+    amount: number;
     vehicleType: VehicleType;
     status: SlotStatus;
   }) {
@@ -66,8 +66,8 @@ export class SlotEntity {
       plainData.slotNumber,
       plainData.slotType,
       plainData.limitOfAssignments,
-      plainData.costType,
-      plainData.cost,
+      plainData.benefitType,
+      plainData.amount,
       plainData.vehicleType,
       plainData.status
     );
@@ -79,8 +79,8 @@ export class SlotEntity {
       slotNumber: this.slotNumber,
       slotType: this.slotType,
       limitOfAssignments: this.limitOfAssignments,
-      costType: this.costType,
-      cost: this.cost,
+      benefitType: this.benefitType,
+      amount: this.amount,
       vehicleType: this.vehicleType,
       status: this.status
     };
@@ -89,8 +89,8 @@ export class SlotEntity {
   private validateData(data: {
     slotType: SlotType;
     limitOfAssignments: number;
-    costType: CostType;
-    cost: number;
+    benefitType: BenefitType;
+    amount: number;
   }) {
     if (
       data.slotType === SlotType.SIMPLE &&
@@ -114,26 +114,26 @@ export class SlotEntity {
     }
 
     if (
-      (data.costType === CostType.DISCOUNT ||
-        data.costType === CostType.COMPLEMENT) &&
-      data.cost <= 0
+      (data.benefitType === BenefitType.DISCOUNT ||
+        data.benefitType === BenefitType.COMPLEMENT) &&
+      data.amount <= 0
     ) {
       throw new AppError(
         'ENTITY_VALIDATIONS',
         400,
-        `You must assign a value of whether the type of space is ${CostType.DISCOUNT} or ${CostType.COMPLEMENT}.`,
+        `You must assign a value of whether the type of space is ${BenefitType.DISCOUNT} or ${BenefitType.COMPLEMENT}.`,
         true
       );
     }
 
     if (
-      data.costType === CostType.NO_COST &&
-      (data.cost > 0 || data.cost < 0)
+      data.benefitType === BenefitType.NO_COST &&
+      (data.amount > 0 || data.amount < 0)
     ) {
       throw new AppError(
         'ENTITY_VALIDATIONS',
         400,
-        `You cannot assign a cost value if the type is ${CostType.NO_COST}.`,
+        `You cannot assign an amount value if the type is ${BenefitType.NO_COST}.`,
         true
       );
     }

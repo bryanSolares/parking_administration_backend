@@ -1,6 +1,6 @@
 import { LocationEntity } from '../entities/location-entity';
 import {
-  CostType,
+  BenefitType,
   SlotEntity,
   SlotType,
   VehicleType
@@ -47,7 +47,7 @@ export interface ResponseAvailableSlots {
   id: string;
   slotNumber: string;
   slotType: SlotType;
-  costType: CostType;
+  benefitType: BenefitType;
 }
 
 export type TrendDataType = 'daily' | 'weekly' | 'monthly';
