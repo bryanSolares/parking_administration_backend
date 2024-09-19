@@ -525,12 +525,19 @@ describe('(e2e) Location and Slots', () => {
           ...LocationMother.createSlotEntity().toPrimitives(),
           locationId: locationEntity.id
         };
+        const slotEntity2 = {
+          ...LocationMother.createSlotEntity().toPrimitives(),
+          locationId: locationEntity.id
+        };
         await LocationModel.create(locationEntity.toPrimitives());
         await SlotModel.create(slotEntity);
+        await SlotModel.create(slotEntity2);
         const locationRequest = LocationMother.createLocationRequest();
         locationRequest.slots = [
-          { ...locationRequest.slots[0], id: slotEntity.id }
+          { ...locationRequest.slots[0], id: slotEntity.id },
+          {...locationRequest.slots[1]}
         ];
+        locationRequest.slotsToDelete = [slotEntity2.id];
 
         const response = await request(server.getApp())
           .put(`${baseUrl}/${locationEntity.id}`)
@@ -550,8 +557,8 @@ describe('(e2e) Location and Slots', () => {
           comments: locationRequest.comments,
           numberOfIdentifier: locationRequest.numberOfIdentifier
         });
-        expect(slotDatabase).toHaveLength(1);
-        expect(slotDatabase[0]).toMatchObject({
+        expect(slotDatabase).toHaveLength(2);
+        expect(slotDatabase.find((slot: any) => slot.id === locationRequest.slots[0].id)).toMatchObject({
           slotNumber: locationRequest.slots[0].slotNumber,
           slotType: locationRequest.slots[0].slotType,
           limitOfAssignments: locationRequest.slots[0].limitOfAssignments,
@@ -860,7 +867,7 @@ describe('(e2e) Location and Slots', () => {
         });
       });
 
-      it('No se permite cambiar las propiedades "TYPE_VEHICLE" de un slot si está ocupado', async () => {
+      it('No se permite cambiar la propiedad "TYPE_VEHICLE" de un slot si está ocupado', async () => {
         const locationEntity = LocationMother.createLocationEntity();
         await LocationModel.create(locationEntity.toPrimitives());
         const slotEntity = {
