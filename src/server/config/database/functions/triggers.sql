@@ -27,8 +27,8 @@ begin
             update slot set status = 'DISPONIBLE' where id = new.slot_id;
         end if;
 
-        update discount_note set status_signature = 'RECHAZADO', status_dispatched = 'EXITOSO' where assignment_id = NEW.id;
-        update assignment_loan set status = 'INACTIVO' where assignment_id = NEW.id;
+        update discount_note set status_signature = 'RECHAZADO', status_dispatched = 'EXITOSO' where assignment_id = NEW.id and status_signature = 'PENDIENTE';
+        update assignment_loan set status = 'INACTIVO' where assignment_id = NEW.id and status = 'ACTIVO';
 
     end if;
 end ;;

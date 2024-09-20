@@ -129,3 +129,4 @@ TODO:
 - [ ] verify if can create assignment if location is inactive
 
 - [ ] add filter (active - inactive) in location finder
+- [ ] test automatic de-assignment procedure
