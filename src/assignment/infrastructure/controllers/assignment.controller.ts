@@ -68,11 +68,7 @@ export class AssignmentController {
     }
   }
 
-  async updateStatusDiscountNode(
-    req: Request,
-    res: Response,
-    next: NextFunction
-  ) {
+  async updateStatusDiscountNode(req: Request, res: Response, next: NextFunction) {
     const assignmentId = req.params.discount_note_id;
     const statusSignature = req.body.status;
 
@@ -103,10 +99,7 @@ export class AssignmentController {
     const { limit, page } = req.query;
 
     try {
-      const assignments = await this.assignmentFinderUseCase.run(
-        Number(limit),
-        Number(page)
-      );
+      const assignments = await this.assignmentFinderUseCase.run(Number(limit), Number(page));
       const response = {
         data: assignments?.data,
         pageCounter: assignments?.pageCounter
@@ -210,11 +203,7 @@ export class AssignmentController {
     }
   }
 
-  async updateStatusAcceptanceForm(
-    req: Request,
-    res: Response,
-    next: NextFunction
-  ) {
+  async updateStatusAcceptanceForm(req: Request, res: Response, next: NextFunction) {
     const assignmentId = req.params.assignment_id;
     const { status } = req.body;
 

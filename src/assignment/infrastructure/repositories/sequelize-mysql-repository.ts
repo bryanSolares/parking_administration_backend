@@ -104,9 +104,7 @@ export class SequelizeAssignmentRepository implements AssignmentRepository {
           model: AssignmentLoanModel,
           where: { status: 'ACTIVO' },
           required: false,
-          include: [
-            { model: EmployeeModel, include: [{ model: VehicleModel }] }
-          ]
+          include: [{ model: EmployeeModel, include: [{ model: VehicleModel }] }]
         }
       ]
     });
@@ -120,25 +118,13 @@ export class SequelizeAssignmentRepository implements AssignmentRepository {
     const employeeData = EmployeeEntity.fromPrimitive(plainData.employee);
 
     employeeData.vehicles = plainData.employee.vehicles.map(
-      (vehicle: {
-        id: string;
-        vehicleBadge: string;
-        color: string;
-        brand: string;
-        model: string;
-        type: VehicleType;
-      }) => {
+      (vehicle: { id: string; vehicleBadge: string; color: string; brand: string; model: string; type: VehicleType }) => {
         return VehicleEntity.fromPrimitive(vehicle);
       }
     );
 
-    const tagsData = plainData.tags.map(
-      (tag: {
-        id: string;
-        name: string;
-        description: string;
-        status: TagStatus;
-      }) => TagEntity.fromPrimitives(tag)
+    const tagsData = plainData.tags.map((tag: { id: string; name: string; description: string; status: TagStatus }) =>
+      TagEntity.fromPrimitives(tag)
     );
 
     const locationData = LocationEntity.fromPrimitives({
@@ -156,22 +142,15 @@ export class SequelizeAssignmentRepository implements AssignmentRepository {
       employee: employeeData,
       tags: tagsData,
       location: locationData,
-      discountNote: plainData.discount_note
-        ? DiscountNoteEntity.fromPrimitives(plainData.discount_note)
-        : undefined,
-      assignmentLoan: plainData.assignment_loan
-        ? AssignmentLoadEntity.fromPrimitives(plainData.assignment_loan)
-        : undefined
+      discountNote: plainData.discount_note ? DiscountNoteEntity.fromPrimitives(plainData.discount_note) : undefined,
+      assignmentLoan: plainData.assignment_loan ? AssignmentLoadEntity.fromPrimitives(plainData.assignment_loan) : undefined
     };
 
     return assignment;
   }
 
   /* eslint-disable   @typescript-eslint/no-unsafe-return */
-  async getAssignments(
-    limit: number = 20,
-    page: number = 1
-  ): Promise<AssignmentFinderResult> {
+  async getAssignments(limit: number = 20, page: number = 1): Promise<AssignmentFinderResult> {
     const assignmentsCounter = await AssignmentModel.count();
     const allPages = Math.ceil(assignmentsCounter / limit);
     const offset = (page - 1) * limit;
@@ -210,9 +189,7 @@ export class SequelizeAssignmentRepository implements AssignmentRepository {
       return { data: [], pageCounter: allPages };
     }
 
-    const plainData = assignments.map(assignment =>
-      assignment.get({ plain: true })
-    );
+    const plainData = assignments.map(assignment => assignment.get({ plain: true }));
 
     const data = plainData.map(plainResult => {
       return {
@@ -227,12 +204,8 @@ export class SequelizeAssignmentRepository implements AssignmentRepository {
           ...plainResult.slot.location,
           slots: [SlotEntity.fromPrimitives(plainResult.slot)]
         }),
-        discountNote: plainResult.discount_note
-          ? DiscountNoteEntity.fromPrimitives(plainResult.discount_note)
-          : undefined,
-        deAssignment: plainResult.de_assignment
-          ? DeAssignmentEntity.fromPrimitives(plainResult.de_assignment)
-          : undefined
+        discountNote: plainResult.discount_note ? DiscountNoteEntity.fromPrimitives(plainResult.discount_note) : undefined,
+        deAssignment: plainResult.de_assignment ? DeAssignmentEntity.fromPrimitives(plainResult.de_assignment) : undefined
       };
     });
 
@@ -261,10 +234,7 @@ export class SequelizeAssignmentRepository implements AssignmentRepository {
     return DiscountNoteEntity.fromPrimitives(discountNote.get({ plain: true }));
   }
 
-  async updateStatusDiscountNote(
-    id: string,
-    status: DiscountNodeStatusSignature
-  ): Promise<void> {
+  async updateStatusDiscountNote(id: string, status: DiscountNodeStatusSignature): Promise<void> {
     await DiscountNoteModel.update(
       {
         statusSignature: status,
@@ -274,13 +244,8 @@ export class SequelizeAssignmentRepository implements AssignmentRepository {
     );
   }
 
-  async executeFunction(
-    functionName: ListOfFunctions,
-    parameters: string[]
-  ): Promise<ReturnType> {
-    const paramPlaceholders = parameters
-      .map((_, index) => `:param${index}`)
-      .join(',');
+  async executeFunction(functionName: ListOfFunctions, parameters: string[]): Promise<ReturnType> {
+    const paramPlaceholders = parameters.map((_, index) => `:param${index}`).join(',');
     const query = `SELECT ${functionName}(${paramPlaceholders})`;
 
     const paramReplacements = parameters.reduce(
@@ -291,20 +256,15 @@ export class SequelizeAssignmentRepository implements AssignmentRepository {
       {} as Record<string, string>
     );
 
-    const [result]: { [key: string]: ReturnType }[] = await sequelize.query(
-      query,
-      {
-        replacements: paramReplacements,
-        type: QueryTypes.SELECT
-      }
-    );
+    const [result]: { [key: string]: ReturnType }[] = await sequelize.query(query, {
+      replacements: paramReplacements,
+      type: QueryTypes.SELECT
+    });
 
     return Object.values(result)[0];
   }
 
-  async createAssignmentLoan(
-    assignmentLoan: AssignmentLoadEntity
-  ): Promise<void> {
+  async createAssignmentLoan(assignmentLoan: AssignmentLoadEntity): Promise<void> {
     const employeeData = assignmentLoan.employee;
     const vehiclesData = assignmentLoan.employee.vehicles;
 
@@ -328,25 +288,14 @@ export class SequelizeAssignmentRepository implements AssignmentRepository {
     await transaction.commit();
   }
 
-  async updateAssignmentLoan(
-    assignmentLoan: AssignmentLoadEntity,
-    vehiclesForDelete: string[]
-  ): Promise<void> {
+  async updateAssignmentLoan(assignmentLoan: AssignmentLoadEntity, vehiclesForDelete: string[]): Promise<void> {
     const vehiclesData = assignmentLoan.employee.vehicles;
 
     const transaction = await sequelize.transaction();
 
-    await this.upsertVehicles(
-      vehiclesData,
-      assignmentLoan.employee.id,
-      transaction
-    );
+    await this.upsertVehicles(vehiclesData, assignmentLoan.employee.id, transaction);
 
-    await Promise.all(
-      vehiclesForDelete.map(
-        async id => await VehicleModel.destroy({ where: { id } })
-      )
-    );
+    await Promise.all(vehiclesForDelete.map(async id => await VehicleModel.destroy({ where: { id } })));
 
     await AssignmentLoanModel.update(
       {
@@ -359,9 +308,7 @@ export class SequelizeAssignmentRepository implements AssignmentRepository {
     await transaction.commit();
   }
 
-  async getAssignmentLoanByIdAssignment(
-    assignmentId: string
-  ): Promise<AssignmentLoadEntity | null> {
+  async getAssignmentLoanByIdAssignment(assignmentId: string): Promise<AssignmentLoadEntity | null> {
     const assignmentLoan = await AssignmentLoanModel.findOne({
       where: { assignmentId, status: 'ACTIVO' },
       include: [{ model: EmployeeModel, as: 'employee' }]
@@ -369,14 +316,10 @@ export class SequelizeAssignmentRepository implements AssignmentRepository {
 
     if (!assignmentLoan) return null;
 
-    return AssignmentLoadEntity.fromPrimitives(
-      assignmentLoan.get({ plain: true })
-    );
+    return AssignmentLoadEntity.fromPrimitives(assignmentLoan.get({ plain: true }));
   }
 
-  async getAssignmentLoanById(
-    id: string
-  ): Promise<AssignmentLoadEntity | null> {
+  async getAssignmentLoanById(id: string): Promise<AssignmentLoadEntity | null> {
     const assignmentLoan = await AssignmentLoanModel.findOne({
       where: { id },
       include: [{ model: EmployeeModel, as: 'employee' }]
@@ -384,9 +327,7 @@ export class SequelizeAssignmentRepository implements AssignmentRepository {
 
     if (!assignmentLoan) return null;
 
-    return AssignmentLoadEntity.fromPrimitives(
-      assignmentLoan.get({ plain: true })
-    );
+    return AssignmentLoadEntity.fromPrimitives(assignmentLoan.get({ plain: true }));
   }
 
   async deleteAssignmentLoan(assignmentLoanId: string): Promise<void> {
@@ -395,10 +336,7 @@ export class SequelizeAssignmentRepository implements AssignmentRepository {
     });
   }
 
-  async updateAssignment(
-    assignment: AssignmentEntity,
-    vehicleIdsForDelete: string[]
-  ): Promise<void> {
+  async updateAssignment(assignment: AssignmentEntity, vehicleIdsForDelete: string[]): Promise<void> {
     const transaction = await sequelize.transaction();
 
     if (vehicleIdsForDelete.length > 0) {
@@ -415,11 +353,7 @@ export class SequelizeAssignmentRepository implements AssignmentRepository {
       });
     }
     //update vehicles owner
-    await this.upsertVehicles(
-      assignment.employee.vehicles,
-      assignment.employee.id,
-      transaction
-    );
+    await this.upsertVehicles(assignment.employee.vehicles, assignment.employee.id, transaction);
 
     if (assignment.tags.length > 0) {
       await AssignmentTagDetailModel.destroy({
@@ -440,10 +374,7 @@ export class SequelizeAssignmentRepository implements AssignmentRepository {
   }
 
   /* eslint-disable  @typescript-eslint/no-unsafe-return */
-  async upsertEmployee(
-    employee: EmployeeEntity,
-    transaction?: Transaction
-  ): Promise<string> {
+  async upsertEmployee(employee: EmployeeEntity, transaction?: Transaction): Promise<string> {
     const [employeeDatabase] = await EmployeeModel.upsert(
       {
         ...employee,
@@ -473,11 +404,7 @@ export class SequelizeAssignmentRepository implements AssignmentRepository {
     return employeeDatabase.getDataValue('id');
   }
 
-  async upsertVehicles(
-    vehicles: VehicleEntity[],
-    ownerVehicle: string,
-    transaction?: Transaction
-  ): Promise<void> {
+  async upsertVehicles(vehicles: VehicleEntity[], ownerVehicle: string, transaction?: Transaction): Promise<void> {
     await Promise.all(
       vehicles.map(async vehicle => {
         await VehicleModel.upsert(
@@ -492,16 +419,8 @@ export class SequelizeAssignmentRepository implements AssignmentRepository {
     );
   }
 
-  async changeStatusAssignment(
-    assignmentId: string,
-    status: AssignmentStatus,
-    assignmentDate?: string
-  ): Promise<void> {
-    if (
-      status === AssignmentStatus.ACCEPTED ||
-      status === AssignmentStatus.CANCELLED ||
-      status === AssignmentStatus.REJECTED
-    ) {
+  async changeStatusAssignment(assignmentId: string, status: AssignmentStatus, assignmentDate?: string): Promise<void> {
+    if (status === AssignmentStatus.ACCEPTED || status === AssignmentStatus.CANCELLED || status === AssignmentStatus.REJECTED) {
       await AssignmentModel.update(
         {
           status,
@@ -516,24 +435,16 @@ export class SequelizeAssignmentRepository implements AssignmentRepository {
     }
 
     if (status === AssignmentStatus.IN_PROGRESS && assignmentDate) {
-      await AssignmentModel.update(
-        { status, assignmentDate },
-        { where: { id: assignmentId } }
-      );
+      await AssignmentModel.update({ status, assignmentDate }, { where: { id: assignmentId } });
     }
   }
 
-  async getLastAssignmentInactiveBySlotId(
-    slotId: string
-  ): Promise<FinderResultPreviousAssignment | null> {
+  async getLastAssignmentInactiveBySlotId(slotId: string): Promise<FinderResultPreviousAssignment | null> {
     const assignmentDatabase = await AssignmentModel.findOne({
       where: {
         slotId,
         status: {
-          [Op.in]: [
-            AssignmentStatus.AUTO_DE_ASSIGNMENT,
-            AssignmentStatus.MANUAL_DE_ASSIGNMENT
-          ]
+          [Op.in]: [AssignmentStatus.AUTO_DE_ASSIGNMENT, AssignmentStatus.MANUAL_DE_ASSIGNMENT]
         }
       },
       include: [

@@ -23,8 +23,5 @@ export interface UserRepository {
   }): Promise<void>;
   delete(id: string): Promise<void>;
   getById(id: string): Promise<UserEntity | null>;
-  getAll(
-    limit: number,
-    page: number
-  ): Promise<{ data: UserEntity[]; pageCounter: number }>;
+  getAll(limit: number, page: number): Promise<{ data: UserEntity[]; pageCounter: number }>;
 }

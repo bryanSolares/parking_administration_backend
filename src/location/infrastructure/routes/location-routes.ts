@@ -15,11 +15,7 @@ import { validateRequest } from '@shared/zod-validator';
 const routes = Router();
 
 routes
-  .post(
-    '/location',
-    validateRequest(locationCreateSchema, 'body'),
-    locationController.createLocation.bind(locationController)
-  )
+  .post('/location', validateRequest(locationCreateSchema, 'body'), locationController.createLocation.bind(locationController))
   .get(
     '/location',
     validateRequest(getLocationsSchemaForQuery, 'query'),
@@ -46,10 +42,7 @@ routes
     validateRequest(locationDeleteParamsSchema, 'params'),
     locationController.deleteLocation.bind(locationController)
   )
-  .get(
-    '/location/stats/overview',
-    locationController.overviewParkingData.bind(locationController)
-  )
+  .get('/location/stats/overview', locationController.overviewParkingData.bind(locationController))
   .get(
     '/location/stats/trend',
     validateRequest(trendSchema, 'query'),

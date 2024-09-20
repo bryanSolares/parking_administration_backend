@@ -43,10 +43,7 @@ export class LocationController {
     locationData.id = locationId;
 
     try {
-      await this.updateLocationUseCase.run(
-        locationData,
-        new Set(slotsToDelete)
-      );
+      await this.updateLocationUseCase.run(locationData, new Set(slotsToDelete));
       res.status(200).send({ message: 'Location updated' });
     } catch (error) {
       next(error);
@@ -79,10 +76,7 @@ export class LocationController {
     const { limit, page } = req.query;
 
     try {
-      const data = await this.locationFinderUseCase.run(
-        Number(limit),
-        Number(page)
-      );
+      const data = await this.locationFinderUseCase.run(Number(limit), Number(page));
 
       const response = { data: data?.data, pageCounter: data?.pageCounter };
       res.status(200).send(response);
@@ -105,9 +99,7 @@ export class LocationController {
     const { type } = req.query;
 
     try {
-      const data = await this.statisticsDataUseCase.trendData(
-        type as TrendDataType
-      );
+      const data = await this.statisticsDataUseCase.trendData(type as TrendDataType);
 
       res.status(200).send({ data });
     } catch (error) {
@@ -119,10 +111,7 @@ export class LocationController {
   async getSlotsAvailable(req: Request, res: Response, next: NextFunction) {
     const { locationId, vehicleType } = req.body;
     try {
-      const data = await this.slotsAvailableFinderUseCase.run(
-        locationId,
-        vehicleType
-      );
+      const data = await this.slotsAvailableFinderUseCase.run(locationId, vehicleType);
       res.status(200).send({ data });
     } catch (error) {
       console.log(error);

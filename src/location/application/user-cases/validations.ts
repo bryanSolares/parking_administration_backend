@@ -25,60 +25,31 @@ export class ValidationsUseCases {
     }[];
     slotsToDelete: Set<string>;
   }): Promise<void> {
-    const [location, locationHasActiveAssignment, activeAssignmentForLocation] =
-      await this.loadData(dataRequest.locationId);
+    const [location, locationHasActiveAssignment, activeAssignmentForLocation] = await this.loadData(dataRequest.locationId);
 
     const newSlots = dataRequest.slots.filter(slot => !slot.id);
     const oldSlots = dataRequest.slots.filter(slot => slot.id);
 
     this.validateLocationExists(location);
     this.validateIfNewSlotsAreValid(newSlots);
-    this.validateIfSlotsToDeleteCanBeDeleted(
-      dataRequest.slotsToDelete,
-      location!.slots
-    );
+    this.validateIfSlotsToDeleteCanBeDeleted(dataRequest.slotsToDelete, location!.slots);
 
-    this.validateLocationStatus(
-      dataRequest.locationStatus,
-      location!.status,
-      locationHasActiveAssignment
-    );
+    this.validateLocationStatus(dataRequest.locationStatus, location!.status, locationHasActiveAssignment);
 
-    this.validateSlotsBelongToLocation(
-      oldSlots,
-      dataRequest.slotsToDelete,
-      location!.slots
-    );
+    this.validateSlotsBelongToLocation(oldSlots, dataRequest.slotsToDelete, location!.slots);
 
     this.validateOccupiedSlots(oldSlots, location!.slots);
 
-    this.validateIfChangeMaxNumberOfAssignments(
-      oldSlots,
-      activeAssignmentForLocation
-    );
+    this.validateIfChangeMaxNumberOfAssignments(oldSlots, activeAssignmentForLocation);
   }
 
-  private validateIfSlotsToDeleteCanBeDeleted(
-    slotsToDelete: Set<string>,
-    slots: SlotEntity[]
-  ): void {
-    const occupiedSlotsMap = new Map(
-      slots
-        .filter(slot => slot.status === SlotStatus.OCCUPIED)
-        .map(slot => [slot.id, slot])
-    );
+  private validateIfSlotsToDeleteCanBeDeleted(slotsToDelete: Set<string>, slots: SlotEntity[]): void {
+    const occupiedSlotsMap = new Map(slots.filter(slot => slot.status === SlotStatus.OCCUPIED).map(slot => [slot.id, slot]));
 
-    const hasAnyInvalidSlotId = Array.from(slotsToDelete).some(slotId =>
-      occupiedSlotsMap.has(slotId)
-    );
+    const hasAnyInvalidSlotId = Array.from(slotsToDelete).some(slotId => occupiedSlotsMap.has(slotId));
 
     if (hasAnyInvalidSlotId) {
-      throw new AppError(
-        'FOREIGN_KEY_CONSTRAINT',
-        400,
-        `You cannot delete a slot with active assignments`,
-        true
-      );
+      throw new AppError('FOREIGN_KEY_CONSTRAINT', 400, `You cannot delete a slot with active assignments`, true);
     }
   }
 
@@ -95,12 +66,7 @@ export class ValidationsUseCases {
   ) {
     slots.forEach(slot => {
       if (!slot.id && slot.status === SlotStatus.OCCUPIED) {
-        throw new AppError(
-          'SLOT_NOT_VALID',
-          400,
-          'You cannot create a slot with occupied status',
-          true
-        );
+        throw new AppError('SLOT_NOT_VALID', 400, 'You cannot create a slot with occupied status', true);
       }
     });
   }
@@ -108,10 +74,7 @@ export class ValidationsUseCases {
   private async loadData(locationId: string) {
     return await Promise.all([
       this.locationRepository.getLocationById(locationId),
-      this.locationRepository.executeFunction<boolean>(
-        'location_has_active_assignment',
-        [locationId]
-      ),
+      this.locationRepository.executeFunction<boolean>('location_has_active_assignment', [locationId]),
       this.locationRepository.callProcedure<
         {
           slot_id: string;
@@ -129,22 +92,9 @@ export class ValidationsUseCases {
     }
   }
 
-  private validateLocationStatus(
-    newStatus: LocationStatus,
-    currentStatus: LocationStatus,
-    hasActiveAssignment: boolean
-  ): void {
-    if (
-      newStatus === LocationStatus.INACTIVE &&
-      currentStatus !== LocationStatus.INACTIVE &&
-      hasActiveAssignment
-    ) {
-      throw new AppError(
-        'LOCATION_HAS_ACTIVE_ASSIGNMENT',
-        400,
-        'You cannot inactivate a location with active assignments',
-        true
-      );
+  private validateLocationStatus(newStatus: LocationStatus, currentStatus: LocationStatus, hasActiveAssignment: boolean): void {
+    if (newStatus === LocationStatus.INACTIVE && currentStatus !== LocationStatus.INACTIVE && hasActiveAssignment) {
+      throw new AppError('LOCATION_HAS_ACTIVE_ASSIGNMENT', 400, 'You cannot inactivate a location with active assignments', true);
     }
   }
 
@@ -206,12 +156,10 @@ export class ValidationsUseCases {
       if (!slotCurrentData) return;
 
       const isStatusChangingToOccupied =
-        slotRequest.status === SlotStatus.OCCUPIED &&
-        slotCurrentData.status !== SlotStatus.OCCUPIED;
+        slotRequest.status === SlotStatus.OCCUPIED && slotCurrentData.status !== SlotStatus.OCCUPIED;
 
       const isStatusChangingFromOccupied =
-        slotRequest.status !== SlotStatus.OCCUPIED &&
-        slotCurrentData.status === SlotStatus.OCCUPIED;
+        slotRequest.status !== SlotStatus.OCCUPIED && slotCurrentData.status === SlotStatus.OCCUPIED;
 
       const isChangingImportantAttributes =
         slotCurrentData.status === SlotStatus.OCCUPIED &&
@@ -220,11 +168,7 @@ export class ValidationsUseCases {
           slotCurrentData.benefitType !== slotRequest.benefitType ||
           slotCurrentData.amount !== slotRequest.amount);
 
-      if (
-        isStatusChangingToOccupied ||
-        isStatusChangingFromOccupied ||
-        isChangingImportantAttributes
-      ) {
+      if (isStatusChangingToOccupied || isStatusChangingFromOccupied || isChangingImportantAttributes) {
         throw new AppError(
           'SLOT_OCCUPIED',
           400,
@@ -268,16 +212,11 @@ export class ValidationsUseCases {
       >
     );
 
-    const slotsOccupiedDataRequest = slotsRequest.filter(
-      slotRequest => slotRequest.status === SlotStatus.OCCUPIED
-    );
+    const slotsOccupiedDataRequest = slotsRequest.filter(slotRequest => slotRequest.status === SlotStatus.OCCUPIED);
 
     slotsOccupiedDataRequest.forEach(slotRequest => {
       const scheduleDataSlotDatabase = scheduleDataMap[slotRequest.id];
-      if (
-        slotRequest.limitOfAssignments <
-        scheduleDataSlotDatabase.current_number_of_assignments
-      ) {
+      if (slotRequest.limitOfAssignments < scheduleDataSlotDatabase.current_number_of_assignments) {
         throw new AppError(
           'CANT_UPDATE_SLOT_SCHEDULES',
           400,

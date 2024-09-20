@@ -9,8 +9,7 @@ export class CreateDiscountNote {
   constructor(private readonly assignmentRepository: AssignmentRepository) {}
 
   async run(idAssignment: string): Promise<void> {
-    const assignment =
-      await this.assignmentRepository.getAssignmentById(idAssignment);
+    const assignment = await this.assignmentRepository.getAssignmentById(idAssignment);
 
     if (!assignment || assignment.status !== AssignmentStatus.ACCEPTED) {
       throw new AppError(
@@ -31,12 +30,7 @@ export class CreateDiscountNote {
     }
 
     if (assignment.discountNote) {
-      throw new AppError(
-        'DISCOUNT_NOTE_ALREADY_EXISTS',
-        400,
-        'Discount note already exists',
-        true
-      );
+      throw new AppError('DISCOUNT_NOTE_ALREADY_EXISTS', 400, 'Discount note already exists', true);
     }
 
     const discountNote = new DiscountNoteEntity(uuid(), idAssignment);

@@ -31,34 +31,20 @@ export class UpdateAssignmentLoanUseCase {
     },
     assignmentLoanId: string
   ): Promise<void> {
-    const assignmentLoanDataBase =
-      await this.assignmentRepository.getAssignmentLoanById(assignmentLoanId);
+    const assignmentLoanDataBase = await this.assignmentRepository.getAssignmentLoanById(assignmentLoanId);
 
-    if (
-      !assignmentLoanDataBase ||
-      assignmentLoanDataBase.status === AssignmentLoadStatus.INACTIVE
-    ) {
-      throw new AppError(
-        'ASSIGNMENT_LOAN_NOT_FOUND',
-        404,
-        'Assignment loan not found',
-        true
-      );
+    if (!assignmentLoanDataBase || assignmentLoanDataBase.status === AssignmentLoadStatus.INACTIVE) {
+      throw new AppError('ASSIGNMENT_LOAN_NOT_FOUND', 404, 'Assignment loan not found', true);
     }
 
-    await this.validations.validateIfVehiclesBelongToEmployee(
-      assignmentLoanDataBase.employee.id,
-      data.employee.vehicles
-    );
+    await this.validations.validateIfVehiclesBelongToEmployee(assignmentLoanDataBase.employee.id, data.employee.vehicles);
 
     await this.validations.validateIfVehiclesBelongToEmployee(
       assignmentLoanDataBase.employee.id,
       data.vehiclesForDelete.map(id => ({ id }))
     );
 
-    const vehicles = data.employee.vehicles.map(vehicle =>
-      VehicleEntity.fromPrimitive({ ...vehicle, id: vehicle.id ?? uuid() })
-    );
+    const vehicles = data.employee.vehicles.map(vehicle => VehicleEntity.fromPrimitive({ ...vehicle, id: vehicle.id ?? uuid() }));
 
     assignmentLoanDataBase.employee.vehicles = vehicles;
 
@@ -72,14 +58,8 @@ export class UpdateAssignmentLoanUseCase {
       assignmentLoanDataBase.status
     );
 
-    await this.validations.validateIfRangeOfDaysToAssignmentLoanIsValid(
-      data.startDateAssignment,
-      data.endDateAssignment
-    );
+    await this.validations.validateIfRangeOfDaysToAssignmentLoanIsValid(data.startDateAssignment, data.endDateAssignment);
 
-    await this.assignmentRepository.updateAssignmentLoan(
-      assignmentLoan,
-      data.vehiclesForDelete
-    );
+    await this.assignmentRepository.updateAssignmentLoan(assignmentLoan, data.vehiclesForDelete);
   }
 }

@@ -12,13 +12,7 @@ export class RoleEntity {
   readonly status: RoleStatus;
   resources: Resource[];
 
-  constructor(
-    id: string,
-    name: string,
-    description: string,
-    status: RoleStatus,
-    resources: Resource[]
-  ) {
+  constructor(id: string, name: string, description: string, status: RoleStatus, resources: Resource[]) {
     this.id = id;
     this.name = name;
     this.description = description;
@@ -42,13 +36,7 @@ export class RoleEntity {
       };
     });
 
-    return new RoleEntity(
-      plainData.id,
-      plainData.name,
-      plainData.description,
-      plainData.status,
-      resources
-    );
+    return new RoleEntity(plainData.id, plainData.name, plainData.description, plainData.status, resources);
   }
 
   toPrimitives() {

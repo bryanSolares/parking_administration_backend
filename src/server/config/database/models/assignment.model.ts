@@ -4,15 +4,7 @@ import { AssignmentStatus } from '@src/assignment/core/entities/assignment-entit
 
 export class AssignmentModel extends Model {}
 
-const assignmentStatus = [
-  'ASIGNADO',
-  'EN_PROGRESO',
-  'CANCELADO',
-  'RECHAZADO',
-  'ACEPTADO',
-  'BAJA_AUTOMATICA',
-  'BAJA_MANUAL'
-];
+const assignmentStatus = ['ASIGNADO', 'EN_PROGRESO', 'CANCELADO', 'RECHAZADO', 'ACEPTADO', 'BAJA_AUTOMATICA', 'BAJA_MANUAL'];
 
 AssignmentModel.init(
   {

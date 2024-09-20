@@ -2,21 +2,18 @@ import { Sequelize } from 'sequelize';
 import { logger } from '../logger/load-logger';
 import { config } from '../logger/load-envs';
 
-export const sequelize = new Sequelize(
-  `mysql://${config.DB_HOST}:${config.DB_PORT}/${config.DB_NAME}`,
-  {
-    dialect: 'mysql',
-    username: config.DB_USER,
-    password: config.DB_PASSWORD,
-    pool: {
-      max: 5,
-      min: 0,
-      acquire: 30000,
-      idle: 10000
-    },
-    logging: false
-  }
-);
+export const sequelize = new Sequelize(`mysql://${config.DB_HOST}:${config.DB_PORT}/${config.DB_NAME}`, {
+  dialect: 'mysql',
+  username: config.DB_USER,
+  password: config.DB_PASSWORD,
+  pool: {
+    max: 5,
+    min: 0,
+    acquire: 30000,
+    idle: 10000
+  },
+  logging: false
+});
 
 const syncDatabase = () => {
   return new Promise((resolve, reject) => {

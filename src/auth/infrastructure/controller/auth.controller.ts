@@ -12,12 +12,10 @@ export class AuthController {
   ) {}
 
   private setAuthCookies(response: Response, token: string, refresh: string) {
-    response
-      .cookie('token', `Bearer ${token}`, { httpOnly: true, secure: true })
-      .cookie('refresh_token', `Bearer ${refresh}`, {
-        httpOnly: true,
-        secure: true
-      });
+    response.cookie('token', `Bearer ${token}`, { httpOnly: true, secure: true }).cookie('refresh_token', `Bearer ${refresh}`, {
+      httpOnly: true,
+      secure: true
+    });
   }
 
   async login(request: Request, response: Response, next: NextFunction) {
@@ -71,11 +69,7 @@ export class AuthController {
 
   logout(_: Request, response: Response, next: NextFunction) {
     try {
-      response
-        .status(200)
-        .clearCookie('token')
-        .clearCookie('refresh_token')
-        .json({ message: 'Bye!' });
+      response.status(200).clearCookie('token').clearCookie('refresh_token').json({ message: 'Bye!' });
     } catch (error) {
       next(error);
     }

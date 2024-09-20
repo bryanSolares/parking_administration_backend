@@ -86,11 +86,7 @@ export class EmployeeEntity {
       primitiveData.address,
       primitiveData.email,
       primitiveData.phone,
-      primitiveData.vehicles
-        ? primitiveData.vehicles.map(vehicle =>
-            VehicleEntity.fromPrimitive(vehicle)
-          )
-        : [],
+      primitiveData.vehicles ? primitiveData.vehicles.map(vehicle => VehicleEntity.fromPrimitive(vehicle)) : [],
       primitiveData.accessToken,
       primitiveData.accessTokenStatus
     );

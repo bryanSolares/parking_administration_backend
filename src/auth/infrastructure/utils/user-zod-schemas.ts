@@ -9,8 +9,7 @@ export const userSchema = z.object({
   phone: z
     .string()
     .regex(/^\+\(50\d{1}\) \d{8}$/, {
-      message:
-        'Format phone number is +(5XX) XXXXXXXX, example: +(502) 45454545'
+      message: 'Format phone number is +(5XX) XXXXXXXX, example: +(502) 45454545'
     })
     .optional(),
   role: z.string().uuid()

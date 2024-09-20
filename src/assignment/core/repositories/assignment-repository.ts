@@ -23,10 +23,9 @@ export type FinderResultById = {
   assignmentLoan?: AssignmentLoadEntity;
 };
 
-export type FinderResultPreviousAssignment = Omit<
-  FinderResultById,
-  'tags' | 'discountNote' | 'assignmentLoan' | 'location'
-> & { deAssignment: DeAssignmentEntity };
+export type FinderResultPreviousAssignment = Omit<FinderResultById, 'tags' | 'discountNote' | 'assignmentLoan' | 'location'> & {
+  deAssignment: DeAssignmentEntity;
+};
 
 export type AssignmentFinderResult = Promise<{
   pageCounter: number;
@@ -49,39 +48,17 @@ export interface AssignmentRepository {
   createDeAssignment(deAssignment: DeAssignmentEntity): Promise<void>;
   createDiscountNote(discountNote: DiscountNoteEntity): Promise<void>;
   getDiscountNoteById(id: string): Promise<DiscountNoteEntity | null>;
-  updateStatusDiscountNote(
-    discountNoteId: string,
-    status: DiscountNodeStatusSignature
-  ): Promise<void>;
+  updateStatusDiscountNote(discountNoteId: string, status: DiscountNodeStatusSignature): Promise<void>;
   createAssignmentLoan(assignmentLoan: AssignmentLoadEntity): Promise<void>;
-  getAssignmentLoanByIdAssignment(
-    assignmentId: string
-  ): Promise<AssignmentLoadEntity | null>;
-  getAssignmentLoanById(
-    assignmentLoanId: string
-  ): Promise<AssignmentLoadEntity | null>;
+  getAssignmentLoanByIdAssignment(assignmentId: string): Promise<AssignmentLoadEntity | null>;
+  getAssignmentLoanById(assignmentLoanId: string): Promise<AssignmentLoadEntity | null>;
   deleteAssignmentLoan(assignmentLoanId: string): Promise<void>;
-  updateAssignmentLoan(
-    assignmentLoan: AssignmentLoadEntity,
-    vehiclesForDelete: string[]
-  ): Promise<void>;
-  updateAssignment(
-    assignment: AssignmentEntity,
-    vehicleIdsForDelete: string[]
-  ): Promise<void>;
+  updateAssignmentLoan(assignmentLoan: AssignmentLoadEntity, vehiclesForDelete: string[]): Promise<void>;
+  updateAssignment(assignment: AssignmentEntity, vehicleIdsForDelete: string[]): Promise<void>;
 
-  executeFunction(
-    functionName: ListOfFunctions,
-    parameters: string[]
-  ): Promise<ReturnType>;
+  executeFunction(functionName: ListOfFunctions, parameters: string[]): Promise<ReturnType>;
 
-  changeStatusAssignment(
-    assignmentId: string,
-    status: AssignmentStatus,
-    assignmentDate?: string
-  ): Promise<void>;
+  changeStatusAssignment(assignmentId: string, status: AssignmentStatus, assignmentDate?: string): Promise<void>;
 
-  getLastAssignmentInactiveBySlotId(
-    slotId: string
-  ): Promise<FinderResultPreviousAssignment | null>;
+  getLastAssignmentInactiveBySlotId(slotId: string): Promise<FinderResultPreviousAssignment | null>;
 }

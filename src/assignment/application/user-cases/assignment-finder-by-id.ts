@@ -9,12 +9,7 @@ export class AssignmentFinderById {
     const assignment = await this.assignmentRepository.getAssignmentById(id);
 
     if (!assignment) {
-      throw new AppError(
-        'ASSIGNMENT_NOT_FOUND',
-        404,
-        'Assignment not found',
-        true
-      );
+      throw new AppError('ASSIGNMENT_NOT_FOUND', 404, 'Assignment not found', true);
     }
 
     return assignment;

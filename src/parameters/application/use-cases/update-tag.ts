@@ -4,12 +4,7 @@ import { AppError } from '@src/server/config/err/AppError';
 export class UpdateTag {
   constructor(private readonly tagRepository: TagRepository) {}
 
-  async run(data: {
-    id: string;
-    name: string;
-    description: string;
-    status: 'ACTIVO' | 'INACTIVO';
-  }) {
+  async run(data: { id: string; name: string; description: string; status: 'ACTIVO' | 'INACTIVO' }) {
     const tag = await this.tagRepository.getById(data.id);
 
     if (!tag) {

@@ -2,9 +2,7 @@
 import { NotificationMailRepository } from '@assignment-module-core/repositories/notification-mail-repository';
 
 export class NotificationService {
-  constructor(
-    private readonly notificationMailRepository: NotificationMailRepository
-  ) {}
+  constructor(private readonly notificationMailRepository: NotificationMailRepository) {}
 
   createAssignmentNotification(
     owner: { name: string; email: string; token: string },
@@ -24,29 +22,17 @@ export class NotificationService {
     }
   ) {
     //owner
-    this.notificationMailRepository.assignmentNotification(
-      owner,
-      location,
-      scheduleAssignment
-    );
+    this.notificationMailRepository.assignmentNotification(owner, location, scheduleAssignment);
 
     if (guest && scheduleLoan) {
-      this.notificationMailRepository.assignmentGuestNotification(
-        owner,
-        guest,
-        location,
-        {
-          startDate: new Date(scheduleLoan.startDate).toLocaleDateString(
-            'es-GT',
-            {
-              timeZone: 'America/Guatemala'
-            }
-          ),
-          endDate: new Date(scheduleLoan.endDate).toLocaleDateString('es-GT', {
-            timeZone: 'America/Guatemala'
-          })
-        }
-      );
+      this.notificationMailRepository.assignmentGuestNotification(owner, guest, location, {
+        startDate: new Date(scheduleLoan.startDate).toLocaleDateString('es-GT', {
+          timeZone: 'America/Guatemala'
+        }),
+        endDate: new Date(scheduleLoan.endDate).toLocaleDateString('es-GT', {
+          timeZone: 'America/Guatemala'
+        })
+      });
     }
   }
 
@@ -57,10 +43,7 @@ export class NotificationService {
     });
   }
 
-  createDeAssignmentNotification(
-    owner: { name: string; email: string },
-    guest: { name: string; email: string } | null
-  ) {
+  createDeAssignmentNotification(owner: { name: string; email: string }, guest: { name: string; email: string } | null) {
     this.notificationMailRepository.deAssignmentOwnerNotification({
       name: owner.name,
       email: owner.email
@@ -97,12 +80,9 @@ export class NotificationService {
         slotNumber: location.slotNumber
       },
       {
-        startDate: new Date(scheduleLoan.startDate).toLocaleDateString(
-          'es-GT',
-          {
-            timeZone: 'America/Guatemala'
-          }
-        ),
+        startDate: new Date(scheduleLoan.startDate).toLocaleDateString('es-GT', {
+          timeZone: 'America/Guatemala'
+        }),
         endDate: new Date(scheduleLoan.endDate).toLocaleDateString('es-GT', {
           timeZone: 'America/Guatemala'
         })

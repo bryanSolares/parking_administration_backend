@@ -18,9 +18,7 @@ export class CreateUser {
     phone: string;
     role: RoleEntity | string;
   }) {
-    const roleDatabase = await this.roleRepository.getById(
-      (user.role || '') as string
-    );
+    const roleDatabase = await this.roleRepository.getById((user.role || '') as string);
 
     if (!roleDatabase) {
       throw new AppError('ROLE_NOT_FOUND', 404, 'Role not found', true);

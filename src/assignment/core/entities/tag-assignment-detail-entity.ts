@@ -9,16 +9,8 @@ export class TagAssignmentDetailEntity {
     this.tagId = tagId;
   }
 
-  static fromPrimitives(plainData: {
-    id: string;
-    assignmentId: string;
-    tagId: string;
-  }): TagAssignmentDetailEntity {
-    return new TagAssignmentDetailEntity(
-      plainData.id,
-      plainData.assignmentId,
-      plainData.tagId
-    );
+  static fromPrimitives(plainData: { id: string; assignmentId: string; tagId: string }): TagAssignmentDetailEntity {
+    return new TagAssignmentDetailEntity(plainData.id, plainData.assignmentId, plainData.tagId);
   }
 
   toPrimitives() {

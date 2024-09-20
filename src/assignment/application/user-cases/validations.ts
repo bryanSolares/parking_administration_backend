@@ -36,10 +36,7 @@ export class Validations {
     await this.validateIfSlotIsValid(data.slot);
     this.validateIfTagsAreValid(data.tags);
     await this.validateIfCanCreateAssignmentInSlot(data.slot!);
-    await this.validateIfVehiclesBelongToEmployee(
-      data.employee.id,
-      data.employee.vehicles
-    );
+    await this.validateIfVehiclesBelongToEmployee(data.employee.id, data.employee.vehicles);
     await this.validateIfEmployeeHasAnActiveAssignment(data.employee.id);
   }
 
@@ -50,10 +47,7 @@ export class Validations {
     }[];
   }) {
     await this.validateIfEmployeeHasAnActiveAssignment(employee.id);
-    await this.validateIfVehiclesBelongToEmployee(
-      employee.id,
-      employee.vehicles
-    );
+    await this.validateIfVehiclesBelongToEmployee(employee.id, employee.vehicles);
   }
 
   private async validateIfSlotIsValid(slot: SlotEntity | null) {
@@ -62,24 +56,11 @@ export class Validations {
     }
 
     if (slot.status === SlotStatus.INACTIVE) {
-      throw new AppError(
-        'SLOT_NOT_AVAILABLE',
-        400,
-        'Slot is not available',
-        true
-      );
+      throw new AppError('SLOT_NOT_AVAILABLE', 400, 'Slot is not available', true);
     }
 
-    if (
-      slot.slotType === SlotType.SIMPLE &&
-      slot.status === SlotStatus.OCCUPIED
-    ) {
-      throw new AppError(
-        'SLOT_OCCUPIED',
-        400,
-        'Slot is occupied, you can not create an assignment in this slot',
-        true
-      );
+    if (slot.slotType === SlotType.SIMPLE && slot.status === SlotStatus.OCCUPIED) {
+      throw new AppError('SLOT_OCCUPIED', 400, 'Slot is occupied, you can not create an assignment in this slot', true);
     }
 
     const location = await this.locationRepository.getLocationBySlotId(slot.id);
@@ -89,132 +70,70 @@ export class Validations {
     }
 
     if (location.status === LocationStatus.INACTIVE) {
-      throw new AppError(
-        'LOCATION_NOT_AVAILABLE',
-        400,
-        'You can not create an assignment if the location is inactive',
-        true
-      );
+      throw new AppError('LOCATION_NOT_AVAILABLE', 400, 'You can not create an assignment if the location is inactive', true);
     }
   }
 
   private async validateIfCanCreateAssignmentInSlot(slot: SlotEntity) {
-    if (
-      slot.slotType === SlotType.MULTIPLE &&
-      slot.status !== SlotStatus.INACTIVE
-    ) {
-      const canCreateMoreAssignments =
-        await this.assignmentRepository.executeFunction(
-          ListOfFunctions.FN_VERIFY_IF_CAN_CREATE_MORE_ASSIGNMENTS,
-          [slot.id]
-        );
+    if (slot.slotType === SlotType.MULTIPLE && slot.status !== SlotStatus.INACTIVE) {
+      const canCreateMoreAssignments = await this.assignmentRepository.executeFunction(
+        ListOfFunctions.FN_VERIFY_IF_CAN_CREATE_MORE_ASSIGNMENTS,
+        [slot.id]
+      );
       if (!canCreateMoreAssignments) {
-        throw new AppError(
-          'CAN_NOT_CREATE_MORE_ASSIGNMENTS',
-          400,
-          'You can not create more assignments in this slot',
-          true
-        );
+        throw new AppError('CAN_NOT_CREATE_MORE_ASSIGNMENTS', 400, 'You can not create more assignments in this slot', true);
       }
     }
   }
 
   private async validateIfEmployeeHasAnActiveAssignment(employeeId: string) {
     if (employeeId) {
-      const employeeHasActiveAssignment =
-        await this.assignmentRepository.executeFunction(
-          ListOfFunctions.FN_EMPLOYEE_HAS_AN_ACTIVE_ASSIGNMENT,
-          [employeeId]
-        );
+      const employeeHasActiveAssignment = await this.assignmentRepository.executeFunction(
+        ListOfFunctions.FN_EMPLOYEE_HAS_AN_ACTIVE_ASSIGNMENT,
+        [employeeId]
+      );
 
       if (employeeHasActiveAssignment) {
-        throw new AppError(
-          'EMPLOYEE_HAS_AN_ACTIVE_ASSIGNMENT',
-          400,
-          'Employee has an active assignment',
-          true
-        );
+        throw new AppError('EMPLOYEE_HAS_AN_ACTIVE_ASSIGNMENT', 400, 'Employee has an active assignment', true);
       }
     }
   }
 
-  public async validateIfVehiclesBelongToEmployee(
-    employeeId: string,
-    vehiclesRequest: { id: string }[]
-  ) {
-    if (
-      !employeeId &&
-      vehiclesRequest.some(vehicle => vehicle.id && /\w+/.test(vehicle.id))
-    ) {
-      throw new AppError(
-        'VEHICLE_NOT_VALID',
-        400,
-        `You cannot add vehicles identified to a new employee.`,
-        true
-      );
+  public async validateIfVehiclesBelongToEmployee(employeeId: string, vehiclesRequest: { id: string }[]) {
+    if (!employeeId && vehiclesRequest.some(vehicle => vehicle.id && /\w+/.test(vehicle.id))) {
+      throw new AppError('VEHICLE_NOT_VALID', 400, `You cannot add vehicles identified to a new employee.`, true);
     }
 
     if (employeeId) {
-      const employeeDatabase =
-        await this.employeeRepository.getEmployeeByIdFromDatabase(employeeId);
+      const employeeDatabase = await this.employeeRepository.getEmployeeByIdFromDatabase(employeeId);
 
       if (!employeeDatabase) {
-        throw new AppError(
-          'EMPLOYEE_NOT_FOUND',
-          400,
-          'Employee not found',
-          true
-        );
+        throw new AppError('EMPLOYEE_NOT_FOUND', 400, 'Employee not found', true);
       }
 
-      const vehicles = new Set(
-        employeeDatabase.vehicles.map(vehicle => vehicle.id)
-      );
+      const vehicles = new Set(employeeDatabase.vehicles.map(vehicle => vehicle.id));
 
       vehiclesRequest.forEach(vehicle => {
         if (vehicle && vehicle.id && !vehicles.has(vehicle.id)) {
-          throw new AppError(
-            'VEHICLE_NOT_FOUND',
-            400,
-            `The vehicle with id ${vehicle.id} does not belong to the employee`,
-            true
-          );
+          throw new AppError('VEHICLE_NOT_FOUND', 400, `The vehicle with id ${vehicle.id} does not belong to the employee`, true);
         }
       });
     }
   }
 
-  public validateIfTagsAreValid(tags: {
-    request: string[];
-    database: TagEntity[] | [];
-  }) {
+  public validateIfTagsAreValid(tags: { request: string[]; database: TagEntity[] | [] }) {
     if (tags.request.length !== tags.database.length) {
-      throw new AppError(
-        'TAGS_NOT_VALID',
-        400,
-        'Tags are not valid or not exist',
-        true
-      );
+      throw new AppError('TAGS_NOT_VALID', 400, 'Tags are not valid or not exist', true);
     }
   }
 
-  public async validateIfRangeOfDaysToAssignmentLoanIsValid(
-    start: string,
-    end: string
-  ) {
+  public async validateIfRangeOfDaysToAssignmentLoanIsValid(start: string, end: string) {
     const diffDaysToAssignmentLoan = diffDays(end, start);
 
-    const setting = await this.settingRepository.getParameterByKey(
-      SettingKeys.MAX_DAYS_TO_ASSIGNMENT_LOAN
-    );
+    const setting = await this.settingRepository.getParameterByKey(SettingKeys.MAX_DAYS_TO_ASSIGNMENT_LOAN);
 
     if (!setting) {
-      throw new AppError(
-        'SETTING_NOT_FOUND',
-        404,
-        'Data max days to assignment loan not found',
-        true
-      );
+      throw new AppError('SETTING_NOT_FOUND', 404, 'Data max days to assignment loan not found', true);
     }
 
     if (diffDaysToAssignmentLoan > Number(setting.settingValue)) {

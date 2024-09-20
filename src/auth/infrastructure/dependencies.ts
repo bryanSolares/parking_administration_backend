@@ -42,22 +42,9 @@ const finderByIdRole = new FinderByIdRole(roleRepository);
 const finderRole = new FinderRole(roleRepository);
 const finderResources = new FinderResource(roleRepository);
 
-const userController = new UserController(
-  createUser,
-  updateUser,
-  deleteUser,
-  finderById,
-  finderUser
-);
+const userController = new UserController(createUser, updateUser, deleteUser, finderById, finderUser);
 
-const roleController = new RoleController(
-  createRole,
-  updateRole,
-  deleteRole,
-  finderByIdRole,
-  finderRole,
-  finderResources
-);
+const roleController = new RoleController(createRole, updateRole, deleteRole, finderByIdRole, finderRole, finderResources);
 
 const authController = new AuthController(authUseCase, refreshTokenUseCase);
 

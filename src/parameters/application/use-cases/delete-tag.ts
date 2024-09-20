@@ -10,16 +10,10 @@ export class DeleteTag {
       throw new AppError('TAG_NOT_FOUND', 404, 'Tag not found', true);
     }
 
-    const tagWithAssignmentRelation =
-      await this.tagRepository.getDetailTagsWithAssignment(id);
+    const tagWithAssignmentRelation = await this.tagRepository.getDetailTagsWithAssignment(id);
 
     if (tagWithAssignmentRelation) {
-      throw new AppError(
-        'TAG_NOT_DELETABLE',
-        400,
-        'You can not delete a tag related to an assignment',
-        true
-      );
+      throw new AppError('TAG_NOT_DELETABLE', 400, 'You can not delete a tag related to an assignment', true);
     }
 
     return this.tagRepository.delete(id);

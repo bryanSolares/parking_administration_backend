@@ -6,18 +6,8 @@ export class SettingEntity {
     public readonly description: string
   ) {}
 
-  static fromPrimitives(plainData: {
-    id: string;
-    settingKey: string;
-    settingValue: string;
-    description: string;
-  }) {
-    return new SettingEntity(
-      plainData.id,
-      plainData.settingKey,
-      plainData.settingValue,
-      plainData.description
-    );
+  static fromPrimitives(plainData: { id: string; settingKey: string; settingValue: string; description: string }) {
+    return new SettingEntity(plainData.id, plainData.settingKey, plainData.settingValue, plainData.description);
   }
 
   toPrimitives() {

@@ -67,11 +67,7 @@ const discountNoteId = z.object({
   discount_note_id: z.string().uuid()
 });
 
-export const assignmentIdSchema = z.union([
-  assignmentId,
-  assignmentLoanId,
-  discountNoteId
-]);
+export const assignmentIdSchema = z.union([assignmentId, assignmentLoanId, discountNoteId]);
 
 export const createDeAssignmentBodySchema = z.object({
   reason: z.string(),

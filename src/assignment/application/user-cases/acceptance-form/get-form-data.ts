@@ -11,23 +11,13 @@ export class GetFormDataOfAcceptanceUseCase {
   ) {}
 
   async run(assignmentId: string) {
-    const assignment =
-      await this.assignmentRepository.getAssignmentById(assignmentId);
+    const assignment = await this.assignmentRepository.getAssignmentById(assignmentId);
 
     if (!assignment) {
-      throw new AppError(
-        'ASSIGNMENT_NOT_FOUND',
-        404,
-        'Assignment not found',
-        true
-      );
+      throw new AppError('ASSIGNMENT_NOT_FOUND', 404, 'Assignment not found', true);
     }
 
-    if (
-      ![AssignmentStatus.ASSIGNED, AssignmentStatus.IN_PROGRESS].some(
-        status => status === assignment.status
-      )
-    ) {
+    if (![AssignmentStatus.ASSIGNED, AssignmentStatus.IN_PROGRESS].some(status => status === assignment.status)) {
       throw new AppError(
         'ASSIGNMENT_NOT_VALID',
         400,
@@ -36,26 +26,15 @@ export class GetFormDataOfAcceptanceUseCase {
       );
     }
 
-    const signatures = await this.settingRepository.getParameterByKey(
-      SettingKeys.SIGNATURES_FOR_ACCEPTANCE_FORM
-    );
+    const signatures = await this.settingRepository.getParameterByKey(SettingKeys.SIGNATURES_FOR_ACCEPTANCE_FORM);
 
     if (!signatures) {
-      throw new AppError(
-        'SETTING_NOT_FOUND',
-        400,
-        'Data signatures for acceptance form not found',
-        true
-      );
+      throw new AppError('SETTING_NOT_FOUND', 400, 'Data signatures for acceptance form not found', true);
     }
 
-    const { id, employeeCode, name, phone, email, subManagement, management1 } =
-      assignment.employee;
+    const { id, employeeCode, name, phone, email, subManagement, management1 } = assignment.employee;
 
-    const previousAssignment =
-      await this.assignmentRepository.getLastAssignmentInactiveBySlotId(
-        assignment.location.slots[0].id
-      );
+    const previousAssignment = await this.assignmentRepository.getLastAssignmentInactiveBySlotId(assignment.location.slots[0].id);
 
     return {
       assignmentId: assignment.id,
@@ -69,9 +48,7 @@ export class GetFormDataOfAcceptanceUseCase {
         email,
         subManagement,
         management1,
-        vehicles: assignment.employee.vehicles
-          ? assignment.employee.vehicles.map(vehicle => vehicle.toPrimitive())
-          : []
+        vehicles: assignment.employee.vehicles ? assignment.employee.vehicles.map(vehicle => vehicle.toPrimitive()) : []
       },
       previousEmployee: previousAssignment
         ? {
@@ -92,9 +69,7 @@ export class GetFormDataOfAcceptanceUseCase {
               subManagement: previousAssignment.employee.subManagement,
               management1: previousAssignment.employee.management1,
               vehicles: previousAssignment.employee.vehicles
-                ? previousAssignment.employee.vehicles.map(vehicle =>
-                    vehicle.toPrimitive()
-                  )
+                ? previousAssignment.employee.vehicles.map(vehicle => vehicle.toPrimitive())
                 : []
             },
             deAssignment: previousAssignment.deAssignment.toPrimitives()

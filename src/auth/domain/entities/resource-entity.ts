@@ -9,16 +9,8 @@ export class ResourceEntity {
     this.description = description;
   }
 
-  static fromPrimitives(plainData: {
-    id: string;
-    slug: string;
-    description: string;
-  }): ResourceEntity {
-    return new ResourceEntity(
-      plainData.id,
-      plainData.slug,
-      plainData.description
-    );
+  static fromPrimitives(plainData: { id: string; slug: string; description: string }): ResourceEntity {
+    return new ResourceEntity(plainData.id, plainData.slug, plainData.description);
   }
 
   toPrimitives() {

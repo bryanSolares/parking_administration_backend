@@ -86,16 +86,8 @@ export class SlotEntity {
     };
   }
 
-  private validateData(data: {
-    slotType: SlotType;
-    limitOfAssignments: number;
-    benefitType: BenefitType;
-    amount: number;
-  }) {
-    if (
-      data.slotType === SlotType.SIMPLE &&
-      (data.limitOfAssignments > 1 || data.limitOfAssignments < 1)
-    ) {
+  private validateData(data: { slotType: SlotType; limitOfAssignments: number; benefitType: BenefitType; amount: number }) {
+    if (data.slotType === SlotType.SIMPLE && (data.limitOfAssignments > 1 || data.limitOfAssignments < 1)) {
       throw new AppError(
         'ENTITY_VALIDATIONS',
         400,
@@ -113,11 +105,7 @@ export class SlotEntity {
       );
     }
 
-    if (
-      (data.benefitType === BenefitType.DISCOUNT ||
-        data.benefitType === BenefitType.COMPLEMENT) &&
-      data.amount <= 0
-    ) {
+    if ((data.benefitType === BenefitType.DISCOUNT || data.benefitType === BenefitType.COMPLEMENT) && data.amount <= 0) {
       throw new AppError(
         'ENTITY_VALIDATIONS',
         400,
@@ -126,10 +114,7 @@ export class SlotEntity {
       );
     }
 
-    if (
-      data.benefitType === BenefitType.NO_COST &&
-      (data.amount > 0 || data.amount < 0)
-    ) {
+    if (data.benefitType === BenefitType.NO_COST && (data.amount > 0 || data.amount < 0)) {
       throw new AppError(
         'ENTITY_VALIDATIONS',
         400,

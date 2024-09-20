@@ -32,23 +32,15 @@ export class UpdateAssignmentUseCase {
     },
     assignmentId: string
   ): Promise<void> {
-    const assignmentDatabase =
-      await this.assignmentRepository.getAssignmentById(assignmentId);
+    const assignmentDatabase = await this.assignmentRepository.getAssignmentById(assignmentId);
     if (!assignmentDatabase) {
-      throw new AppError(
-        'ASSIGNMENT_NOT_FOUND',
-        404,
-        'Assignment not found',
-        true
-      );
+      throw new AppError('ASSIGNMENT_NOT_FOUND', 404, 'Assignment not found', true);
     }
 
     if (
-      ![
-        AssignmentStatus.ASSIGNED,
-        AssignmentStatus.IN_PROGRESS,
-        AssignmentStatus.ACCEPTED
-      ].some(status => status === assignmentDatabase.status)
+      ![AssignmentStatus.ASSIGNED, AssignmentStatus.IN_PROGRESS, AssignmentStatus.ACCEPTED].some(
+        status => status === assignmentDatabase.status
+      )
     ) {
       throw new AppError(
         'INACTIVE_ASSIGNMENT',
@@ -58,10 +50,7 @@ export class UpdateAssignmentUseCase {
       );
     }
 
-    await this.validations.validateIfVehiclesBelongToEmployee(
-      assignmentDatabase.employee.id,
-      data.employee.vehicles
-    );
+    await this.validations.validateIfVehiclesBelongToEmployee(assignmentDatabase.employee.id, data.employee.vehicles);
 
     await this.validations.validateIfVehiclesBelongToEmployee(
       assignmentDatabase.employee.id,
@@ -69,9 +58,7 @@ export class UpdateAssignmentUseCase {
     );
 
     //TODO: Refactor this
-    const tagsDatabase = await this.tagRepository.getTagsByIds(
-      data.tags.map(id => id)
-    );
+    const tagsDatabase = await this.tagRepository.getTagsByIds(data.tags.map(id => id));
     this.validations.validateIfTagsAreValid({
       database: tagsDatabase,
       request: data.tags.map(id => id)
@@ -91,9 +78,6 @@ export class UpdateAssignmentUseCase {
       tagsDatabase
     );
 
-    await this.assignmentRepository.updateAssignment(
-      assignment,
-      data.vehicleIdsForDelete
-    );
+    await this.assignmentRepository.updateAssignment(assignment, data.vehicleIdsForDelete);
   }
 }

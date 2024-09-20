@@ -21,11 +21,7 @@ export class AssignmentLoadEntity {
     public readonly assignmentDate: string,
     public readonly status: AssignmentLoadStatus
   ) {
-    this.validateDateOfAssignmentLoan(
-      startDateAssignment,
-      endDateAssignment,
-      assignmentDate
-    );
+    this.validateDateOfAssignmentLoan(startDateAssignment, endDateAssignment, assignmentDate);
     this.id = id;
     this.assignmentId = assignmentId;
     this.employee = employee;
@@ -92,60 +88,31 @@ export class AssignmentLoadEntity {
     };
   }
 
-  private validateDateOfAssignmentLoan(
-    start: string,
-    end: string,
-    assignmentDate: string
-  ) {
+  private validateDateOfAssignmentLoan(start: string, end: string, assignmentDate: string) {
     this.validateFormatDate(start);
     this.validateFormatDate(end);
     this.validateFormatDate(assignmentDate);
 
     if (isBefore(start, assignmentDate)) {
-      throw new AppError(
-        'INVALID_START_DATE',
-        400,
-        'Start date must be greater or equal than today',
-        true
-      );
+      throw new AppError('INVALID_START_DATE', 400, 'Start date must be greater or equal than today', true);
     }
 
     if (isBefore(end, start)) {
-      throw new AppError(
-        'INVALID_END_DATE',
-        400,
-        'End date must be greater than start date',
-        true
-      );
+      throw new AppError('INVALID_END_DATE', 400, 'End date must be greater than start date', true);
     }
 
     if (!isBefore(assignmentDate, end)) {
-      throw new AppError(
-        'INVALID_END_DATE',
-        400,
-        'End date must be greater than today',
-        true
-      );
+      throw new AppError('INVALID_END_DATE', 400, 'End date must be greater than today', true);
     }
 
     if (isEqual(start, end)) {
-      throw new AppError(
-        'INVALID_START_AND_END_DATE',
-        400,
-        'Start date must be less than end date',
-        true
-      );
+      throw new AppError('INVALID_START_AND_END_DATE', 400, 'Start date must be less than end date', true);
     }
   }
 
   private validateFormatDate(date: string) {
     if (!DATE_FORMAT_PATTERN.test(date)) {
-      throw new AppError(
-        'INVALID_DATE_FORMAT',
-        400,
-        'Date format must be YYYY-MM-DD',
-        true
-      );
+      throw new AppError('INVALID_DATE_FORMAT', 400, 'Date format must be YYYY-MM-DD', true);
     }
 
     try {

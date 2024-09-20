@@ -3,10 +3,7 @@ import { z, ZodError } from 'zod';
 
 type ValidateOption = 'body' | 'params' | 'query';
 
-export const validateRequest = (
-  schema: z.ZodTypeAny,
-  validateOf: ValidateOption
-) => {
+export const validateRequest = (schema: z.ZodTypeAny, validateOf: ValidateOption) => {
   return (req: Request, res: Response, next: NextFunction) => {
     try {
       schema.parse(req[validateOf]);

@@ -39,12 +39,7 @@ export class CreateLocation {
         throw error;
       }
 
-      throw new AppError(
-        'UNKNOWN_ERROR',
-        500,
-        'Error not identified on create location use case',
-        false
-      );
+      throw new AppError('UNKNOWN_ERROR', 500, 'Error not identified on create location use case', false);
     }
   }
 }

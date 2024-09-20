@@ -47,39 +47,20 @@ export class CreateAssignmentLoan {
     },
     assignmentId: string
   ) {
-    const assignment =
-      await this.assignmentRepository.getAssignmentById(assignmentId);
+    const assignment = await this.assignmentRepository.getAssignmentById(assignmentId);
 
     if (!assignment) {
-      throw new AppError(
-        'ASSIGNMENT_NOT_FOUND',
-        404,
-        'Assignment not found',
-        true
-      );
+      throw new AppError('ASSIGNMENT_NOT_FOUND', 404, 'Assignment not found', true);
     }
 
     if (assignment.status !== AssignmentStatus.ACCEPTED) {
-      throw new AppError(
-        'INVALID_ASSIGNMENT',
-        400,
-        'This assignment is not accepted, status is not valid',
-        true
-      );
+      throw new AppError('INVALID_ASSIGNMENT', 400, 'This assignment is not accepted, status is not valid', true);
     }
 
-    const presentAssignmentLoan =
-      await this.assignmentRepository.getAssignmentLoanByIdAssignment(
-        assignmentId
-      );
+    const presentAssignmentLoan = await this.assignmentRepository.getAssignmentLoanByIdAssignment(assignmentId);
 
     if (presentAssignmentLoan) {
-      throw new AppError(
-        'ASSIGNMENT_LOAN_ALREADY_EXISTS',
-        400,
-        'The assignment already has an active loan',
-        true
-      );
+      throw new AppError('ASSIGNMENT_LOAN_ALREADY_EXISTS', 400, 'The assignment already has an active loan', true);
     }
 
     await this.validations.validateIfCanCreateAssignmentLoan(data.employee);
@@ -107,10 +88,7 @@ export class CreateAssignmentLoan {
       AssignmentLoadStatus.ACTIVE
     );
 
-    await this.validations.validateIfRangeOfDaysToAssignmentLoanIsValid(
-      data.startDateAssignment,
-      data.endDateAssignment
-    );
+    await this.validations.validateIfRangeOfDaysToAssignmentLoanIsValid(data.startDateAssignment, data.endDateAssignment);
 
     await this.assignmentRepository.createAssignmentLoan(assignmentLoan);
 

@@ -1,27 +1,15 @@
 import { Model } from 'sequelize';
 import { DataTypes } from 'sequelize';
 import { sequelize } from '../sequelize';
-import {
-  BenefitType,
-  SlotStatus,
-  SlotType
-} from '@src/location/core/entities/slot-entity';
+import { BenefitType, SlotStatus, SlotType } from '@src/location/core/entities/slot-entity';
 import { VehicleType } from '../../../../location/core/entities/slot-entity';
 
 export class SlotModel extends Model {}
 
 const slotType = [SlotType.SIMPLE, SlotType.MULTIPLE];
 const vehicleType = [VehicleType.CAR, VehicleType.CYCLE, VehicleType.TRUCK];
-const benefitType = [
-  BenefitType.NO_COST,
-  BenefitType.COMPLEMENT,
-  BenefitType.DISCOUNT
-];
-const statusSlot = [
-  SlotStatus.ACTIVE,
-  SlotStatus.INACTIVE,
-  SlotStatus.OCCUPIED
-];
+const benefitType = [BenefitType.NO_COST, BenefitType.COMPLEMENT, BenefitType.DISCOUNT];
+const statusSlot = [SlotStatus.ACTIVE, SlotStatus.INACTIVE, SlotStatus.OCCUPIED];
 
 SlotModel.init(
   {

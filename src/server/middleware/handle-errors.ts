@@ -7,12 +7,7 @@ import { NextFunction } from 'express';
 import { AppError } from '../config/err/AppError';
 import { logger } from '@config/logger/load-logger';
 
-export const handleErrors = (
-  err: ErrorRequestHandler | AppError,
-  req: Request,
-  res: Response,
-  next: NextFunction
-) => {
+export const handleErrors = (err: ErrorRequestHandler | AppError, req: Request, res: Response, next: NextFunction) => {
   console.log(err);
   if (err instanceof AppError) {
     if (err.isOperational) {

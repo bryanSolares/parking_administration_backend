@@ -50,30 +50,17 @@ export class UpdateLocation {
         slotsToDelete: new Set(slotsToDelete)
       });
 
-      await this.locationRepository.updateLocation(
-        locationEntity,
-        slotsToDelete
-      );
+      await this.locationRepository.updateLocation(locationEntity, slotsToDelete);
     } catch (error) {
       if (error instanceof ForeignKeyConstraintError) {
-        throw new AppError(
-          'FOREING_KEY_CONSTRAINT',
-          400,
-          'You can not delete slots with assignment or schedule',
-          true
-        );
+        throw new AppError('FOREING_KEY_CONSTRAINT', 400, 'You can not delete slots with assignment or schedule', true);
       }
 
       if (error instanceof AppError) {
         throw error;
       }
       console.log(error);
-      throw new AppError(
-        'UNKNOWN_ERROR',
-        500,
-        'Error not identified on update location use case',
-        false
-      );
+      throw new AppError('UNKNOWN_ERROR', 500, 'Error not identified on update location use case', false);
     }
   }
 }

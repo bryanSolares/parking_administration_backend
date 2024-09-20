@@ -1,10 +1,5 @@
 import { LocationEntity } from '../entities/location-entity';
-import {
-  BenefitType,
-  SlotEntity,
-  SlotType,
-  VehicleType
-} from '../entities/slot-entity';
+import { BenefitType, SlotEntity, SlotType, VehicleType } from '../entities/slot-entity';
 
 export interface LocationFinderResultWithStatusCounterSlots {
   id: string;
@@ -54,31 +49,19 @@ export type TrendDataType = 'daily' | 'weekly' | 'monthly';
 
 export interface LocationRepository {
   createLocation(location: LocationEntity): Promise<void>;
-  updateLocation(
-    location: LocationEntity,
-    slotsToDelete: Set<string>
-  ): Promise<void>;
+  updateLocation(location: LocationEntity, slotsToDelete: Set<string>): Promise<void>;
   deleteLocation(id: string): Promise<void>;
   getLocationById(id: string): Promise<LocationEntity | null>;
-  getLocations(
-    limit: number,
-    page: number
-  ): Promise<LocationFinderResult | null>;
+  getLocations(limit: number, page: number): Promise<LocationFinderResult | null>;
   getSlotById(id: string): Promise<SlotEntity | null>;
   getLocationBySlotId(slotId: string): Promise<LocationEntity | null>;
   executeFunction<TypeFunctionResult = boolean | number>(
     functionName: FunctionNames,
     params: string[]
   ): Promise<TypeFunctionResult>;
-  callProcedure<TypeProcedureResult>(
-    procedureName: ProcedureNames,
-    params: string[]
-  ): Promise<TypeProcedureResult>;
+  callProcedure<TypeProcedureResult>(procedureName: ProcedureNames, params: string[]): Promise<TypeProcedureResult>;
   overviewData(): Promise<OverviewDataResult>;
   trendData(type: TrendDataType): Promise<TrendDataResult[] | []>;
 
-  getAvailableSlotsByTypeVehicleAndLocationId(
-    locationId: string,
-    vehicleType: VehicleType
-  ): Promise<ResponseAvailableSlots[]>;
+  getAvailableSlotsByTypeVehicleAndLocationId(locationId: string, vehicleType: VehicleType): Promise<ResponseAvailableSlots[]>;
 }

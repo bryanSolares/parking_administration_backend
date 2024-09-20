@@ -20,9 +20,7 @@ export class UpdateUser {
     role: RoleEntity | string;
   }) {
     const userDatabase = await this.userRepository.getById(user.id);
-    const roleDatabase = await this.roleRepository.getById(
-      (user.role || '') as string
-    );
+    const roleDatabase = await this.roleRepository.getById((user.role || '') as string);
 
     if (!userDatabase) {
       throw new AppError('USER_NOT_FOUND', 404, 'User not found', true);

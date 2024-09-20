@@ -9,12 +9,7 @@ export const validateAuth =
       const tokenBearer = request.cookies[cookie] as string;
 
       if (!tokenBearer) {
-        throw new AppError(
-          'AUTHORIZATION_NOT_PROVIDED',
-          401,
-          'Token not provided',
-          true
-        );
+        throw new AppError('AUTHORIZATION_NOT_PROVIDED', 401, 'Token not provided', true);
       }
       const tokenHeader = tokenBearer?.split(' ')[1];
       if (!validateToken(tokenHeader)) {

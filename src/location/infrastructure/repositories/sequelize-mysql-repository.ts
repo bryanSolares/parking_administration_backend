@@ -30,12 +30,7 @@ import { TrendDataType } from '@location-module-core/repositories/location-repos
 import { LocationFinderResult } from '@location-module-core/repositories/location-repository';
 
 import { LocationEntity } from '@location-module-core/entities/location-entity';
-import {
-  BenefitType,
-  SlotEntity,
-  SlotType,
-  VehicleType
-} from '@location-module-core/entities/slot-entity';
+import { BenefitType, SlotEntity, SlotType, VehicleType } from '@location-module-core/entities/slot-entity';
 import { SlotStatus } from '@location-module-core/entities/slot-entity';
 import { ParkingTrendsModel } from '@src/server/config/database/models/parking/parking-trends';
 
@@ -69,10 +64,7 @@ export class SequelizeMYSQLLocationRepository implements LocationRepository {
     }
   }
 
-  async updateLocation(
-    location: LocationEntity,
-    slotsToDelete: Set<string>
-  ): Promise<void> {
+  async updateLocation(location: LocationEntity, slotsToDelete: Set<string>): Promise<void> {
     let transaction: Transaction | null = null;
     try {
       transaction = await sequelize.transaction();
@@ -80,16 +72,7 @@ export class SequelizeMYSQLLocationRepository implements LocationRepository {
       await LocationModel.update(location, {
         where: { id: location.id },
         transaction,
-        fields: [
-          'name',
-          'address',
-          'contactReference',
-          'phone',
-          'email',
-          'comments',
-          'numberOfIdentifier',
-          'status'
-        ]
+        fields: ['name', 'address', 'contactReference', 'phone', 'email', 'comments', 'numberOfIdentifier', 'status']
       });
 
       // Upsert Slots
@@ -169,10 +152,7 @@ export class SequelizeMYSQLLocationRepository implements LocationRepository {
     });
   }
 
-  async getLocations(
-    limit: number = 20,
-    page: number = 1
-  ): Promise<LocationFinderResult | null> {
+  async getLocations(limit: number = 20, page: number = 1): Promise<LocationFinderResult | null> {
     const locationsCounter = await LocationModel.count();
     const allPages = Math.ceil(locationsCounter / limit);
     const offset = (page - 1) * limit;
@@ -265,9 +245,7 @@ export class SequelizeMYSQLLocationRepository implements LocationRepository {
     functionName: FunctionNames,
     params: string[]
   ): Promise<TypeFunctionResult> {
-    const paramPlaceholders = params
-      .map((_, index) => `:param${index}`)
-      .join(',');
+    const paramPlaceholders = params.map((_, index) => `:param${index}`).join(',');
     const query = `SELECT ${functionName}(${paramPlaceholders})`;
 
     const paramReplacements = params.reduce(
@@ -288,13 +266,8 @@ export class SequelizeMYSQLLocationRepository implements LocationRepository {
     return Object.values(resultFunction)[0] as TypeFunctionResult;
   }
 
-  async callProcedure<TypeProcedureResult>(
-    procedureName: ProcedureNames,
-    params: string[]
-  ): Promise<TypeProcedureResult> {
-    const paramPlaceholders = params
-      .map((_, index) => `:param${index}`)
-      .join(',');
+  async callProcedure<TypeProcedureResult>(procedureName: ProcedureNames, params: string[]): Promise<TypeProcedureResult> {
+    const paramPlaceholders = params.map((_, index) => `:param${index}`).join(',');
     const query = `call ${procedureName}(${paramPlaceholders})`;
 
     const paramReplacements = params.reduce(
@@ -353,10 +326,7 @@ export class SequelizeMYSQLLocationRepository implements LocationRepository {
     const baseAttributes: FindAttributeOptions | string = [
       [sequelize.fn('SUM', sequelize.col('total_slots')), 'totalSlots'],
       [sequelize.fn('SUM', sequelize.col('available_slots')), 'availableSlots'],
-      [
-        sequelize.fn('SUM', sequelize.col('unavailable_slots')),
-        'unavailableSlots'
-      ],
+      [sequelize.fn('SUM', sequelize.col('unavailable_slots')), 'unavailableSlots'],
       [sequelize.fn('SUM', sequelize.col('occupied_slots')), 'occupiedSlots']
     ];
 
@@ -365,9 +335,7 @@ export class SequelizeMYSQLLocationRepository implements LocationRepository {
         startDate: format(addDay(today, -7), 'YYYY-MM-DD', 'en'),
         endDate: format(today, 'YYYY-MM-DD', 'en')
       };
-      attributes = [
-        [sequelize.fn('DATE', sequelize.col('date')), 'periodTrend']
-      ];
+      attributes = [[sequelize.fn('DATE', sequelize.col('date')), 'periodTrend']];
       groupBy = 'periodTrend';
     }
 
@@ -388,12 +356,7 @@ export class SequelizeMYSQLLocationRepository implements LocationRepository {
         startDate: format(addMonth(today, -12), 'YYYY-MM-DD', 'en'),
         endDate: format(today, 'YYYY-MM-DD', 'en')
       };
-      attributes = [
-        [
-          sequelize.fn('DATE_FORMAT', sequelize.col('date'), '%Y-%m'),
-          'periodTrend'
-        ]
-      ];
+      attributes = [[sequelize.fn('DATE_FORMAT', sequelize.col('date'), '%Y-%m'), 'periodTrend']];
       groupBy = 'periodTrend';
     }
 

@@ -10,12 +10,7 @@ import { ResourceModel } from '@src/server/config/database/models/auth/resource.
 import { RoleDetailModel } from '@src/server/config/database/models/auth/role.detail.model';
 
 export class MySQLSequelizeRoleRepository implements RoleRepository {
-  async create(data: {
-    name: string;
-    description: string;
-    status: 'ACTIVO' | 'INACTIVO';
-    listOfAccess: [];
-  }): Promise<void> {
+  async create(data: { name: string; description: string; status: 'ACTIVO' | 'INACTIVO'; listOfAccess: [] }): Promise<void> {
     const transaction = await sequelize.transaction();
     try {
       const roleId = uuid();
@@ -25,20 +20,15 @@ export class MySQLSequelizeRoleRepository implements RoleRepository {
         resources: []
       });
 
-      await RoleModel.create(
-        { ...roleEntity },
-        { fields: ['id', 'name', 'description', 'status'], transaction }
-      );
+      await RoleModel.create({ ...roleEntity }, { fields: ['id', 'name', 'description', 'status'], transaction });
 
-      const listOfAccess = data.listOfAccess.map(
-        (access: { resource: string; can_access: boolean }) => {
-          return {
-            role_id: roleId,
-            resource_id: access.resource,
-            can_access: access.can_access
-          };
-        }
-      );
+      const listOfAccess = data.listOfAccess.map((access: { resource: string; can_access: boolean }) => {
+        return {
+          role_id: roleId,
+          resource_id: access.resource,
+          can_access: access.can_access
+        };
+      });
 
       await RoleDetailModel.bulkCreate(listOfAccess, {
         fields: ['role_id', 'resource_id', 'can_access'],
@@ -76,20 +66,18 @@ export class MySQLSequelizeRoleRepository implements RoleRepository {
       );
 
       await Promise.all(
-        data.listOfAccess.map(
-          (resource: { resource: string; can_access: boolean }) => {
-            return RoleDetailModel.update(
-              {
-                can_access: resource.can_access
-              },
-              {
-                where: { role_id: data.id, resource_id: resource.resource },
-                fields: ['can_access'],
-                transaction
-              }
-            );
-          }
-        )
+        data.listOfAccess.map((resource: { resource: string; can_access: boolean }) => {
+          return RoleDetailModel.update(
+            {
+              can_access: resource.can_access
+            },
+            {
+              where: { role_id: data.id, resource_id: resource.resource },
+              fields: ['can_access'],
+              transaction
+            }
+          );
+        })
       );
 
       await transaction.commit();
@@ -124,12 +112,7 @@ export class MySQLSequelizeRoleRepository implements RoleRepository {
     const rolesEntity = RoleEntity.fromPrimitives(plainRoles);
 
     rolesEntity.resources = plainRoles.resources.map(
-      (res: {
-        id: string;
-        slug: string;
-        description: string;
-        role_detail: { can_access: boolean };
-      }) => {
+      (res: { id: string; slug: string; description: string; role_detail: { can_access: boolean } }) => {
         return {
           id: res.id,
           slug: res.slug,
@@ -142,10 +125,7 @@ export class MySQLSequelizeRoleRepository implements RoleRepository {
     return rolesEntity;
   }
 
-  async getAll(
-    limit: number = 20,
-    page: number = 1
-  ): Promise<{ data: RoleEntity[]; pageCounter: number }> {
+  async getAll(limit: number = 20, page: number = 1): Promise<{ data: RoleEntity[]; pageCounter: number }> {
     const roleCounter = await RoleModel.count();
     const allPages = Math.ceil(roleCounter / limit);
     const offset = (page - 1) * limit;
@@ -168,21 +148,14 @@ export class MySQLSequelizeRoleRepository implements RoleRepository {
         ...role.get({ plain: true }),
         resources: role
           .get({ plain: true })
-          .resources.map(
-            (res: {
-              id: string;
-              slug: string;
-              description: string;
-              role_detail: { can_access: boolean };
-            }) => {
-              return {
-                id: res.id,
-                slug: res.slug,
-                description: res.description,
-                can_access: res.role_detail.can_access
-              };
-            }
-          )
+          .resources.map((res: { id: string; slug: string; description: string; role_detail: { can_access: boolean } }) => {
+            return {
+              id: res.id,
+              slug: res.slug,
+              description: res.description,
+              can_access: res.role_detail.can_access
+            };
+          })
       })
     );
 
@@ -194,9 +167,7 @@ export class MySQLSequelizeRoleRepository implements RoleRepository {
 
   async getResources(): Promise<ResourceEntity[]> {
     const resourcesDatabase = await ResourceModel.findAll();
-    const resources = resourcesDatabase.map(resource =>
-      ResourceEntity.fromPrimitives(resource.get({ plain: true }))
-    );
+    const resources = resourcesDatabase.map(resource => ResourceEntity.fromPrimitives(resource.get({ plain: true })));
     return resources;
   }
 }

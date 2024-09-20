@@ -31,11 +31,7 @@ routes
     validateRequest(getEmployeeByCodeSchemaForParams, 'params'),
     assignmentController.employeeFinderByCode.bind(assignmentController)
   )
-  .post(
-    '/',
-    validateRequest(assignmentCreateSchema, 'body'),
-    assignmentController.createAssignment.bind(assignmentController)
-  )
+  .post('/', validateRequest(assignmentCreateSchema, 'body'), assignmentController.createAssignment.bind(assignmentController))
   .patch(
     '/:assignment_id',
     validateRequest(assignmentIdSchema, 'params'),

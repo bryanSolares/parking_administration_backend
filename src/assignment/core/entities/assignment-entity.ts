@@ -114,12 +114,8 @@ export class AssignmentEntity {
       primitiveData.parkingCardNumber,
       primitiveData.benefitType,
       primitiveData.status,
-      primitiveData.tags
-        ? primitiveData.tags.map(tag => TagEntity.fromPrimitives(tag))
-        : [],
-      primitiveData.discountNote
-        ? DiscountNoteEntity.fromPrimitives(primitiveData.discountNote)
-        : undefined,
+      primitiveData.tags ? primitiveData.tags.map(tag => TagEntity.fromPrimitives(tag)) : [],
+      primitiveData.discountNote ? DiscountNoteEntity.fromPrimitives(primitiveData.discountNote) : undefined,
       primitiveData.assignmentDate,
       primitiveData.formDecisionDate
     );
@@ -139,9 +135,7 @@ export class AssignmentEntity {
       benefitType: this.benefitType,
       status: this.status,
       tags: this.tags ? this.tags.map(tag => tag.toPrimitives()) : [],
-      discountNote: this.discountNote
-        ? this.discountNote.toPrimitives()
-        : undefined
+      discountNote: this.discountNote ? this.discountNote.toPrimitives() : undefined
     };
   }
 }

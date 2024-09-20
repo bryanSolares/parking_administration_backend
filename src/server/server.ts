@@ -40,11 +40,7 @@ export class Server {
 
   //Load routes
   private loadRoutes() {
-    this.app.use(
-      '/api/v1/docs/',
-      swaggerUI.serve,
-      swaggerUI.setup(swaggerDocs)
-    );
+    this.app.use('/api/v1/docs/', swaggerUI.serve, swaggerUI.setup(swaggerDocs));
     this.app.use(routes);
     this.app.use(handleErrors);
   }

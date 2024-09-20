@@ -8,30 +8,15 @@ import { AppError } from '@src/server/config/err/AppError';
 export class CreateDeAssignment {
   constructor(private readonly assignmentRepository: AssignmentRepository) {}
 
-  async run(data: {
-    deAssignmentData: { reason: string; deAssignmentDate: string };
-    assignmentId: string;
-  }): Promise<void> {
-    const assignment = await this.assignmentRepository.getAssignmentById(
-      data.assignmentId
-    );
+  async run(data: { deAssignmentData: { reason: string; deAssignmentDate: string }; assignmentId: string }): Promise<void> {
+    const assignment = await this.assignmentRepository.getAssignmentById(data.assignmentId);
 
     if (!assignment) {
-      throw new AppError(
-        'ASSIGNMENT_NOT_FOUND',
-        404,
-        'Assignment not found',
-        true
-      );
+      throw new AppError('ASSIGNMENT_NOT_FOUND', 404, 'Assignment not found', true);
     }
 
     if (assignment.status !== AssignmentStatus.ACCEPTED) {
-      throw new AppError(
-        'INVALID_ASSIGNMENT',
-        400,
-        'This assignment is not accepted, status is not valid',
-        true
-      );
+      throw new AppError('INVALID_ASSIGNMENT', 400, 'This assignment is not accepted, status is not valid', true);
     }
 
     const deAssignment = new DeAssignmentEntity(

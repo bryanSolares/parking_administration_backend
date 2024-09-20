@@ -29,23 +29,13 @@ export class CreateAcceptanceProcessUseCase {
     },
     assignmentId: string
   ) {
-    const assignment =
-      await this.assignmentRepository.getAssignmentById(assignmentId);
+    const assignment = await this.assignmentRepository.getAssignmentById(assignmentId);
 
     if (!assignment) {
-      throw new AppError(
-        'ASSIGNMENT_NOT_FOUND',
-        404,
-        'Assignment not found',
-        true
-      );
+      throw new AppError('ASSIGNMENT_NOT_FOUND', 404, 'Assignment not found', true);
     }
 
-    if (
-      ![AssignmentStatus.ASSIGNED, AssignmentStatus.IN_PROGRESS].some(
-        status => status === assignment.status
-      )
-    ) {
+    if (![AssignmentStatus.ASSIGNED, AssignmentStatus.IN_PROGRESS].some(status => status === assignment.status)) {
       throw new AppError(
         'ASSIGNMENT_NOT_VALID',
         400,
@@ -54,17 +44,10 @@ export class CreateAcceptanceProcessUseCase {
       );
     }
 
-    const signatures = await this.settingRepository.getParameterByKey(
-      SettingKeys.SIGNATURES_FOR_ACCEPTANCE_FORM
-    );
+    const signatures = await this.settingRepository.getParameterByKey(SettingKeys.SIGNATURES_FOR_ACCEPTANCE_FORM);
 
     if (!signatures) {
-      throw new AppError(
-        'SETTING_NOT_FOUND',
-        400,
-        'Data signatures for acceptance form not found',
-        true
-      );
+      throw new AppError('SETTING_NOT_FOUND', 400, 'Data signatures for acceptance form not found', true);
     }
 
     //get employee of assignment
@@ -88,10 +71,6 @@ export class CreateAcceptanceProcessUseCase {
     //send form
 
     // update status
-    await this.assignmentRepository.changeStatusAssignment(
-      assignmentId,
-      AssignmentStatus.IN_PROGRESS,
-      data.assignmentDate
-    );
+    await this.assignmentRepository.changeStatusAssignment(assignmentId, AssignmentStatus.IN_PROGRESS, data.assignmentDate);
   }
 }

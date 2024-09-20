@@ -7,30 +7,16 @@ export class UpdateStatusDiscountNote {
 
   async run(
     id: string,
-    status:
-      | DiscountNodeStatusSignature.APPROVED
-      | DiscountNodeStatusSignature.REJECTED
-      | DiscountNodeStatusSignature.CANCELED
+    status: DiscountNodeStatusSignature.APPROVED | DiscountNodeStatusSignature.REJECTED | DiscountNodeStatusSignature.CANCELED
   ) {
-    const discountNote =
-      await this.assignmentRepository.getDiscountNoteById(id);
+    const discountNote = await this.assignmentRepository.getDiscountNoteById(id);
 
     if (!discountNote) {
-      throw new AppError(
-        'DISCOUNT_NOTE_NOT_FOUND',
-        404,
-        'Discount note not found',
-        true
-      );
+      throw new AppError('DISCOUNT_NOTE_NOT_FOUND', 404, 'Discount note not found', true);
     }
 
     if (discountNote.statusSignature !== DiscountNodeStatusSignature.PENDING) {
-      throw new AppError(
-        'DISCOUNT_NOTE_ALREADY_SIGNED',
-        400,
-        'Discount note already signed.',
-        true
-      );
+      throw new AppError('DISCOUNT_NOTE_ALREADY_SIGNED', 400, 'Discount note already signed.', true);
     }
 
     await this.assignmentRepository.updateStatusDiscountNote(id, status);

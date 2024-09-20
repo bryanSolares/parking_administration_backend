@@ -38,10 +38,7 @@ const validations = new Validations(
 );
 
 //Use cases
-const employeeFinderByCode = new GetEmployeeByCode(
-  employeeRepository,
-  settingRepository
-);
+const employeeFinderByCode = new GetEmployeeByCode(employeeRepository, settingRepository);
 const createAssignment = new CreateAssignment(
   sequelizeAssignmentRepository,
   sequelizeLocationRepository,
@@ -50,46 +47,20 @@ const createAssignment = new CreateAssignment(
 );
 
 const assignmentFinder = new AssignmentFinder(sequelizeAssignmentRepository);
-const assignmentFinderById = new AssignmentFinderById(
-  sequelizeAssignmentRepository
-);
+const assignmentFinderById = new AssignmentFinderById(sequelizeAssignmentRepository);
 const deAssignmentById = new CreateDeAssignment(sequelizeAssignmentRepository);
-const createDiscountNote = new CreateDiscountNote(
-  sequelizeAssignmentRepository
-);
-const createAssignmentLoan = new CreateAssignmentLoan(
-  sequelizeAssignmentRepository,
-  validations
-);
-const updateAssignmentLoan = new UpdateAssignmentLoanUseCase(
-  sequelizeAssignmentRepository,
-  validations
-);
-const updateAssignment = new UpdateAssignmentUseCase(
-  sequelizeAssignmentRepository,
-  parameterRepository,
-  validations
-);
+const createDiscountNote = new CreateDiscountNote(sequelizeAssignmentRepository);
+const createAssignmentLoan = new CreateAssignmentLoan(sequelizeAssignmentRepository, validations);
+const updateAssignmentLoan = new UpdateAssignmentLoanUseCase(sequelizeAssignmentRepository, validations);
+const updateAssignment = new UpdateAssignmentUseCase(sequelizeAssignmentRepository, parameterRepository, validations);
 
-const updateDiscountNote = new UpdateStatusDiscountNote(
-  sequelizeAssignmentRepository
-);
-const deleteAssignmentLoan = new DeleteAssignmentLoan(
-  sequelizeAssignmentRepository
-);
-const getFormDataOfAcceptance = new GetFormDataOfAcceptanceUseCase(
-  sequelizeAssignmentRepository,
-  settingRepository
-);
+const updateDiscountNote = new UpdateStatusDiscountNote(sequelizeAssignmentRepository);
+const deleteAssignmentLoan = new DeleteAssignmentLoan(sequelizeAssignmentRepository);
+const getFormDataOfAcceptance = new GetFormDataOfAcceptanceUseCase(sequelizeAssignmentRepository, settingRepository);
 
-const createAcceptanceProcess = new CreateAcceptanceProcessUseCase(
-  sequelizeAssignmentRepository,
-  settingRepository
-);
+const createAcceptanceProcess = new CreateAcceptanceProcessUseCase(sequelizeAssignmentRepository, settingRepository);
 
-const updateStatusAcceptanceAssignment = new UpdateAcceptanceStatusUseCase(
-  sequelizeAssignmentRepository
-);
+const updateStatusAcceptanceAssignment = new UpdateAcceptanceStatusUseCase(sequelizeAssignmentRepository);
 
 //Controllers
 const assignmentController = new AssignmentController(

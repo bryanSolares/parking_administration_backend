@@ -4,9 +4,7 @@ import path from 'path';
 
 const isTestEnvironment = process.env.NODE_ENV === 'test';
 
-isTestEnvironment
-  ? dotenv.config({ path: path.join(__dirname, '../../../../__tests__/.env') })
-  : dotenv.config();
+isTestEnvironment ? dotenv.config({ path: path.join(__dirname, '../../../../__tests__/.env') }) : dotenv.config();
 
 export const config = {
   PORT: isTestEnvironment ? 0 : process.env.PORT,

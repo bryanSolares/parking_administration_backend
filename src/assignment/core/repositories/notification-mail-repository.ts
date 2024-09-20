@@ -16,16 +16,7 @@ export interface NotificationMailRepository {
     location: { name: string; address: string; slotNumber: string },
     schedule: { startDate: string; endDate: string }
   ): Promise<void>;
-  discountNoteNotification(
-    owner: { name: string; email: string },
-    rrhh: { name: string; email: string }
-  ): Promise<void>;
-  deAssignmentOwnerNotification(owner: {
-    name: string;
-    email: string;
-  }): Promise<void>;
-  deAssignmentGuestNotification(guest: {
-    name: string;
-    email: string;
-  }): Promise<void>;
+  discountNoteNotification(owner: { name: string; email: string }, rrhh: { name: string; email: string }): Promise<void>;
+  deAssignmentOwnerNotification(owner: { name: string; email: string }): Promise<void>;
+  deAssignmentGuestNotification(guest: { name: string; email: string }): Promise<void>;
 }

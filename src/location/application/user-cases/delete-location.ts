@@ -10,37 +10,17 @@ export class DeleteLocation {
       const location = await this.locationRepository.getLocationById(id);
 
       if (!location) {
-        throw new AppError(
-          'LOCATION_NOT_FOUND',
-          404,
-          'Location not found',
-          true
-        );
+        throw new AppError('LOCATION_NOT_FOUND', 404, 'Location not found', true);
       }
 
-      if (
-        await this.locationRepository.executeFunction(
-          'location_has_active_assignment',
-          [id]
-        )
-      ) {
-        throw new AppError(
-          'FOREING_KEY_CONSTRAINT',
-          400,
-          'You cannot delete a location with active assignments',
-          true
-        );
+      if (await this.locationRepository.executeFunction('location_has_active_assignment', [id])) {
+        throw new AppError('FOREING_KEY_CONSTRAINT', 400, 'You cannot delete a location with active assignments', true);
       }
 
       await this.locationRepository.deleteLocation(id);
     } catch (error) {
       if (error instanceof ForeignKeyConstraintError) {
-        throw new AppError(
-          'FOREING_KEY_CONSTRAINT',
-          400,
-          'You can not delete slots with assignment or schedule',
-          true
-        );
+        throw new AppError('FOREING_KEY_CONSTRAINT', 400, 'You can not delete slots with assignment or schedule', true);
       }
 
       if (error instanceof AppError) {

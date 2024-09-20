@@ -1,10 +1,4 @@
-import {
-  BenefitType,
-  SlotEntity,
-  SlotStatus,
-  SlotType,
-  VehicleType
-} from './slot-entity';
+import { BenefitType, SlotEntity, SlotStatus, SlotType, VehicleType } from './slot-entity';
 
 export enum LocationStatus {
   ACTIVE = 'ACTIVO',
@@ -79,9 +73,7 @@ export class LocationEntity {
       primitiveData.comments,
       primitiveData.numberOfIdentifier,
       primitiveData.status,
-      primitiveData.slots
-        ? primitiveData.slots.map(slot => SlotEntity.fromPrimitives(slot))
-        : []
+      primitiveData.slots ? primitiveData.slots.map(slot => SlotEntity.fromPrimitives(slot)) : []
     );
   }
 

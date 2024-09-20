@@ -34,15 +34,7 @@ export class MySQLSequelizeUserRepository implements UserRepository {
       { ...userEntity, role_id: userEntity.role },
       {
         where: { id: user.id },
-        fields: [
-          'name',
-          'email',
-          'username',
-          'password',
-          'status',
-          'phone',
-          'role_id'
-        ]
+        fields: ['name', 'email', 'username', 'password', 'status', 'phone', 'role_id']
       }
     );
   }
@@ -71,10 +63,7 @@ export class MySQLSequelizeUserRepository implements UserRepository {
     return UserEntity.fromPrimitives(userDatabase.get({ plain: true }));
   }
 
-  async getAll(
-    limit: number = 20,
-    page: number = 1
-  ): Promise<{ data: UserEntity[]; pageCounter: number }> {
+  async getAll(limit: number = 20, page: number = 1): Promise<{ data: UserEntity[]; pageCounter: number }> {
     const usersCounter = await UserModel.count();
     const allPages = Math.ceil(usersCounter / limit);
     const offset = (page - 1) * limit;
@@ -93,9 +82,7 @@ export class MySQLSequelizeUserRepository implements UserRepository {
       ]
     });
 
-    const users = usersDatabase.map(user =>
-      UserEntity.fromPrimitives(user.get({ plain: true }))
-    );
+    const users = usersDatabase.map(user => UserEntity.fromPrimitives(user.get({ plain: true })));
 
     return {
       data: users,

@@ -8,20 +8,11 @@ import { TagAssignmentDetailEntity } from '@src/assignment/core/entities/tag-ass
 import { AssignmentTagDetailModel } from '@src/server/config/database/models/assignment-tag-detail';
 
 export class SequelizePostgresRepository implements TagRepository {
-  async create(tag: {
-    name: string;
-    description: string;
-    status: 'ACTIVO' | 'INACTIVO';
-  }): Promise<void> {
+  async create(tag: { name: string; description: string; status: 'ACTIVO' | 'INACTIVO' }): Promise<void> {
     await TagModel.create({ ...tag, id: uuid() });
   }
 
-  async update(tag: {
-    id: string;
-    name: string;
-    description: string;
-    status: 'ACTIVO' | 'INACTIVO';
-  }): Promise<void> {
+  async update(tag: { id: string; name: string; description: string; status: 'ACTIVO' | 'INACTIVO' }): Promise<void> {
     await TagModel.update(tag, {
       where: { id: tag.id },
       fields: ['name', 'description', 'status']
@@ -34,24 +25,17 @@ export class SequelizePostgresRepository implements TagRepository {
 
   async getById(id: string): Promise<TagEntity | null> {
     const tagDatabase = await TagModel.findByPk(id);
-    return tagDatabase
-      ? TagEntity.fromPrimitives(tagDatabase?.get({ plain: true }))
-      : null;
+    return tagDatabase ? TagEntity.fromPrimitives(tagDatabase?.get({ plain: true })) : null;
   }
 
-  async getAll(
-    limit: number = 20,
-    page: number = 1
-  ): Promise<{ data: TagEntity[]; pageCounter: number }> {
+  async getAll(limit: number = 20, page: number = 1): Promise<{ data: TagEntity[]; pageCounter: number }> {
     const tagsCounter = await TagModel.count();
     const allPages = Math.ceil(tagsCounter / limit);
     const offset = (page - 1) * limit;
 
     const tagsDatabase = await TagModel.findAll({ offset, limit });
 
-    const tags = tagsDatabase.map(tag =>
-      TagEntity.fromPrimitives(tag.get({ plain: true }))
-    );
+    const tags = tagsDatabase.map(tag => TagEntity.fromPrimitives(tag.get({ plain: true })));
 
     return {
       data: tags,
@@ -59,18 +43,12 @@ export class SequelizePostgresRepository implements TagRepository {
     };
   }
 
-  async getDetailTagsWithAssignment(
-    tagId: string
-  ): Promise<TagAssignmentDetailEntity | null> {
+  async getDetailTagsWithAssignment(tagId: string): Promise<TagAssignmentDetailEntity | null> {
     const tagDetailDatabase = await AssignmentTagDetailModel.findOne({
       where: { tag_id: tagId }
     });
 
-    return tagDetailDatabase
-      ? TagAssignmentDetailEntity.fromPrimitives(
-          tagDetailDatabase?.get({ plain: true })
-        )
-      : null;
+    return tagDetailDatabase ? TagAssignmentDetailEntity.fromPrimitives(tagDetailDatabase?.get({ plain: true })) : null;
   }
 
   async getTagsByIds(ids: string[]): Promise<TagEntity[] | []> {
@@ -82,8 +60,6 @@ export class SequelizePostgresRepository implements TagRepository {
       return [];
     }
 
-    return tagsDatabase.map(tag =>
-      TagEntity.fromPrimitives(tag.get({ plain: true }))
-    );
+    return tagsDatabase.map(tag => TagEntity.fromPrimitives(tag.get({ plain: true })));
   }
 }

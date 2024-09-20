@@ -10,12 +10,7 @@ export class GetLocationByIdFinder {
       const location = await this.locationRepository.getLocationById(id);
 
       if (!location) {
-        throw new AppError(
-          'LOCATION_NOT_FOUND',
-          404,
-          'Location not found',
-          true
-        );
+        throw new AppError('LOCATION_NOT_FOUND', 404, 'Location not found', true);
       }
       return location;
     } catch (error) {
@@ -25,12 +20,7 @@ export class GetLocationByIdFinder {
 
       console.log(error);
 
-      throw new AppError(
-        'UNKNOWN_ERROR',
-        500,
-        'Error not identified on location by id finder use case',
-        false
-      );
+      throw new AppError('UNKNOWN_ERROR', 500, 'Error not identified on location by id finder use case', false);
     }
   }
 }
