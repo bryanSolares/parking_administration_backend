@@ -3,7 +3,7 @@ import { AssignmentLoadEntity } from '@src/assignment/core/entities/assignment-l
 import { AssignmentLoadStatus } from '@src/assignment/core/entities/assignment-load-entity';
 import { AssignmentRepository } from '@src/assignment/core/repositories/assignment-repository';
 import { VehicleType } from '@src/location/core/entities/slot-entity';
-import { AppError } from '@src/server/config/err/AppError';
+import { AppError } from '@src/shared/infrastructure/server/config/err/AppError';
 import { Validations } from '../validations';
 import { VehicleEntity } from '@src/assignment/core/entities/vehicle-entity';
 

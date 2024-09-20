@@ -3,8 +3,8 @@ import { EmployeeRepository } from '@assignment-module-core/repositories/employe
 
 import { EmployeeEntity } from '@assignment-module-core/entities/employee-entity';
 
-import { EmployeeModel } from '@config/database/models/employee.model';
-import { VehicleModel } from '@config/database/models/vehicle.model';
+import { EmployeeModel } from '@src/shared/infrastructure/server/config/database/models/assignment/employee.model';
+import { VehicleModel } from '@src/shared/infrastructure/server/config/database/models/assignment/vehicle.model';
 
 export class SequelizeEmployeeRepository implements EmployeeRepository {
   async getEmployeeFromWebService(codeEmployee: string, url: string): Promise<Response> {

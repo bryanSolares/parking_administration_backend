@@ -1,6 +1,6 @@
 import { LocationRepository } from '@location-module-core/repositories/location-repository';
 import { LocationEntity } from '@location-module-core/entities/location-entity';
-import { AppError } from '@src/server/config/err/AppError';
+import { AppError } from '@src/shared/infrastructure/server/config/err/AppError';
 
 export class GetLocationByIdFinder {
   constructor(private readonly locationRepository: LocationRepository) {}

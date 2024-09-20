@@ -3,7 +3,7 @@ import {
   AssignmentEntity,
   AssignmentStatus
 } from '../../../src/assignment/core/entities/assignment-entity';
-import { AssignmentModel } from '../../../src/server/config/database/models/assignment.model';
+import { AssignmentModel } from '../../../src/shared/infrastructure/server/config/database/models/assignment/assignment.model';
 import { LocationBuilder, SlotBuilder } from './location-builder';
 import { EmployeeBuilder } from './employee-builder';
 import {

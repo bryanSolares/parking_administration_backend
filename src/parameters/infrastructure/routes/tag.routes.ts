@@ -1,7 +1,7 @@
 import { Router } from 'express';
 import { tagController } from '../repositories/dependencies';
 
-import { validateRequest } from '@shared/zod-validator';
+import { validateRequest } from '@src/shared/infrastructure/utils/zod-validator';
 import { idTagSchema } from '../utils/tag-zod-schemas';
 import { tagSchema } from '../utils/tag-zod-schemas';
 import { finderSchema } from '../utils/tag-zod-schemas';

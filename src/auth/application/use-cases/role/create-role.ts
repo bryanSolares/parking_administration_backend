@@ -1,5 +1,5 @@
 import { RoleRepository } from '@src/auth/domain/repository/role-repository';
-import { AppError } from '@src/server/config/err/AppError';
+import { AppError } from '@src/shared/infrastructure/server/config/err/AppError';
 
 export class CreateRole {
   constructor(private readonly roleRepository: RoleRepository) {}

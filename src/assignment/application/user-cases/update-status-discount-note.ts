@@ -1,6 +1,6 @@
 import { AssignmentRepository } from '@assignment-module-core/repositories/assignment-repository';
 import { DiscountNodeStatusSignature } from '@src/assignment/core/entities/discount-note-entity';
-import { AppError } from '@src/server/config/err/AppError';
+import { AppError } from '@src/shared/infrastructure/server/config/err/AppError';
 
 export class UpdateStatusDiscountNote {
   constructor(private readonly assignmentRepository: AssignmentRepository) {}

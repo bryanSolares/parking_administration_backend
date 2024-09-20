@@ -1,7 +1,7 @@
 import { Router } from 'express';
 import { userController } from '../dependencies';
 
-import { validateRequest } from '@shared/zod-validator';
+import { validateRequest } from '@src/shared/infrastructure/utils/zod-validator';
 import { userSchema } from '../utils/user-zod-schemas';
 import { idUserSchema } from '../utils/user-zod-schemas';
 import { finderSchema } from '../utils/user-zod-schemas';

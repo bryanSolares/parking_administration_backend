@@ -1,7 +1,7 @@
 import { v4 as uuid } from 'uuid';
 import { AssignmentRepository } from '@assignment-module-core/repositories/assignment-repository';
 import { AssignmentStatus } from '@src/assignment/core/entities/assignment-entity';
-import { AppError } from '@src/server/config/err/AppError';
+import { AppError } from '@src/shared/infrastructure/server/config/err/AppError';
 import { BenefitType } from '@src/location/core/entities/slot-entity';
 import { DiscountNoteEntity } from '@src/assignment/core/entities/discount-note-entity';
 

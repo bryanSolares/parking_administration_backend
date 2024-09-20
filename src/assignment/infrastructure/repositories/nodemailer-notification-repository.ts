@@ -1,6 +1,6 @@
 import fs from 'node:fs';
 import { NotificationMailRepository } from '@assignment-module-core/repositories/notification-mail-repository';
-import { Mailer } from '@config/mail/nodemailer';
+import { Mailer } from '@src/shared/infrastructure/server/config/mail/nodemailer';
 
 export class NodemailerNotificationRepository implements NotificationMailRepository {
   private _transporter: Mailer;

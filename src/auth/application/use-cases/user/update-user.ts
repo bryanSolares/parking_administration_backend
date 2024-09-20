@@ -1,7 +1,7 @@
 import { RoleEntity } from '@src/auth/domain/entities/role-entity';
 import { RoleRepository } from '@src/auth/domain/repository/role-repository';
 import { UserRepository } from '@src/auth/domain/repository/user-repository';
-import { AppError } from '@src/server/config/err/AppError';
+import { AppError } from '@src/shared/infrastructure/server/config/err/AppError';
 
 export class UpdateUser {
   constructor(

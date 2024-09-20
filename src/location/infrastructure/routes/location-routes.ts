@@ -10,7 +10,7 @@ import { trendSchema } from '../utils/location-zod-schemas';
 import { getAvailableSlotsSchema } from '../utils/location-zod-schemas';
 
 import { locationController } from '@src/location/infrastructure/repositories/dependecies';
-import { validateRequest } from '@shared/zod-validator';
+import { validateRequest } from '@src/shared/infrastructure/utils/zod-validator';
 
 const routes = Router();
 

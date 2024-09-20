@@ -1,9 +1,9 @@
 import { Router } from 'express';
 import { authController } from '../dependencies';
 
-import { validateAuth } from '@server/middleware/auth-middleware';
+import { validateAuth } from '@src/shared/infrastructure/server/middleware/auth-middleware';
 import { loginSchema } from '../utils/auth-zod-schemas';
-import { validateRequest } from '@shared/zod-validator';
+import { validateRequest } from '@src/shared/infrastructure/utils/zod-validator';
 
 const routes = Router();
 

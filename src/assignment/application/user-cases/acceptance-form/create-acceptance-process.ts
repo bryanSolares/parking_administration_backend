@@ -2,7 +2,7 @@ import { AssignmentStatus } from '@src/assignment/core/entities/assignment-entit
 import { AssignmentRepository } from '@src/assignment/core/repositories/assignment-repository';
 import { SettingRepository } from '@src/parameters/core/repositories/setting-repository';
 import { SettingKeys } from '@src/parameters/core/repositories/setting-repository';
-import { AppError } from '@src/server/config/err/AppError';
+import { AppError } from '@src/shared/infrastructure/server/config/err/AppError';
 
 // type SignatureEmployee = {
 //   employee_code: string;

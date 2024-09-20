@@ -12,11 +12,10 @@ import { format } from '@formkit/tempo';
 import { weekStart } from '@formkit/tempo';
 import { addMonth } from '@formkit/tempo';
 
-import { logger } from '@config/logger/load-logger';
 import { sequelize } from '@config/database/sequelize';
 
-import { LocationModel } from '@config/database/models/location.model';
-import { SlotModel } from '@config/database/models/slot.model';
+import { LocationModel } from '@src/shared/infrastructure/server/config/database/models/parking/location.model';
+import { SlotModel } from '@src/shared/infrastructure/server/config/database/models/parking/slot.model';
 
 import {
   FunctionNames,
@@ -32,7 +31,7 @@ import { LocationFinderResult } from '@location-module-core/repositories/locatio
 import { LocationEntity } from '@location-module-core/entities/location-entity';
 import { BenefitType, SlotEntity, SlotType, VehicleType } from '@location-module-core/entities/slot-entity';
 import { SlotStatus } from '@location-module-core/entities/slot-entity';
-import { ParkingTrendsModel } from '@src/server/config/database/models/parking/parking-trends';
+import { ParkingTrendsModel } from '@src/shared/infrastructure/server/config/database/models/parking/parking-trends';
 
 export class SequelizeMYSQLLocationRepository implements LocationRepository {
   async createLocation(location: LocationEntity): Promise<void> {
@@ -57,7 +56,6 @@ export class SequelizeMYSQLLocationRepository implements LocationRepository {
       }
 
       await transaction.commit();
-      logger().info('Location created');
     } catch (error) {
       await transaction?.rollback();
       throw error;
@@ -118,7 +116,6 @@ export class SequelizeMYSQLLocationRepository implements LocationRepository {
       }
 
       await transaction.commit();
-      logger().info('Location updated');
     } catch (error) {
       await transaction?.rollback();
       throw error;

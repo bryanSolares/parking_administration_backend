@@ -1,6 +1,6 @@
 import { AssignmentStatus } from '@src/assignment/core/entities/assignment-entity';
 import { AssignmentRepository } from '@src/assignment/core/repositories/assignment-repository';
-import { AppError } from '@src/server/config/err/AppError';
+import { AppError } from '@src/shared/infrastructure/server/config/err/AppError';
 
 export class UpdateAcceptanceStatusUseCase {
   constructor(private readonly assignmentRepository: AssignmentRepository) {}

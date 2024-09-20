@@ -1,5 +1,5 @@
 import { TagRepository } from '@src/parameters/core/repositories/tag-repository';
-import { AppError } from '@src/server/config/err/AppError';
+import { AppError } from '@src/shared/infrastructure/server/config/err/AppError';
 
 export class UpdateTag {
   constructor(private readonly tagRepository: TagRepository) {}

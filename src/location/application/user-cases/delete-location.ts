@@ -1,6 +1,6 @@
 import { ForeignKeyConstraintError } from 'sequelize';
 import { LocationRepository } from '@location-module-core/repositories/location-repository';
-import { AppError } from '@src/server/config/err/AppError';
+import { AppError } from '@src/shared/infrastructure/server/config/err/AppError';
 
 export class DeleteLocation {
   constructor(private readonly locationRepository: LocationRepository) {}

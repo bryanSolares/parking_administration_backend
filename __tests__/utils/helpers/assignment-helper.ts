@@ -1,9 +1,9 @@
 import { AssignmentEntity } from "../../../src/assignment/core/entities/assignment-entity";
 import { EmployeeEntity } from "../../../src/assignment/core/entities/employee-entity";
 import { VehicleEntity } from "../../../src/assignment/core/entities/vehicle-entity";
-import { AssignmentModel } from '../../../src/server/config/database/models/assignment.model';
-import { EmployeeModel } from '../../../src/server/config/database/models/employee.model';
-import { VehicleModel } from '../../../src/server/config/database/models/vehicle.model';
+import { AssignmentModel } from '../../../src/shared/infrastructure/server/config/database/models/assignment/assignment.model';
+import { EmployeeModel } from '../../../src/shared/infrastructure/server/config/database/models/assignment/employee.model';
+import { VehicleModel } from '../../../src/shared/infrastructure/server/config/database/models/assignment/vehicle.model';
 
 interface AssignmentTableResult {
   id: string;

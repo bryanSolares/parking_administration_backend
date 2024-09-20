@@ -1,10 +1,10 @@
 import request from 'supertest';
 import { faker } from '@faker-js/faker';
 
-import { Server } from '../../src/server/server';
+import { Server } from '../../src/shared/infrastructure/server/server';
 import { cleanDatabaseTagTesting } from '../utils/db';
 import { TagMother } from '../utils/mother/tag-mother';
-import { TagModel } from '../../src/server/config/database/models/tag.model';
+import { TagModel } from '../../src/shared/infrastructure/server/config/database/models/parameter/tag.model';
 
 const baseUrl = '/api/v1/parameter/tag';
 const server = new Server();

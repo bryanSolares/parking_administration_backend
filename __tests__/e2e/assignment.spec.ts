@@ -1,6 +1,6 @@
 import request from 'supertest';
 
-import { Server } from '../../src/server/server';
+import { Server } from '../../src/shared/infrastructure/server/server';
 import { cleanDatabaseAssignmentTesting } from '../utils/db';
 import { cleanDatabaseLocationTesting } from '../utils/db';
 import { cleanDatabaseTagTesting } from '../utils/db';

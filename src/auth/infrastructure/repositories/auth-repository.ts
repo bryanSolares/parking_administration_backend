@@ -1,6 +1,6 @@
 import { AuthRepository } from '@src/auth/domain/repository/auth-repository';
 import { RoleRepository } from '@src/auth/domain/repository/role-repository';
-import { UserModel } from '@config/database/models/auth/user.model';
+import { UserModel } from '@src/shared/infrastructure/server/config/database/models/auth/user.model';
 import { UserEntity } from '@src/auth/domain/entities/user-entity';
 import { RoleEntity } from '@src/auth/domain/entities/role-entity';
 

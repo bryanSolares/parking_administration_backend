@@ -2,8 +2,8 @@ import { v4 as uuid } from 'uuid';
 import { UserEntity } from '@src/auth/domain/entities/user-entity';
 import { UserRepository } from '@src/auth/domain/repository/user-repository';
 
-import { UserModel } from '@config/database/models/auth/user.model';
-import { RoleModel } from '@src/server/config/database/models/auth/role.model';
+import { UserModel } from '@src/shared/infrastructure/server/config/database/models/auth/user.model';
+import { RoleModel } from '@src/shared/infrastructure/server/config/database/models/auth/role.model';
 
 export class MySQLSequelizeUserRepository implements UserRepository {
   async create(user: {

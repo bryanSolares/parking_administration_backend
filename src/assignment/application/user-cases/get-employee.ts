@@ -1,4 +1,4 @@
-import { AppError } from '@src/server/config/err/AppError';
+import { AppError } from '@src/shared/infrastructure/server/config/err/AppError';
 import { EmployeeRepository } from '../../core/repositories/employee-repository';
 import { EmployeeEntity } from '@src/assignment/core/entities/employee-entity';
 import { SettingRepository } from '@src/parameters/core/repositories/setting-repository';

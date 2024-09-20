@@ -10,20 +10,19 @@
     "baseUrl": "./",
     "paths": {
       "@src/*": ["src/*"],
-      "@server/*": ["src/server/*"],
-      "@config/*": ["src/server/config/*"],
-      "@routes/*": ["src/server/config/routes/*"],
+      "@server/*": ["src/shared/infrastructure/server/*"],
+      "@config/*": ["src/shared/infrastructure/server/config/*"],
+      "@routes/*": ["src/shared/infrastructure/routes/*"],
       "@shared/*": ["src/shared/*"],
       "@assignment-module/*": ["src/assignment/*"],
       "@assignment-module-application/*": ["src/assignment/application/*"],
       "@assignment-module-core/*": ["src/assignment/core/*"],
-      "@assignment-module-infrastructure/*": [
-        "src/assignment/infrastructure/*"
-      ],
+      "@assignment-module-infrastructure/*": ["src/assignment/infrastructure/*"],
       "@location-module/*": ["src/location/*"],
       "@location-module-application/*": ["src/location/application/*"],
       "@location-module-core/*": ["src/location/core/*"],
-      "@location-module-infrastructure/*": ["src/location/infrastructure/*"]
+      "@location-module-infrastructure/*": ["src/location/infrastructure/*"],
+      "@contexts/*": ["src/contexts/*"]
     },
     "target": "es2022"
   },

@@ -1,6 +1,6 @@
 import { AssignmentRepository } from '@assignment-module-core/repositories/assignment-repository';
 import { AssignmentLoadStatus } from '@src/assignment/core/entities/assignment-load-entity';
-import { AppError } from '@src/server/config/err/AppError';
+import { AppError } from '@src/shared/infrastructure/server/config/err/AppError';
 
 export class DeleteAssignmentLoan {
   constructor(private readonly assignmentRepository: AssignmentRepository) {}

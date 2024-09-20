@@ -1,6 +1,6 @@
 import { AssignmentRepository } from '@assignment-module-core/repositories/assignment-repository';
 import { FinderResultById } from '@assignment-module-core/repositories/assignment-repository';
-import { AppError } from '@src/server/config/err/AppError';
+import { AppError } from '@src/shared/infrastructure/server/config/err/AppError';
 
 export class AssignmentFinderById {
   constructor(private readonly assignmentRepository: AssignmentRepository) {}

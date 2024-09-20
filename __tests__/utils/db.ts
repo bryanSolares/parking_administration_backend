@@ -1,4 +1,4 @@
-import { sequelize } from '../../src/server/config/database/sequelize';
+import { sequelize } from '../../src/shared/infrastructure/server/config/database/sequelize';
 
 export const prepareDatabase = async () => {
     try {

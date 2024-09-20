@@ -9,7 +9,7 @@ import { SlotType } from '@src/location/core/entities/slot-entity';
 import { TagEntity } from '@src/parameters/core/entities/tag-entity';
 import { SettingRepository } from '@src/parameters/core/repositories/setting-repository';
 import { SettingKeys } from '@src/parameters/core/repositories/setting-repository';
-import { AppError } from '@src/server/config/err/AppError';
+import { AppError } from '@src/shared/infrastructure/server/config/err/AppError';
 import { LocationStatus } from '@src/location/core/entities/location-entity';
 
 export class Validations {

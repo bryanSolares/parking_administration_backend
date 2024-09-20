@@ -1,15 +1,15 @@
 import request from 'supertest';
 import { faker } from '@faker-js/faker';
 
-import { Server } from '../../src/server/server';
+import { Server } from '../../src/shared/infrastructure/server/server';
 import { LocationMother } from '../utils/mother/location-mother';
 import {
   cleanDatabaseAssignmentTesting,
   cleanDatabaseLocationTesting
 } from '../utils/db';
 
-import { LocationModel } from '../../src/server/config/database/models/location.model';
-import { SlotModel } from '../../src/server/config/database/models/slot.model';
+import { LocationModel } from '../../src/shared/infrastructure/server/config/database/models/parking/location.model';
+import { SlotModel } from '../../src/shared/infrastructure/server/config/database/models/parking/slot.model';
 import {
   BenefitType,
   SlotStatus,

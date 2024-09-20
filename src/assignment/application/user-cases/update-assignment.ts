@@ -2,7 +2,7 @@ import { v4 as uuid } from 'uuid';
 import { AssignmentRepository } from '@assignment-module-core/repositories/assignment-repository';
 import { TagRepository } from '@src/parameters/core/repositories/tag-repository';
 import { VehicleType } from '@src/location/core/entities/slot-entity';
-import { AppError } from '@src/server/config/err/AppError';
+import { AppError } from '@src/shared/infrastructure/server/config/err/AppError';
 import { AssignmentEntity } from '@src/assignment/core/entities/assignment-entity';
 import { AssignmentStatus } from '@src/assignment/core/entities/assignment-entity';
 import { Validations } from './validations';

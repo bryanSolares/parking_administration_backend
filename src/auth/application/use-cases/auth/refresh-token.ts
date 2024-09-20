@@ -1,5 +1,5 @@
 import { AuthRepository } from '@src/auth/domain/repository/auth-repository';
-import { AppError } from '@src/server/config/err/AppError';
+import { AppError } from '@src/shared/infrastructure/server/config/err/AppError';
 
 export class RefreshTokenUseCase {
   constructor(private readonly authRepository: AuthRepository) {}

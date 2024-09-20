@@ -10,8 +10,8 @@ import {
   SlotType,
   VehicleType
 } from '../../../src/location/core/entities/slot-entity';
-import { LocationModel } from '../../../src/server/config/database/models/location.model';
-import { SlotModel } from '../../../src/server/config/database/models/slot.model';
+import { LocationModel } from '../../../src/shared/infrastructure/server/config/database/models/parking/location.model';
+import { SlotModel } from '../../../src/shared/infrastructure/server/config/database/models/parking/slot.model';
 
 export class LocationBuilder {
   private locationEntity: LocationEntity;

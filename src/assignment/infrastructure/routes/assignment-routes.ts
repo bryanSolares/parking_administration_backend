@@ -3,7 +3,7 @@ import { Request, Response } from 'express';
 
 import { assignmentController } from '../repositories/dependencies';
 
-import { validateRequest } from '@shared/zod-validator';
+import { validateRequest } from '@src/shared/infrastructure/utils/zod-validator';
 
 import { assignmentCreateSchema } from '../utils/assignment-zod-schemas';
 import { createDeAssignmentBodySchema } from '../utils/assignment-zod-schemas';

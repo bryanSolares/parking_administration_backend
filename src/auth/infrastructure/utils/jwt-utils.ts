@@ -1,5 +1,5 @@
 import jwt from 'jsonwebtoken';
-import { config } from '@config/logger/load-envs';
+import { config } from '@src/shared/infrastructure/server/config/env/envs';
 
 interface JwtPayload {
   user: string;

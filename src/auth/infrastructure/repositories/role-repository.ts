@@ -4,10 +4,10 @@ import { UniqueConstraintError } from 'sequelize';
 import { RoleEntity } from '@src/auth/domain/entities/role-entity';
 import { RoleRepository } from '@src/auth/domain/repository/role-repository';
 
-import { RoleModel } from '@config/database/models/auth/role.model';
+import { RoleModel } from '@src/shared/infrastructure/server/config/database/models/auth/role.model';
 import { ResourceEntity } from '@src/auth/domain/entities/resource-entity';
-import { ResourceModel } from '@src/server/config/database/models/auth/resource.model';
-import { RoleDetailModel } from '@src/server/config/database/models/auth/role.detail.model';
+import { ResourceModel } from '@src/shared/infrastructure/server/config/database/models/auth/resource.model';
+import { RoleDetailModel } from '@src/shared/infrastructure/server/config/database/models/auth/role.detail.model';
 
 export class MySQLSequelizeRoleRepository implements RoleRepository {
   async create(data: { name: string; description: string; status: 'ACTIVO' | 'INACTIVO'; listOfAccess: [] }): Promise<void> {

@@ -2,10 +2,10 @@ import { v4 as uuid } from 'uuid';
 import { Op } from 'sequelize';
 
 import { TagRepository } from '@src/parameters/core/repositories/tag-repository';
-import { TagModel } from '@config/database/models/tag.model';
+import { TagModel } from '@src/shared/infrastructure/server/config/database/models/parameter/tag.model';
 import { TagEntity } from '@src/parameters/core/entities/tag-entity';
 import { TagAssignmentDetailEntity } from '@src/assignment/core/entities/tag-assignment-detail-entity';
-import { AssignmentTagDetailModel } from '@src/server/config/database/models/assignment-tag-detail';
+import { AssignmentTagDetailModel } from '@src/shared/infrastructure/server/config/database/models/assignment/assignment-tag-detail';
 
 export class SequelizePostgresRepository implements TagRepository {
   async create(tag: { name: string; description: string; status: 'ACTIVO' | 'INACTIVO' }): Promise<void> {

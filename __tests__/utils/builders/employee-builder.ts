@@ -1,7 +1,7 @@
 import { faker } from "@faker-js/faker";
 import { EmployeeEntity, TokenStatus } from "../../../src/assignment/core/entities/employee-entity";
 import { VehicleEntity } from "../../../src/assignment/core/entities/vehicle-entity";
-import { EmployeeModel } from "../../../src/server/config/database/models/employee.model";
+import { EmployeeModel } from "../../../src/shared/infrastructure/server/config/database/models/assignment/employee.model";
 
 export class EmployeeBuilder{
   private _employeeEntity: EmployeeEntity;

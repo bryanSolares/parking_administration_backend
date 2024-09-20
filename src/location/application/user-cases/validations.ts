@@ -1,4 +1,4 @@
-import { AppError } from '@src/server/config/err/AppError';
+import { AppError } from '@src/shared/infrastructure/server/config/err/AppError';
 import { LocationEntity } from '@src/location/core/entities/location-entity';
 import { LocationStatus } from '@src/location/core/entities/location-entity';
 import { LocationRepository } from '@src/location/core/repositories/location-repository';

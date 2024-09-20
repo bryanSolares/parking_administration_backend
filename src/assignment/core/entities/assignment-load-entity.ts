@@ -3,7 +3,7 @@ import { isEqual } from '@formkit/tempo';
 
 import { VehicleType } from '@src/location/core/entities/slot-entity';
 import { EmployeeEntity, TokenStatus } from './employee-entity';
-import { AppError } from '@src/server/config/err/AppError';
+import { AppError } from '@src/shared/infrastructure/server/config/err/AppError';
 
 export enum AssignmentLoadStatus {
   'ACTIVE' = 'ACTIVO',

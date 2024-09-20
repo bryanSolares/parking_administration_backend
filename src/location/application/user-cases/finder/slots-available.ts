@@ -1,7 +1,7 @@
 import { LocationStatus } from '@src/location/core/entities/location-entity';
 import { VehicleType } from '@src/location/core/entities/slot-entity';
 import { LocationRepository, ResponseAvailableSlots } from '@src/location/core/repositories/location-repository';
-import { AppError } from '@src/server/config/err/AppError';
+import { AppError } from '@src/shared/infrastructure/server/config/err/AppError';
 
 export class SlotsAvailableFinderUseCase {
   constructor(private readonly locationRepository: LocationRepository) {}

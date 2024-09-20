@@ -1,7 +1,7 @@
 import { SettingEntity } from '@src/parameters/core/entities/setting-entity';
 import { SettingRepository } from '@src/parameters/core/repositories/setting-repository';
 import { SettingKeys } from '@src/parameters/core/repositories/setting-repository';
-import { SettingModel } from '@src/server/config/database/models/setting.model';
+import { SettingModel } from '@src/shared/infrastructure/server/config/database/models/parking/setting.model';
 
 export class SequelizeSettingMySQLRepository implements SettingRepository {
   async getParameterByKey(key: SettingKeys): Promise<SettingEntity | null> {

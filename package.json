@@ -63,7 +63,7 @@
   "main": "",
   "name": "backend-parking",
   "scripts": {
-    "build": "yarn build:validate && yarn build:clean && yarn build:generate && cp -r ./src/server/config/swagger ./build/server/config/swagger",
+    "build": "yarn build:validate && yarn build:clean && yarn build:generate",
     "build:clean": "rimraf ./build; exit 0",
     "build:validate": "tsc --noEmit",
     "build:generate": "swc ./src -d build --strip-leading-paths",

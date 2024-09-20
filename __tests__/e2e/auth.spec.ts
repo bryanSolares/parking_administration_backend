@@ -1,14 +1,14 @@
 import request from 'supertest';
 import { faker } from '@faker-js/faker';
 
-import { Server } from '../../src/server/server';
+import { Server } from '../../src/shared/infrastructure/server/server';
 import { cleanDatabaseAuthTesting } from '../utils/db';
-import { UserModel } from '../../src/server/config/database/models/auth/user.model';
 import { UserMother } from '../utils/mother/user-mother';
 import { RoleMother } from '../utils/mother/role-mother';
-import { RoleModel } from '../../src/server/config/database/models/auth/role.model';
-import { RoleDetailModel } from '../../src/server/config/database/models/auth/role.detail.model';
-import { ResourceModel } from '../../src/server/config/database/models/auth/resource.model';
+import { UserModel } from '../../src/shared/infrastructure/server/config/database/models/auth/user.model';
+import { RoleModel } from '../../src/shared/infrastructure/server/config/database/models/auth/role.model';
+import { ResourceModel } from '../../src/shared/infrastructure/server/config/database/models/auth/resource.model';
+import { RoleDetailModel } from '../../src/shared/infrastructure/server/config/database/models/auth/role.detail.model';
 
 const baseUrl = '/api/v1/auth';
 const server = new Server();
