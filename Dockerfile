@@ -28,4 +28,4 @@ EXPOSE 3500
 
 USER appuser
 
-CMD ["node", "./build/app.js"]
+CMD ["node", "./build/index.js"]
