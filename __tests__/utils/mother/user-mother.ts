@@ -1,5 +1,5 @@
 import { faker } from "@faker-js/faker";
-import { UserEntity, UserStatus } from "../../../src/auth/domain/entities/user-entity";
+import { UserEntity, UserStatus } from "../../../src/contexts/auth/core/entities/user-entity";
 
 export class UserMother{
   static createUserEntity({

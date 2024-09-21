@@ -1,6 +1,6 @@
 import { faker } from '@faker-js/faker';
-import { SettingEntity } from '../../../src/parameters/core/entities/setting-entity';
-import { SettingModel } from '../../../src/shared/infrastructure/server/config/database/models/parking/setting.model';
+import { SettingEntity } from '../../../src/contexts/parameters/core/entities/setting-entity';
+import { SettingModel } from '../../../src/contexts/shared/infrastructure/models/parking/setting.model';
 
 export class SettingBuilder {
   private _settingEntity: SettingEntity;

@@ -1,7 +1,7 @@
 import { faker } from "@faker-js/faker";
-import { VehicleEntity } from "../../../src/assignment/core/entities/vehicle-entity";
-import { VehicleType } from "../../../src/location/core/entities/slot-entity";
-import { VehicleModel } from "../../../src/shared/infrastructure/server/config/database/models/assignment/vehicle.model";
+import { VehicleEntity } from "../../../src/contexts/assignment/core/entities/vehicle-entity";
+import { VehicleType } from "../../../src/contexts/location/core/entities/slot-entity";
+import { VehicleModel } from "../../../src/contexts/shared/infrastructure/models/assignment/vehicle.model";
 
 export class VehicleBuilder {
   private _vehicleEntity: VehicleEntity;

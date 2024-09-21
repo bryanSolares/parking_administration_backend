@@ -1,6 +1,6 @@
 import request from 'supertest';
 
-import { Server } from '../../src/shared/infrastructure/server/server';
+import { Server } from '../../src/server/server';
 import { cleanDatabaseAssignmentTesting } from '../utils/db';
 import { cleanDatabaseLocationTesting } from '../utils/db';
 import { cleanDatabaseTagTesting } from '../utils/db';
@@ -14,12 +14,12 @@ import { SlotBuilder } from '../utils/builders/location-builder';
 import { TagBuilder } from '../utils/builders/tag-builder';
 import { AssignmentHelper } from '../utils/helpers/assignment-helper';
 import { LocationHelper } from '../utils/helpers/location-helper';
-import { SlotStatus } from '../../src/location/core/entities/slot-entity';
+import { SlotStatus } from '../../src/contexts/location/core/entities/slot-entity';
 import { faker } from '@faker-js/faker';
 import { AssignmentBuilder } from '../utils/builders/assignment-builder';
 import { VehicleBuilder } from '../utils/builders/vehicle-builder';
 import { EmployeeBuilder } from '../utils/builders/employee-builder';
-import { AssignmentStatus } from '../../src/assignment/core/entities/assignment-entity';
+import { AssignmentStatus } from '../../src/contexts/assignment/core/entities/assignment-entity';
 import { ParametersHelper } from '../utils/helpers/parameters-helper';
 import { SettingBuilder } from '../utils/builders/setting-builder';
 

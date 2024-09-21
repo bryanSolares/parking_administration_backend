@@ -1,28 +1,28 @@
 import request from 'supertest';
 import { faker } from '@faker-js/faker';
 
-import { Server } from '../../src/shared/infrastructure/server/server';
+import { Server } from '../../src/server/server';
 import { LocationMother } from '../utils/mother/location-mother';
 import {
   cleanDatabaseAssignmentTesting,
   cleanDatabaseLocationTesting
 } from '../utils/db';
 
-import { LocationModel } from '../../src/shared/infrastructure/server/config/database/models/parking/location.model';
-import { SlotModel } from '../../src/shared/infrastructure/server/config/database/models/parking/slot.model';
+import { LocationModel } from '../../src/contexts/shared/infrastructure/models/parking/location.model';
+import { SlotModel } from '../../src/contexts/shared/infrastructure/models/parking/slot.model';
 import {
   BenefitType,
   SlotStatus,
   SlotType,
   VehicleType
-} from '../../src/location/core/entities/slot-entity';
-import { LocationStatus } from '../../src/location/core/entities/location-entity';
+} from '../../src/contexts/location/core/entities/slot-entity';
+import { LocationStatus } from '../../src/contexts/location/core/entities/location-entity';
 import { AssignmentBuilder } from '../utils/builders/assignment-builder';
 import {
   LocationBuilder,
   SlotBuilder
 } from '../utils/builders/location-builder';
-import { AssignmentStatus } from '../../src/assignment/core/entities/assignment-entity';
+import { AssignmentStatus } from '../../src/contexts/assignment/core/entities/assignment-entity';
 import { LocationHelper } from '../utils/helpers/location-helper';
 
 const baseUrl = '/api/v1/parking/location';

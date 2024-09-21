@@ -4,7 +4,7 @@ import { faker } from '@faker-js/faker';
 import {
   TagEntity,
   TagStatus
-} from '../../../src/parameters/core/entities/tag-entity';
+} from '../../../src/contexts/parameters/core/entities/tag-entity';
 
 export class TagMother {
   static createTagRequest({

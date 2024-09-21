@@ -1,7 +1,7 @@
 import { faker } from "@faker-js/faker";
-import { Resource, RoleEntity } from "../../../src/auth/domain/entities/role-entity";
-import { RoleStatus } from "../../../src/auth/domain/entities/role-entity";
-import { ResourceEntity } from "../../../src/auth/domain/entities/resource-entity";
+import { Resource, RoleEntity } from "../../../src/contexts/auth/core/entities/role-entity";
+import { RoleStatus } from "../../../src/contexts/auth/core/entities/role-entity";
+import { ResourceEntity } from "../../../src/contexts/auth/core/entities/resource-entity";
 
 export class RoleMother{
   static createRole({

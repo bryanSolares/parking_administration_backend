@@ -1,5 +1,5 @@
 import { faker } from '@faker-js/faker';
-import { VehicleType } from '../../../src/location/core/entities/slot-entity';
+import { VehicleType } from '../../../src/contexts/location/core/entities/slot-entity';
 
 export class AssignmentRequestMother {
   static createAssignmentRequest({

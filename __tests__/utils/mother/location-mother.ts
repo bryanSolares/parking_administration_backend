@@ -6,11 +6,11 @@ import {
   SlotStatus,
   SlotType,
   VehicleType
-} from '../../../src/location/core/entities/slot-entity';
+} from '../../../src/contexts/location/core/entities/slot-entity';
 import {
   LocationEntity,
   LocationStatus
-} from '../../../src/location/core/entities/location-entity';
+} from '../../../src/contexts/location/core/entities/location-entity';
 
 export class LocationMother {
   static createLocationRequest(

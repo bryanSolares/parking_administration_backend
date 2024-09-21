@@ -2,16 +2,16 @@ import { faker } from '@faker-js/faker';
 import {
   LocationEntity,
   LocationStatus
-} from '../../../src/location/core/entities/location-entity';
+} from '../../../src/contexts/location/core/entities/location-entity';
 import {
   BenefitType,
   SlotEntity,
   SlotStatus,
   SlotType,
   VehicleType
-} from '../../../src/location/core/entities/slot-entity';
-import { LocationModel } from '../../../src/shared/infrastructure/server/config/database/models/parking/location.model';
-import { SlotModel } from '../../../src/shared/infrastructure/server/config/database/models/parking/slot.model';
+} from '../../../src/contexts/location/core/entities/slot-entity';
+import { LocationModel } from '../../../src/contexts/shared/infrastructure/models/parking/location.model';
+import { SlotModel } from '../../../src/contexts/shared/infrastructure/models/parking/slot.model';
 
 export class LocationBuilder {
   private locationEntity: LocationEntity;

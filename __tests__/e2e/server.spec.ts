@@ -1,6 +1,6 @@
 import request from 'supertest';
 
-import { Server } from '../../src/shared/infrastructure/server/server';
+import { Server } from '../../src/server/server';
 
 const baseUrl = '/api/v1';
 const server = new Server();

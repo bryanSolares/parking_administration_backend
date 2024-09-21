@@ -2,16 +2,16 @@ import { de, faker } from '@faker-js/faker';
 import {
   AssignmentEntity,
   AssignmentStatus
-} from '../../../src/assignment/core/entities/assignment-entity';
-import { AssignmentModel } from '../../../src/shared/infrastructure/server/config/database/models/assignment/assignment.model';
+} from '../../../src/contexts/assignment/core/entities/assignment-entity';
+import { AssignmentModel } from '../../../src/contexts/shared/infrastructure/models/assignment/assignment.model';
 import { LocationBuilder, SlotBuilder } from './location-builder';
 import { EmployeeBuilder } from './employee-builder';
 import {
   BenefitType,
   SlotEntity
-} from '../../../src/location/core/entities/slot-entity';
-import { EmployeeEntity } from '../../../src/assignment/core/entities/employee-entity';
-import { TagEntity } from '../../../src/parameters/core/entities/tag-entity';
+} from '../../../src/contexts/location/core/entities/slot-entity';
+import { EmployeeEntity } from '../../../src/contexts/assignment/core/entities/employee-entity';
+import { TagEntity } from '../../../src/contexts/parameters/core/entities/tag-entity';
 import { VehicleBuilder } from './vehicle-builder';
 
 export class AssignmentBuilder {

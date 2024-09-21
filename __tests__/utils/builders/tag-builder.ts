@@ -1,6 +1,6 @@
 import { faker } from "@faker-js/faker";
-import { TagEntity, TagStatus } from "../../../src/parameters/core/entities/tag-entity";
-import { TagModel } from "../../../src/shared/infrastructure/server/config/database/models/parameter/tag.model";
+import { TagEntity, TagStatus } from "../../../src/contexts/parameters/core/entities/tag-entity";
+import { TagModel } from "../../../src/contexts/shared/infrastructure/models/parameter/tag.model";
 
 export class TagBuilder{
   private tagEntity: TagEntity;

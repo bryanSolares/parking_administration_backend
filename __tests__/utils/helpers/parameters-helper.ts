@@ -1,4 +1,4 @@
-import { SettingModel } from '../../../src/shared/infrastructure/server/config/database/models/parking/setting.model';
+import { SettingModel } from '../../../src/contexts/shared/infrastructure/models/parking/setting.model';
 
 
 export interface SettingTableResult {
