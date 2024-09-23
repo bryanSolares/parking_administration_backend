@@ -9,4 +9,7 @@ export enum SettingKeys {
 //TODO: getParameter type string, or json or number
 export interface SettingRepository {
   getParameterByKey(key: SettingKeys): Promise<SettingEntity | null>;
+  getSettingById(id: string): Promise<SettingEntity | null>;
+  getAllSettings(): Promise<Array<SettingEntity>>;
+  updateSetting(setting: SettingEntity): Promise<void>;
 }

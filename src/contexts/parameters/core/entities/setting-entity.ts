@@ -1,13 +1,29 @@
 export class SettingEntity {
   constructor(
-    public readonly id: string,
-    public readonly settingKey: string,
-    public readonly settingValue: string,
-    public readonly description: string
+    readonly id: string,
+    readonly settingKey: string,
+    readonly settingValue: string,
+    readonly description: string,
+    readonly createdAt?: string,
+    readonly updatedAt?: string
   ) {}
 
-  static fromPrimitives(plainData: { id: string; settingKey: string; settingValue: string; description: string }) {
-    return new SettingEntity(plainData.id, plainData.settingKey, plainData.settingValue, plainData.description);
+  static fromPrimitives(plainData: {
+    id: string;
+    settingKey: string;
+    settingValue: string;
+    description: string;
+    createdAt?: string;
+    updatedAt?: string;
+  }) {
+    return new SettingEntity(
+      plainData.id,
+      plainData.settingKey,
+      plainData.settingValue,
+      plainData.description,
+      plainData.createdAt,
+      plainData.updatedAt
+    );
   }
 
   toPrimitives() {
@@ -15,7 +31,9 @@ export class SettingEntity {
       id: this.id,
       settingKey: this.settingKey,
       settingValue: this.settingValue,
-      description: this.description
+      description: this.description,
+      createdAt: this.createdAt,
+      updatedAt: this.updatedAt
     };
   }
 }

@@ -2,6 +2,8 @@ import { Model } from 'sequelize';
 import { DataTypes } from 'sequelize';
 import { sequelize } from '@src/server/config/database/sequelize';
 
+const TagStatus = ['ACTIVO', 'INACTIVO'];
+
 export class TagModel extends Model {}
 
 TagModel.init(
@@ -19,15 +21,19 @@ TagModel.init(
       type: DataTypes.STRING
     },
     status: {
-      type: DataTypes.ENUM('ACTIVO', 'INACTIVO'),
-      defaultValue: 'ACTIVO'
+      type: DataTypes.ENUM,
+      values: TagStatus,
+      allowNull: false
     }
   },
   {
     sequelize,
+    underscored: true,
+    paranoid: true,
     tableName: 'tag',
     modelName: 'tag',
     updatedAt: 'updated_at',
-    createdAt: 'created_at'
+    createdAt: 'created_at',
+    deletedAt: 'deleted_at'
   }
 );

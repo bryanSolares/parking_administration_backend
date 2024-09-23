@@ -1,6 +1,6 @@
 import { faker } from '@faker-js/faker';
 import { SettingEntity } from '../../../src/contexts/parameters/core/entities/setting-entity';
-import { SettingModel } from '../../../src/contexts/shared/infrastructure/models/parking/setting.model';
+import { SettingModel } from '../../../src/contexts/shared/infrastructure/models/parameter/setting.model';
 
 export class SettingBuilder {
   private _settingEntity: SettingEntity;
@@ -29,6 +29,21 @@ export class SettingBuilder {
       settingValue:
         '{"security_boss":{"name":"securityBoss","employee_code":"57123456789"},"parking_manager":{"name":"parkingManager","employee_code":"57123456789"},"human_resources_manager":{"name":"humanResourcesManager","employee_code":"57123456789"},"human_resources_payroll":{"name":"humanResourcesPayroll","employee_code":"57123456789"}}',
       description: 'Personal que firma formularios de aceptación'
+    });
+    return this;
+  }
+
+  public withDataFaker(
+    data: { settingKey: string; settingValue: string; description: string } = {
+      settingKey: faker.lorem.word(),
+      settingValue: faker.lorem.word(),
+      description: faker.lorem.word()
+    }
+  ): SettingBuilder {
+    this._settingEntity = SettingEntity.fromPrimitives({
+      ...this._settingEntity.toPrimitives(),
+      ...data,
+      id: faker.string.uuid(),
     });
     return this;
   }

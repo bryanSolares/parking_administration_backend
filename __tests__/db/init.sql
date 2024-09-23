@@ -157,9 +157,10 @@ CREATE TABLE `tag` (
   `id` char(36) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL,
   `name` varchar(255) NOT NULL,
   `description` varchar(255) DEFAULT NULL,
-  `status` enum('ACTIVO','INACTIVO') DEFAULT 'ACTIVO',
+  `status` enum('ACTIVO','INACTIVO') NOT NULL,
   `created_at` datetime NOT NULL,
   `updated_at` datetime NOT NULL,
+  `deleted_at` datetime DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `id` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;

@@ -157,9 +157,10 @@ CREATE TABLE `tag` (
   `id` char(36) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL,
   `name` varchar(255) NOT NULL,
   `description` varchar(255) DEFAULT NULL,
-  `status` enum('ACTIVO','INACTIVO') DEFAULT 'ACTIVO',
+  `status` enum('ACTIVO','INACTIVO') NOT NULL,
   `created_at` datetime NOT NULL,
   `updated_at` datetime NOT NULL,
+  `deleted_at` datetime DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `id` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
@@ -460,9 +461,17 @@ begin
 end ;;
 delimiter ;
 
-insert into `resource` values
-('13a87ee9-5290-445b-8b6a-d2e5aea9eb8b','dashboard','main dashboard','2024-08-31 00:00:00','2024-08-31 00:00:00'),
-('57cb7a57-019c-4605-a982-7f5776eb9531','parking-administrator','parking administrator','2024-08-31 00:00:00','2024-08-31 00:00:00');
+insert into resource values ('76576cf3-09e5-4172-8acf-de56c49e75e7', 'dashboard', '', current_date, current_date);
+insert into resource values ('4142c1ab-e3e5-43c4-979a-001c779cc150', 'notifications', '', current_date, current_date);
+insert into resource values ('dd688388-e528-4c73-9f68-88faa7ad933a', 'management-locations', '', current_date, current_date);
+insert into resource values ('3843b30e-060d-4e78-b6e5-9c78c2b27697', 'management-assignments', '', current_date, current_date);
+insert into resource values ('c6eb0954-cbae-4680-9035-a470feab1a5a', 'management-notifications', '', current_date, current_date);
+insert into resource values ('ad4da354-cf92-4a28-a86f-ab40fa7c944c', 'management-reports', '', current_date, current_date);
+insert into resource values ('8a62ace2-8829-4165-b27d-fd285271fc87', 'parameters-setting', '', current_date, current_date);
+insert into resource values ('9334e57d-b264-4288-9727-91cf608b148c', 'parameters-users', '', current_date, current_date);
+insert into resource values ('fba4ee19-b6a5-4972-8d9d-b7532bbfc623', 'parameters-roles', '', current_date, current_date);
+insert into resource values ('fcfdc402-cf18-423b-acdd-45510a1b259c', 'parameters-templates', '', current_date, current_date);
+insert into resource values ('2246130a-3805-4692-88c3-a9bbee29cc91', 'parameters-logs', '', current_date, current_date);
 
 INSERT INTO `setting` VALUES
 ('70d41c5d-488f-4852-81c8-e6d58c206335','MAX_DAYS_TO_ASSIGNMENT_LOAN','15','Máximo de días permitido para asignaciones temporales','2024-09-05 00:00:00','2024-09-05 00:00:00'),

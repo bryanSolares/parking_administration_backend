@@ -13,16 +13,16 @@ SettingModel.init(
       allowNull: false
     },
     settingKey: {
-      type: DataTypes.STRING,
+      type: DataTypes.STRING(50),
       unique: true,
       allowNull: false
     },
     settingValue: {
-      type: DataTypes.STRING,
+      type: DataTypes.STRING(500),
       allowNull: false
     },
     description: {
-      type: DataTypes.STRING,
+      type: DataTypes.STRING(255),
       allowNull: true
     }
   },
