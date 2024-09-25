@@ -1,12 +1,19 @@
 {
   "compilerOptions": {
-    "baseUrl": "./",
-    "module": "commonjs",
+    "allowSyntheticDefaultImports": true,
     "target": "ES2022",
-    "esModuleInterop": true,
-    "strict": true,
+    "alwaysStrict": true,
     "outDir": "build",
+    "allowJs": false,
+    "sourceMap": true,
+    "module": "CommonJS",
+    "moduleResolution": "node",
+    "esModuleInterop": true,
+    "lib": ["ES2022"],
     "skipLibCheck": true,
+    "noImplicitOverride": true,
+    "baseUrl": "./",
+    "strict": true,
     "resolveJsonModule": true,
     "paths": {
       "@src/*": ["src/*"],

@@ -34,17 +34,19 @@ export class GetEmployeeByCode {
 
     const data = await response.json();
 
-    const employee = EmployeeEntity.fromPrimitive(data);
+    // FIXME: fix this
+    // const employee = EmployeeEntity.fromPrimitive(data);
 
-    const employeeDatabase = await this.employeeRepository.getEmployeeFromDatabase(employeeCode);
+    ///const employeeDatabase = await this.employeeRepository.getEmployeeFromDatabase(employeeCode);
 
-    if (employeeDatabase) {
-      employee.id = employeeDatabase.id;
-      employee.vehicles = employeeDatabase.vehicles;
-      employee.accessToken = employeeDatabase.accessToken;
-      employee.accessTokenStatus = employeeDatabase.accessTokenStatus;
-    }
+    // if (employeeDatabase) {
+    //   employee.id = employeeDatabase.id;
+    //   employee.vehicles = employeeDatabase.vehicles;
+    //   employee.accessToken = employeeDatabase.accessToken;
+    //   employee.accessTokenStatus = employeeDatabase.accessTokenStatus;
+    // }
 
-    return employee;
+    //return employee;
+    return data as EmployeeEntity;
   }
 }

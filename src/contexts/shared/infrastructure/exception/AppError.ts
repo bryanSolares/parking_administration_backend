@@ -1,7 +1,7 @@
 import { HttpCode } from './types';
 
 export class AppError extends Error {
-  public readonly name: string;
+  override name: string;
   public readonly httpCode: HttpCode;
   public readonly isOperational: boolean;
 

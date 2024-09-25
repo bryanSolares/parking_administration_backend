@@ -1,4 +1,5 @@
 import { v4 as uuid } from 'uuid';
+import { format } from '@formkit/tempo';
 
 import { AssignmentRepository } from '@src/contexts/assignment/core/repositories/assignment-repository';
 import { AppError } from '@src/contexts/shared/infrastructure/exception/AppError';
@@ -8,11 +9,13 @@ import { AssignmentStatus } from '@src/contexts/assignment/core/entities/assignm
 import { AssignmentLoadEntity } from '@src/contexts/assignment/core/entities/assignment-load-entity';
 import { AssignmentLoadStatus } from '@src/contexts/assignment/core/entities/assignment-load-entity';
 import { EmployeeEntity } from '@src/contexts/assignment/core/entities/employee-entity';
-import { format } from '@formkit/tempo';
+import { NotificationQueueRepository } from '@src/contexts/shared/core/repositories.ts/notification-queue-repository';
+import { EventStatus, EventType, NotificationQueue } from '@src/contexts/shared/core/notification_queue';
 
 export class CreateAssignmentLoan {
   constructor(
     private readonly assignmentRepository: AssignmentRepository,
+    private readonly notification: NotificationQueueRepository,
     private readonly validations: Validations
   ) {}
 
@@ -91,6 +94,9 @@ export class CreateAssignmentLoan {
     await this.validations.validateIfRangeOfDaysToAssignmentLoanIsValid(data.startDateAssignment, data.endDateAssignment);
 
     await this.assignmentRepository.createAssignmentLoan(assignmentLoan);
+
+    const notification = new NotificationQueue(uuid(), EventType.ASSIGNMENT_LOAN, assignmentLoan.id, EventStatus.PENDING);
+    await this.notification.create(notification);
 
     // const owner = assignment.employee;
     // const guest = assignmentLoan.employee;
