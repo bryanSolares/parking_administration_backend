@@ -1,8 +1,12 @@
+import { v4 as uuid } from 'uuid';
+
 import { AssignmentStatus } from '@src/contexts/assignment/core/entities/assignment-entity';
 import { AssignmentRepository } from '@src/contexts/assignment/core/repositories/assignment-repository';
 import { SettingRepository } from '@src/contexts/parameters/core/repositories/setting-repository';
 import { SettingKeys } from '@src/contexts/parameters/core/repositories/setting-repository';
+import { EventStatus, EventType, NotificationQueue } from '@src/contexts/shared/core/notification_queue';
 import { AppError } from '@src/contexts/shared/infrastructure/exception/AppError';
+import { NotificationQueueRepository } from '@src/contexts/shared/core/repositories.ts/notification-queue-repository';
 
 // type SignatureEmployee = {
 //   employee_code: string;
@@ -12,7 +16,8 @@ import { AppError } from '@src/contexts/shared/infrastructure/exception/AppError
 export class CreateAcceptanceProcessUseCase {
   constructor(
     private readonly assignmentRepository: AssignmentRepository,
-    private readonly settingRepository: SettingRepository
+    private readonly settingRepository: SettingRepository,
+    private readonly notification: NotificationQueueRepository
   ) {}
 
   async run(
@@ -72,5 +77,8 @@ export class CreateAcceptanceProcessUseCase {
 
     // update status
     await this.assignmentRepository.changeStatusAssignment(assignmentId, AssignmentStatus.IN_PROGRESS, data.assignmentDate);
+
+    const notificationEntity = new NotificationQueue(uuid(), EventType.ACCEPTANCE_FORM, assignment.id, EventStatus.PENDING);
+    await this.notification.create(notificationEntity);
   }
 }

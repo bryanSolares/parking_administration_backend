@@ -1,14 +1,17 @@
-export enum TemplateType {
-  ASSIGNMENT = 'ASSIGNMENT',
+export enum TemplateNotificationType {
+  ACCEPTANCE_FORM = 'ACCEPTANCE_FORM',
+  ACCEPTANCE_ASSIGNMENT = 'ACCEPTANCE_ASSIGNMENT',
+  MANUAL_DE_ASSIGNMENT = 'MANUAL_DE_ASSIGNMENT',
+  AUTO_DE_ASSIGNMENT = 'AUTO_DE_ASSIGNMENT',
   DISCOUNT_NOTE = 'DISCOUNT_NOTE',
-  DE_ASSIGNMENT = 'DE_ASSIGNMENT',
-  ASSIGNMENT_LOAN = 'ASSIGNMENT_LOAN'
+  ASSIGNMENT_LOAN = 'ASSIGNMENT_LOAN',
+  DE_ASSIGNMENT_LOAN = 'DE_ASSIGNMENT_LOAN'
 }
 
 export class EmailTemplateEntity {
   constructor(
     readonly id: string,
-    readonly type: TemplateType,
+    readonly type: TemplateNotificationType,
     readonly templateName: string,
     readonly subject: string,
     readonly content: string
@@ -16,7 +19,7 @@ export class EmailTemplateEntity {
 
   static fromPrimitive(data: {
     id: string;
-    type: TemplateType;
+    type: TemplateNotificationType;
     templateName: string;
     subject: string;
     content: string;

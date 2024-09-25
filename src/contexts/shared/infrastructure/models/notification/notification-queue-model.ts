@@ -3,7 +3,15 @@ import { sequelize } from '@src/server/config/database/sequelize';
 
 export class NotificationQueueModel extends Model {}
 
-const eventTypes = ['ASSIGNMENT', 'DISCOUNT_NOTE', 'DE_ASSIGNMENT', 'ASSIGNMENT_LOAN'];
+const eventTypes = [
+  'ACCEPTANCE_FORM',
+  'ACCEPTANCE_ASSIGNMENT',
+  'MANUAL_DE_ASSIGNMENT',
+  'AUTO_DE_ASSIGNMENT',
+  'DISCOUNT_NOTE',
+  'ASSIGNMENT_LOAN',
+  'DE_ASSIGNMENT_LOAN'
+];
 const eventStatus = ['PENDING', 'IN_PROGRESS', 'DISPATCHED', 'FAILED', 'RETRYING'];
 
 NotificationQueueModel.init(

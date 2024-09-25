@@ -3,7 +3,15 @@ import { sequelize } from '@server/config/database/sequelize';
 
 export class TemplateEmailModel extends Model {}
 
-const templateType = ['ASSIGNMENT', 'DISCOUNT_NOTE', 'DE_ASSIGNMENT', 'ASSIGNMENT_LOAN'];
+const templateType = [
+  'ACCEPTANCE_FORM',
+  'ACCEPTANCE_ASSIGNMENT',
+  'MANUAL_DE_ASSIGNMENT',
+  'AUTO_DE_ASSIGNMENT',
+  'DISCOUNT_NOTE',
+  'ASSIGNMENT_LOAN',
+  'DE_ASSIGNMENT_LOAN'
+];
 
 TemplateEmailModel.init(
   {

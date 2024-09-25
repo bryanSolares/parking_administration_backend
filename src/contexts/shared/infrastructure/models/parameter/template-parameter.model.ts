@@ -1,19 +1,19 @@
 import { DataTypes, Model } from 'sequelize';
 import { sequelize } from '@server/config/database/sequelize';
 
-export class TemplateVariableModel extends Model {}
+export class TemplateParameterModel extends Model {}
 
-TemplateVariableModel.init(
+TemplateParameterModel.init(
   {
     id: {
       type: DataTypes.UUID,
       primaryKey: true
     },
-    variableName: {
+    parameterName: {
       type: DataTypes.STRING,
       allowNull: false
     },
-    variableDescription: {
+    parameterDescription: {
       type: DataTypes.STRING,
       allowNull: false
     },
@@ -33,8 +33,8 @@ TemplateVariableModel.init(
   {
     sequelize,
     underscored: true,
-    modelName: 'template_variable',
-    tableName: 'template_variable',
+    modelName: 'template_parameter',
+    tableName: 'template_parameter',
     createdAt: 'created_at',
     updatedAt: 'updated_at'
   }

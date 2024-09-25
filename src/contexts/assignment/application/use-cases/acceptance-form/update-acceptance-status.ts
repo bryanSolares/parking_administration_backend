@@ -26,7 +26,12 @@ export class UpdateAcceptanceStatusUseCase {
     await this.assignmentRepository.changeStatusAssignment(assignmentId, status);
 
     if (status === AssignmentStatus.ACCEPTED) {
-      const notificationEntity = new NotificationQueue(uuid(), EventType.ASSIGNMENT, assignment.id, EventStatus.PENDING);
+      const notificationEntity = new NotificationQueue(
+        uuid(),
+        EventType.ACCEPTANCE_ASSIGNMENT,
+        assignment.id,
+        EventStatus.PENDING
+      );
       await this.notification.create(notificationEntity);
     }
   }

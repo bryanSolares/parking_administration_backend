@@ -33,7 +33,7 @@ export class CreateDeAssignment {
     );
 
     await this.assignmentRepository.createDeAssignment(deAssignment);
-    const notification = new NotificationQueue(uuid(), EventType.DE_ASSIGNMENT, deAssignment.id, EventStatus.PENDING);
+    const notification = new NotificationQueue(uuid(), EventType.MANUAL_DE_ASSIGNMENT, deAssignment.id, EventStatus.PENDING);
     await this.notification.create(notification);
 
     // const owner = {

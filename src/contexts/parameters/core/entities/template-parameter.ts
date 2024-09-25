@@ -1,8 +1,8 @@
-export class TemplateVariableEntity {
+export class TemplateParameterEntity {
   constructor(
     readonly id: string,
-    readonly variableName: string,
-    readonly variableDescription: string,
+    readonly parameterName: string,
+    readonly parameterDescription: string,
     readonly exampleValue: string,
     readonly entity: string,
     readonly columnName: string
@@ -10,16 +10,16 @@ export class TemplateVariableEntity {
 
   static fromPrimitive(data: {
     id: string;
-    variableName: string;
-    variableDescription: string;
+    parameterName: string;
+    parameterDescription: string;
     exampleValue: string;
     entity: string;
     columnName: string;
-  }): TemplateVariableEntity {
-    return new TemplateVariableEntity(
+  }): TemplateParameterEntity {
+    return new TemplateParameterEntity(
       data.id,
-      data.variableName,
-      data.variableDescription,
+      data.parameterName,
+      data.parameterDescription,
       data.exampleValue,
       data.entity,
       data.columnName
@@ -29,8 +29,8 @@ export class TemplateVariableEntity {
   toPrimitive() {
     return {
       id: this.id,
-      variableName: this.variableName,
-      variableDescription: this.variableDescription,
+      parameterName: this.parameterName,
+      parameterDescription: this.parameterDescription,
       exampleValue: this.exampleValue,
       entity: this.entity,
       columnName: this.columnName

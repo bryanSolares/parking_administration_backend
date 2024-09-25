@@ -1,8 +1,8 @@
 import { TemplateEmailModel } from '@src/contexts/shared/infrastructure/models/parameter/template-email.model';
 import { EmailTemplateEntity } from '../../core/entities/email-template';
-import { TemplateVariableEntity } from '../../core/entities/template-variable';
+import { TemplateParameterEntity } from '../../core/entities/template-parameter';
 import { TemplateRepository } from '../../core/repositories/template-repository';
-import { TemplateVariableModel } from '@src/contexts/shared/infrastructure/models/parameter/template-variable.model';
+import { TemplateParameterModel } from '@src/contexts/shared/infrastructure/models/parameter/template-parameter.model';
 
 export class SequelizeMySqlTemplateRepository implements TemplateRepository {
   // updateTemplate(template: EmailTemplateEntity): Promise<void> {
@@ -15,8 +15,8 @@ export class SequelizeMySqlTemplateRepository implements TemplateRepository {
     const templates = await TemplateEmailModel.findAll();
     return templates.map(template => EmailTemplateEntity.fromPrimitive({ ...template.get({ plain: true }) }));
   }
-  async getTemplateVariables(): Promise<Array<TemplateVariableEntity>> {
-    const variables = await TemplateVariableModel.findAll();
-    return variables.map(variable => TemplateVariableEntity.fromPrimitive({ ...variable.get({ plain: true }) }));
+  async getTemplateVariables(): Promise<Array<TemplateParameterEntity>> {
+    const variables = await TemplateParameterModel.findAll();
+    return variables.map(variable => TemplateParameterEntity.fromPrimitive({ ...variable.get({ plain: true }) }));
   }
 }

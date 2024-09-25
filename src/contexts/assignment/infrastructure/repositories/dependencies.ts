@@ -61,7 +61,11 @@ const updateDiscountNote = new UpdateStatusDiscountNote(sequelizeAssignmentRepos
 const deleteAssignmentLoan = new DeleteAssignmentLoan(sequelizeAssignmentRepository);
 const getFormDataOfAcceptance = new GetFormDataOfAcceptanceUseCase(sequelizeAssignmentRepository, settingRepository);
 
-const createAcceptanceProcess = new CreateAcceptanceProcessUseCase(sequelizeAssignmentRepository, settingRepository);
+const createAcceptanceProcess = new CreateAcceptanceProcessUseCase(
+  sequelizeAssignmentRepository,
+  settingRepository,
+  notificationRepository
+);
 
 const updateStatusAcceptanceAssignment = new UpdateAcceptanceStatusUseCase(sequelizeAssignmentRepository, notificationRepository);
 
