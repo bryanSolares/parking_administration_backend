@@ -10,7 +10,14 @@ import { AssignmentLoadEntity } from '@src/contexts/assignment/core/entities/ass
 import { AssignmentLoadStatus } from '@src/contexts/assignment/core/entities/assignment-load-entity';
 import { EmployeeEntity } from '@src/contexts/assignment/core/entities/employee-entity';
 import { NotificationQueueRepository } from '@src/contexts/shared/core/repositories.ts/notification-queue-repository';
-import { EventStatus, EventType, NotificationQueue } from '@src/contexts/shared/core/notification_queue';
+import {
+  EventStatus,
+  EventType,
+  NotificationQueue,
+  Payload,
+  SenderType,
+  TargetType
+} from '@src/contexts/shared/core/notification_queue';
 
 export class CreateAssignmentLoan {
   constructor(
@@ -95,7 +102,26 @@ export class CreateAssignmentLoan {
 
     await this.assignmentRepository.createAssignmentLoan(assignmentLoan);
 
-    const notification = new NotificationQueue(uuid(), EventType.ASSIGNMENT_LOAN, assignmentLoan.id, EventStatus.PENDING);
+    const notification = new NotificationQueue(
+      uuid(),
+      EventType.ASSIGNMENT_LOAN,
+      {
+        transactionId: assignmentLoan.id,
+        destinations: [
+          {
+            sender: SenderType.EMAIL,
+            address: assignment.employee.email,
+            target: TargetType.TO
+          },
+          {
+            sender: SenderType.EMAIL,
+            address: assignmentLoan.employee.email,
+            target: TargetType.TO
+          }
+        ]
+      } satisfies Payload,
+      EventStatus.PENDING
+    );
     await this.notification.create(notification);
 
     // const owner = assignment.employee;

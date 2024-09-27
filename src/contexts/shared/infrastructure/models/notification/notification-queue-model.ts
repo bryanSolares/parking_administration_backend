@@ -27,7 +27,7 @@ NotificationQueueModel.init(
       allowNull: false
     },
     payload: {
-      type: DataTypes.UUID,
+      type: DataTypes.JSON,
       allowNull: false
     },
     status: {
@@ -40,13 +40,19 @@ NotificationQueueModel.init(
       allowNull: false,
       defaultValue: 0
     },
-    dispatchedAt: {
-      type: DataTypes.DATE
-    },
     maxRetries: {
       type: DataTypes.SMALLINT,
       allowNull: false,
       defaultValue: 3
+    },
+    dispatchedAt: {
+      type: DataTypes.DATE
+    },
+    errorMessage: {
+      type: DataTypes.TEXT
+    },
+    nextAttempt: {
+      type: DataTypes.DATE
     }
   },
   {

@@ -5,7 +5,14 @@ import { AssignmentStatus } from '@src/contexts/assignment/core/entities/assignm
 import { DeAssignmentEntity } from '@src/contexts/assignment/core/entities/deassignment-entity';
 import { AppError } from '@src/contexts/shared/infrastructure/exception/AppError';
 import { NotificationQueueRepository } from '@src/contexts/shared/core/repositories.ts/notification-queue-repository';
-import { EventStatus, EventType, NotificationQueue } from '@src/contexts/shared/core/notification_queue';
+import {
+  EventStatus,
+  EventType,
+  NotificationQueue,
+  Payload,
+  SenderType,
+  TargetType
+} from '@src/contexts/shared/core/notification_queue';
 
 export class CreateDeAssignment {
   constructor(
@@ -33,7 +40,21 @@ export class CreateDeAssignment {
     );
 
     await this.assignmentRepository.createDeAssignment(deAssignment);
-    const notification = new NotificationQueue(uuid(), EventType.MANUAL_DE_ASSIGNMENT, deAssignment.id, EventStatus.PENDING);
+    const notification = new NotificationQueue(
+      uuid(),
+      EventType.MANUAL_DE_ASSIGNMENT,
+      {
+        transactionId: assignment.id,
+        destinations: [
+          {
+            sender: SenderType.EMAIL,
+            address: assignment.employee.email,
+            target: TargetType.TO
+          }
+        ]
+      } satisfies Payload,
+      EventStatus.PENDING
+    );
     await this.notification.create(notification);
 
     // const owner = {

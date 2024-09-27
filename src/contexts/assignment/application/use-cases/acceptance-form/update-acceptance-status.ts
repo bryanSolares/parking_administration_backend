@@ -2,7 +2,14 @@ import { v4 as uuid } from 'uuid';
 
 import { AssignmentStatus } from '@src/contexts/assignment/core/entities/assignment-entity';
 import { AssignmentRepository } from '@src/contexts/assignment/core/repositories/assignment-repository';
-import { EventStatus, EventType, NotificationQueue } from '@src/contexts/shared/core/notification_queue';
+import {
+  EventStatus,
+  EventType,
+  NotificationQueue,
+  Payload,
+  SenderType,
+  TargetType
+} from '@src/contexts/shared/core/notification_queue';
 import { NotificationQueueRepository } from '@src/contexts/shared/core/repositories.ts/notification-queue-repository';
 import { AppError } from '@src/contexts/shared/infrastructure/exception/AppError';
 
@@ -29,7 +36,16 @@ export class UpdateAcceptanceStatusUseCase {
       const notificationEntity = new NotificationQueue(
         uuid(),
         EventType.ACCEPTANCE_ASSIGNMENT,
-        assignment.id,
+        {
+          transactionId: assignment.id,
+          destinations: [
+            {
+              sender: SenderType.EMAIL,
+              address: assignment.employee.email,
+              target: TargetType.TO
+            }
+          ]
+        } satisfies Payload,
         EventStatus.PENDING
       );
       await this.notification.create(notificationEntity);

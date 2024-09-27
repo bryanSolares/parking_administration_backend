@@ -5,7 +5,14 @@ import { AppError } from '@src/contexts/shared/infrastructure/exception/AppError
 import { BenefitType } from '@src/contexts/location/core/entities/slot-entity';
 import { DiscountNoteEntity } from '@src/contexts/assignment/core/entities/discount-note-entity';
 import { NotificationQueueRepository } from '@src/contexts/shared/core/repositories.ts/notification-queue-repository';
-import { EventStatus, EventType, NotificationQueue } from '@src/contexts/shared/core/notification_queue';
+import {
+  EventStatus,
+  EventType,
+  NotificationQueue,
+  Payload,
+  SenderType,
+  TargetType
+} from '@src/contexts/shared/core/notification_queue';
 
 export class CreateDiscountNote {
   constructor(
@@ -41,7 +48,21 @@ export class CreateDiscountNote {
     const discountNote = new DiscountNoteEntity(uuid(), idAssignment);
     await this.assignmentRepository.createDiscountNote(discountNote);
 
-    const notification = new NotificationQueue(uuid(), EventType.DISCOUNT_NOTE, discountNote.id, EventStatus.PENDING);
+    const notification = new NotificationQueue(
+      uuid(),
+      EventType.DISCOUNT_NOTE,
+      {
+        transactionId: assignment.id,
+        destinations: [
+          {
+            sender: SenderType.EMAIL,
+            address: assignment.employee.email,
+            target: TargetType.TO
+          }
+        ]
+      } satisfies Payload,
+      EventStatus.PENDING
+    );
     await this.notification.create(notification);
 
     // //TODO: send email with discount note

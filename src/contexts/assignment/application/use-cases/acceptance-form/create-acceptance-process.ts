@@ -4,7 +4,14 @@ import { AssignmentStatus } from '@src/contexts/assignment/core/entities/assignm
 import { AssignmentRepository } from '@src/contexts/assignment/core/repositories/assignment-repository';
 import { SettingRepository } from '@src/contexts/parameters/core/repositories/setting-repository';
 import { SettingKeys } from '@src/contexts/parameters/core/repositories/setting-repository';
-import { EventStatus, EventType, NotificationQueue } from '@src/contexts/shared/core/notification_queue';
+import {
+  EventStatus,
+  EventType,
+  NotificationQueue,
+  Payload,
+  SenderType,
+  TargetType
+} from '@src/contexts/shared/core/notification_queue';
 import { AppError } from '@src/contexts/shared/infrastructure/exception/AppError';
 import { NotificationQueueRepository } from '@src/contexts/shared/core/repositories.ts/notification-queue-repository';
 
@@ -78,7 +85,21 @@ export class CreateAcceptanceProcessUseCase {
     // update status
     await this.assignmentRepository.changeStatusAssignment(assignmentId, AssignmentStatus.IN_PROGRESS, data.assignmentDate);
 
-    const notificationEntity = new NotificationQueue(uuid(), EventType.ACCEPTANCE_FORM, assignment.id, EventStatus.PENDING);
+    const notificationEntity = new NotificationQueue(
+      uuid(),
+      EventType.ACCEPTANCE_FORM,
+      {
+        transactionId: assignment.id,
+        destinations: [
+          {
+            sender: SenderType.EMAIL,
+            address: assignment.employee.email,
+            target: TargetType.TO
+          }
+        ]
+      } satisfies Payload,
+      EventStatus.PENDING
+    );
     await this.notification.create(notificationEntity);
   }
 }
