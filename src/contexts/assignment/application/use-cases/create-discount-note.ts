@@ -4,20 +4,13 @@ import { AssignmentStatus } from '@src/contexts/assignment/core/entities/assignm
 import { AppError } from '@src/contexts/shared/infrastructure/exception/AppError';
 import { BenefitType } from '@src/contexts/location/core/entities/slot-entity';
 import { DiscountNoteEntity } from '@src/contexts/assignment/core/entities/discount-note-entity';
-import { NotificationQueueRepository } from '@src/contexts/shared/core/repositories.ts/notification-queue-repository';
-import {
-  EventStatus,
-  EventType,
-  NotificationQueue,
-  Payload,
-  SenderType,
-  TargetType
-} from '@src/contexts/shared/core/notification_queue';
+import { EventType } from '@src/contexts/shared/core/notification_queue';
+import { EventNotificationService } from '@src/contexts/shared/application/event-notification-service';
 
 export class CreateDiscountNote {
   constructor(
     private readonly assignmentRepository: AssignmentRepository,
-    private readonly notification: NotificationQueueRepository
+    private readonly eventNotificationService: EventNotificationService
   ) {}
 
   async run(idAssignment: string): Promise<void> {
@@ -46,29 +39,14 @@ export class CreateDiscountNote {
     }
 
     const discountNote = new DiscountNoteEntity(uuid(), idAssignment);
+
     await this.assignmentRepository.createDiscountNote(discountNote);
 
-    const notification = new NotificationQueue(
-      uuid(),
-      EventType.DISCOUNT_NOTE,
-      {
-        transactionId: assignment.id,
-        destinations: [
-          {
-            sender: SenderType.EMAIL,
-            address: assignment.employee.email,
-            target: TargetType.TO
-          }
-        ]
-      } satisfies Payload,
-      EventStatus.PENDING
-    );
-    await this.notification.create(notification);
-
-    // //TODO: send email with discount note
-    // this.notificationService.createDiscountNoteNotification({
-    //   name: assignment.employee.name,
-    //   email: assignment.employee.email
-    // });
+    await this.eventNotificationService.publish({
+      eventType: EventType.DISCOUNT_NOTE,
+      transactionId: assignment.id,
+      destinations: [assignment.employee.email],
+      destinationsCC: []
+    });
   }
 }

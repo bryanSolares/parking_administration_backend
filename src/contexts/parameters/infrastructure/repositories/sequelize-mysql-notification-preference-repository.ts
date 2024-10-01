@@ -6,6 +6,8 @@ import {
 import { NotificationPreferenceModel } from '@src/contexts/shared/infrastructure/models/parameter/notification-preference';
 import { UserModel } from '@src/contexts/shared/infrastructure/models/auth/user.model';
 import { sequelize } from '@src/server/config/database/sequelize';
+import { UserEntity } from '@src/contexts/auth/core/entities/user-entity';
+import { EventType } from '@src/contexts/shared/core/notification_queue';
 
 export class NotificationPreferenceMySQLRepository implements NotificationPreferenceRepository {
   /* eslint-disable @typescript-eslint/no-unsafe-call */
@@ -61,5 +63,27 @@ export class NotificationPreferenceMySQLRepository implements NotificationPrefer
     await Promise.all(updateListPromises);
 
     await transaction.commit();
+  }
+
+  async getUsersByNotificationType(notificationType: EventType): Promise<Array<UserEntity>> {
+    const data = await NotificationPreferenceModel.findAll({
+      where: {
+        notificationType: notificationType,
+        enable: true
+      },
+      include: [
+        {
+          model: UserModel,
+          attributes: ['id', 'username', 'email', 'name']
+        }
+      ]
+    });
+
+    return data.map(item => {
+      const plainData = item.get({ plain: true });
+      return UserEntity.fromPrimitives({
+        ...plainData.user
+      });
+    });
   }
 }

@@ -4,20 +4,13 @@ import { AssignmentRepository } from '@src/contexts/assignment/core/repositories
 import { AssignmentStatus } from '@src/contexts/assignment/core/entities/assignment-entity';
 import { DeAssignmentEntity } from '@src/contexts/assignment/core/entities/deassignment-entity';
 import { AppError } from '@src/contexts/shared/infrastructure/exception/AppError';
-import { NotificationQueueRepository } from '@src/contexts/shared/core/repositories.ts/notification-queue-repository';
-import {
-  EventStatus,
-  EventType,
-  NotificationQueue,
-  Payload,
-  SenderType,
-  TargetType
-} from '@src/contexts/shared/core/notification_queue';
+import { EventType } from '@src/contexts/shared/core/notification_queue';
+import { EventNotificationService } from '@src/contexts/shared/application/event-notification-service';
 
 export class CreateDeAssignment {
   constructor(
     private readonly assignmentRepository: AssignmentRepository,
-    private readonly notification: NotificationQueueRepository
+    private readonly eventNotificationService: EventNotificationService
   ) {}
 
   async run(data: { deAssignmentData: { reason: string; deAssignmentDate: string }; assignmentId: string }): Promise<void> {
@@ -40,33 +33,12 @@ export class CreateDeAssignment {
     );
 
     await this.assignmentRepository.createDeAssignment(deAssignment);
-    const notification = new NotificationQueue(
-      uuid(),
-      EventType.MANUAL_DE_ASSIGNMENT,
-      {
-        transactionId: assignment.id,
-        destinations: [
-          {
-            sender: SenderType.EMAIL,
-            address: assignment.employee.email,
-            target: TargetType.TO
-          }
-        ]
-      } satisfies Payload,
-      EventStatus.PENDING
-    );
-    await this.notification.create(notification);
 
-    // const owner = {
-    //   name: assignment.employee.name,
-    //   email: assignment.employee.email
-    // };
-    // const guest = assignment.assignment_loan
-    //   ? {
-    //       name: assignment.assignment_loan.employee.name,
-    //       email: assignment.assignment_loan.employee.email
-    //     }
-    //   : null;
-    // this.notificationService.createDeAssignmentNotification(owner, guest);
+    await this.eventNotificationService.publish({
+      eventType: EventType.MANUAL_DE_ASSIGNMENT,
+      transactionId: assignment.id,
+      destinations: [assignment.employee.email],
+      destinationsCC: []
+    });
   }
 }

@@ -1,6 +1,5 @@
 import { AssignmentController } from '../controllers/assignment.controller';
 import { SequelizeAssignmentRepository } from './sequelize-mysql-repository';
-import { SequelizeMysqlNotificationRepository } from '../../../shared/infrastructure/repositories/sequelize-mysql-notification-repository';
 
 import { SequelizeMYSQLLocationRepository } from '@src/contexts/location/infrastructure/repositories/sequelize-mysql-repository';
 import { SequelizeEmployeeRepository } from '@src/contexts/assignment/infrastructure/repositories/sequelize-employee.repository';
@@ -25,13 +24,13 @@ import { UpdateAcceptanceStatusUseCase } from '@src/contexts/assignment/applicat
 
 import { Validations } from '@src/contexts/assignment/application/use-cases/validations';
 
+import { eventNotificationService } from '../../../shared/infrastructure/dependencies';
+
 const sequelizeAssignmentRepository = new SequelizeAssignmentRepository();
 const sequelizeLocationRepository = new SequelizeMYSQLLocationRepository();
 const employeeRepository = new SequelizeEmployeeRepository();
 const parameterRepository = new SequelizePostgresRepository();
 const settingRepository = new SequelizeSettingMySQLRepository();
-
-const notificationRepository = new SequelizeMysqlNotificationRepository();
 
 const validations = new Validations(
   sequelizeAssignmentRepository,
@@ -51,23 +50,22 @@ const createAssignment = new CreateAssignment(
 
 const assignmentFinder = new AssignmentFinder(sequelizeAssignmentRepository);
 const assignmentFinderById = new AssignmentFinderById(sequelizeAssignmentRepository);
-const deAssignmentById = new CreateDeAssignment(sequelizeAssignmentRepository, notificationRepository);
-const createDiscountNote = new CreateDiscountNote(sequelizeAssignmentRepository, notificationRepository);
-const createAssignmentLoan = new CreateAssignmentLoan(sequelizeAssignmentRepository, notificationRepository, validations);
+const deAssignmentById = new CreateDeAssignment(sequelizeAssignmentRepository, eventNotificationService);
+const createDiscountNote = new CreateDiscountNote(sequelizeAssignmentRepository, eventNotificationService);
+const createAssignmentLoan = new CreateAssignmentLoan(sequelizeAssignmentRepository, validations, eventNotificationService);
 const updateAssignmentLoan = new UpdateAssignmentLoanUseCase(sequelizeAssignmentRepository, validations);
 const updateAssignment = new UpdateAssignmentUseCase(sequelizeAssignmentRepository, parameterRepository, validations);
 
 const updateDiscountNote = new UpdateStatusDiscountNote(sequelizeAssignmentRepository);
-const deleteAssignmentLoan = new DeleteAssignmentLoan(sequelizeAssignmentRepository);
+const deleteAssignmentLoan = new DeleteAssignmentLoan(sequelizeAssignmentRepository, eventNotificationService);
 const getFormDataOfAcceptance = new GetFormDataOfAcceptanceUseCase(sequelizeAssignmentRepository, settingRepository);
 
-const createAcceptanceProcess = new CreateAcceptanceProcessUseCase(
-  sequelizeAssignmentRepository,
-  settingRepository,
-  notificationRepository
-);
+const createAcceptanceProcess = new CreateAcceptanceProcessUseCase(sequelizeAssignmentRepository, eventNotificationService);
 
-const updateStatusAcceptanceAssignment = new UpdateAcceptanceStatusUseCase(sequelizeAssignmentRepository, notificationRepository);
+const updateStatusAcceptanceAssignment = new UpdateAcceptanceStatusUseCase(
+  sequelizeAssignmentRepository,
+  eventNotificationService
+);
 
 //Controllers
 const assignmentController = new AssignmentController(
