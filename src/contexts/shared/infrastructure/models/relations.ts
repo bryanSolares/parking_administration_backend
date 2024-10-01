@@ -13,6 +13,8 @@ import { RoleModel } from './auth/role.model';
 import { RoleDetailModel } from './auth/role.detail.model';
 import { ResourceModel } from './auth/resource.model';
 import { UserModel } from './auth/user.model';
+import { NotificationPreferenceModel } from './parameter/notification-preference';
+import { NotificationTypeModel } from './parameter/notification-type';
 
 LocationModel.hasMany(SlotModel, {
   foreignKey: 'location_id',
@@ -100,3 +102,9 @@ RoleModel.hasMany(UserModel, {
   onDelete: 'RESTRICT'
 });
 UserModel.belongsTo(RoleModel, { foreignKey: 'role_id' });
+
+/*******Notification Preferences *******/
+NotificationTypeModel.hasMany(NotificationPreferenceModel, { foreignKey: 'notificationType' });
+UserModel.hasMany(NotificationPreferenceModel, { foreignKey: 'userId' });
+NotificationPreferenceModel.belongsTo(UserModel, { foreignKey: 'userId' });
+NotificationPreferenceModel.belongsTo(NotificationTypeModel, { foreignKey: 'notificationType' });

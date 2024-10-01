@@ -1,10 +1,13 @@
 import { SequelizePostgresRepository } from './sequelize-postgres-repository';
 import { SequelizeSettingMySQLRepository } from '../repositories/sequelize-setting-mysql-repository';
 import { SequelizeMySqlTemplateRepository } from '../repositories/sequelize-mysql-template-repository';
+import { NotificationPreferenceMySQLRepository } from './sequelize-mysql-notification-preference-repository';
+import { MySQLSequelizeUserRepository } from '@src/contexts/auth/infrastructure/repositories/user-repository';
 
 import { TagController } from '../controllers/tag.controller';
 import { SettingController } from '../controllers/setting.controller';
 import { TemplateController } from '../controllers/template.controller';
+import { NotificationPreferenceController } from '../controllers/notification-preference-controller';
 
 import { CreateTag } from '@src/contexts/parameters/application/use-cases/create-tag';
 import { UpdateTag } from '@src/contexts/parameters/application/use-cases/update-tag';
@@ -19,9 +22,14 @@ import { GetByIdSettingUseCase } from '../../application/setting/get-by-id-setti
 import { GetTemplatesUseCase } from '@src/contexts/parameters/application/template/get-templates';
 import { GetVariablesUseCase } from '@src/contexts/parameters/application/template/get-variables';
 
+import { GetPreferenceNotificationByUserUseCase } from '@src/contexts/parameters/application/setting/get-preference-by-user';
+import { SaveNotificationPreferenceUseCase } from '@src/contexts/parameters/application/setting/save-notification-preference';
+
 const repository = new SequelizePostgresRepository();
 const settingRepository = new SequelizeSettingMySQLRepository();
 const templateRepository = new SequelizeMySqlTemplateRepository();
+const notificationPreferenceRepository = new NotificationPreferenceMySQLRepository();
+const userRepository = new MySQLSequelizeUserRepository();
 
 const createTagUseCase = new CreateTag(repository);
 const updateTagUseCase = new UpdateTag(repository);
@@ -36,6 +44,9 @@ const getByIdSettingUseCase = new GetByIdSettingUseCase(settingRepository);
 const getTemplatesUseCase = new GetTemplatesUseCase(templateRepository);
 const getTemplateVariablesUseCase = new GetVariablesUseCase(templateRepository);
 
+const getPreferenceNotificationByUserUseCase = new GetPreferenceNotificationByUserUseCase(notificationPreferenceRepository);
+const saveNotificationPreferenceUseCase = new SaveNotificationPreferenceUseCase(notificationPreferenceRepository, userRepository);
+
 const tagController = new TagController(
   createTagUseCase,
   updateTagUseCase,
@@ -48,4 +59,9 @@ const settingController = new SettingController(getAllSettingsUseCase, updateSet
 
 const templateController = new TemplateController(getTemplatesUseCase, getTemplateVariablesUseCase);
 
-export { tagController, settingController, templateController };
+const notificationPreferenceController = new NotificationPreferenceController(
+  getPreferenceNotificationByUserUseCase,
+  saveNotificationPreferenceUseCase
+);
+
+export { tagController, settingController, templateController, notificationPreferenceController };

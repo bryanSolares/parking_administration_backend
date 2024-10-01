@@ -7,7 +7,7 @@ export class RoleDetailModel extends Model {}
 RoleDetailModel.init(
   {
     role_id: {
-      type: DataTypes.STRING,
+      type: DataTypes.UUID,
       allowNull: false,
       primaryKey: true,
       references: {
@@ -16,7 +16,7 @@ RoleDetailModel.init(
       }
     },
     resource_id: {
-      type: DataTypes.STRING,
+      type: DataTypes.UUID,
       allowNull: false,
       primaryKey: true,
       references: {

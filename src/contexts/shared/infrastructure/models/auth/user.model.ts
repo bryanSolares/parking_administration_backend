@@ -7,8 +7,10 @@ export class UserModel extends Model {}
 UserModel.init(
   {
     id: {
-      type: DataTypes.STRING,
-      primaryKey: true
+      type: DataTypes.UUID,
+      primaryKey: true,
+      unique: true,
+      allowNull: false
     },
     username: {
       type: DataTypes.STRING,
@@ -27,7 +29,7 @@ UserModel.init(
       type: DataTypes.STRING
     },
     role_id: {
-      type: DataTypes.STRING,
+      type: DataTypes.UUID,
       references: {
         model: 'role',
         key: 'id'

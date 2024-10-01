@@ -196,7 +196,7 @@ CREATE TABLE `parking_occupancy_trends` (
 
 
 CREATE TABLE `resource` (
-  `id` varchar(255) NOT NULL,
+  `id` char(36) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL,
   `slug` varchar(255) NOT NULL,
   `description` varchar(255) NOT NULL,
   `created_at` datetime NOT NULL,
@@ -205,29 +205,29 @@ CREATE TABLE `resource` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 
-create table if not exists `role` (
-  `id` varchar(255) not null,
-  `name` varchar(255) not null,
-  `description` varchar(255) default null,
-  `status` enum('ACTIVO','INACTIVO') not null default 'ACTIVO',
-  `created_at` datetime not null,
-  `updated_at` datetime not null,
-  primary key (`id`)
-) engine=innodb default charset=utf8mb4 collate=utf8mb4_0900_ai_ci;
+CREATE TABLE `role` (
+  `id` char(36) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL,
+  `name` varchar(255) NOT NULL,
+  `description` varchar(255) DEFAULT NULL,
+  `status` enum('ACTIVO','INACTIVO') NOT NULL DEFAULT 'ACTIVO',
+  `created_at` datetime NOT NULL,
+  `updated_at` datetime NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 
-create table if not exists `role_detail` (
-  `role_id` varchar(255) not null,
-  `resource_id` varchar(255) not null,
-  `can_access` tinyint(1) default '0',
-  `created_at` datetime not null,
-  `updated_at` datetime not null,
-  primary key (`role_id`,`resource_id`),
-  unique key `role_detail_resource_id_role_id_unique` (`role_id`,`resource_id`),
-  key `resource_id` (`resource_id`),
-  constraint `role_detail_ibfk_1` foreign key (`role_id`) references `role` (`id`) on delete cascade on update cascade,
-  constraint `role_detail_ibfk_2` foreign key (`resource_id`) references `resource` (`id`) on delete cascade on update cascade
-) engine=innodb default charset=utf8mb4 collate=utf8mb4_0900_ai_ci;
+CREATE TABLE `role_detail` (
+  `role_id` char(36) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL,
+  `resource_id` char(36) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL,
+  `can_access` tinyint(1) DEFAULT '0',
+  `created_at` datetime NOT NULL,
+  `updated_at` datetime NOT NULL,
+  PRIMARY KEY (`role_id`,`resource_id`),
+  UNIQUE KEY `role_detail_resource_id_role_id_unique` (`role_id`,`resource_id`),
+  KEY `resource_id` (`resource_id`),
+  CONSTRAINT `role_detail_ibfk_1` FOREIGN KEY (`role_id`) REFERENCES `role` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT `role_detail_ibfk_2` FOREIGN KEY (`resource_id`) REFERENCES `resource` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 
 CREATE TABLE `setting` (
@@ -243,21 +243,82 @@ CREATE TABLE `setting` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 
-create table if not exists `user` (
-  `id` varchar(255) not null,
-  `username` varchar(255) not null,
-  `name` varchar(255) default null,
-  `email` varchar(255) default null,
-  `phone` varchar(255) default null,
-  `password` varchar(255) default null,
-  `role_id` varchar(255) default null,
-  `status` enum('ACTIVO','INACTIVO') not null default 'ACTIVO',
-  `created_at` datetime not null,
-  `updated_at` datetime not null,
-  primary key (`id`),
-  key `role_id` (`role_id`),
-  constraint `user_ibfk_1` foreign key (`role_id`) references `role` (`id`) on delete restrict on update restrict
-) engine=innodb default charset=utf8mb4 collate=utf8mb4_0900_ai_ci;
+CREATE TABLE `user` (
+  `id` char(36) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL,
+  `username` varchar(255) NOT NULL,
+  `name` varchar(255) DEFAULT NULL,
+  `email` varchar(255) DEFAULT NULL,
+  `phone` varchar(255) DEFAULT NULL,
+  `password` varchar(255) DEFAULT NULL,
+  `role_id` char(36) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin DEFAULT NULL,
+  `status` enum('ACTIVO','INACTIVO') NOT NULL DEFAULT 'ACTIVO',
+  `created_at` datetime NOT NULL,
+  `updated_at` datetime NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `id` (`id`),
+  KEY `role_id` (`role_id`),
+  CONSTRAINT `user_ibfk_1` FOREIGN KEY (`role_id`) REFERENCES `role` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+CREATE TABLE `notification_type` (
+  `notification_type` varchar(255) NOT NULL,
+  `description` varchar(255) NOT NULL,
+  `created_at` datetime NOT NULL,
+  `updated_at` datetime NOT NULL,
+  PRIMARY KEY (`notification_type`),
+  UNIQUE KEY `notification_type` (`notification_type`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+CREATE TABLE `notification_preference` (
+  `user_id` char(36) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL,
+  `notification_type` varchar(255) NOT NULL,
+  `enable` tinyint(1) NOT NULL DEFAULT '0',
+  `created_at` datetime NOT NULL,
+  `updated_at` datetime NOT NULL,
+  PRIMARY KEY (`user_id`,`notification_type`),
+  KEY `notification_type` (`notification_type`),
+  CONSTRAINT `notification_preference_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT `notification_preference_ibfk_2` FOREIGN KEY (`notification_type`) REFERENCES `notification_type` (`notification_type`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+CREATE TABLE `notification_queue` (
+  `id` char(36) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL,
+  `event_type` enum('ACCEPTANCE_FORM','ACCEPTANCE_ASSIGNMENT','MANUAL_DE_ASSIGNMENT','AUTO_DE_ASSIGNMENT','DISCOUNT_NOTE','ASSIGNMENT_LOAN','DE_ASSIGNMENT_LOAN') NOT NULL,
+  `payload` json NOT NULL,
+  `status` enum('PENDING','IN_PROGRESS','DISPATCHED','FAILED','RETRYING') NOT NULL,
+  `attempts` smallint NOT NULL DEFAULT '0',
+  `max_retries` smallint NOT NULL DEFAULT '3',
+  `dispatched_at` datetime DEFAULT NULL,
+  `error_message` text,
+  `next_attempt` datetime DEFAULT NULL,
+  `created_at` datetime NOT NULL,
+  `updated_at` datetime NOT NULL,
+  `version` int NOT NULL DEFAULT '0',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+CREATE TABLE `template_email` (
+  `id` char(36) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL,
+  `type` enum('ACCEPTANCE_FORM','ACCEPTANCE_ASSIGNMENT','MANUAL_DE_ASSIGNMENT','AUTO_DE_ASSIGNMENT','DISCOUNT_NOTE','ASSIGNMENT_LOAN','DE_ASSIGNMENT_LOAN') NOT NULL,
+  `template_name` varchar(255) NOT NULL,
+  `subject` varchar(255) NOT NULL,
+  `content` text NOT NULL,
+  `created_at` datetime NOT NULL,
+  `updated_at` datetime NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+CREATE TABLE `template_parameter` (
+  `id` char(36) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL,
+  `parameter_name` varchar(255) NOT NULL,
+  `parameter_description` varchar(255) NOT NULL,
+  `example_value` varchar(255) NOT NULL,
+  `entity` varchar(255) NOT NULL,
+  `column_name` varchar(255) NOT NULL,
+  `created_at` datetime NOT NULL,
+  `updated_at` datetime NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 
 
@@ -417,6 +478,26 @@ for each row
     end ;;
 delimiter ;
 
+delimiter ;;
+create trigger in_create_preference_notifications
+    after insert
+    on user
+    for each row
+begin
+    insert into notification_preference
+        (select new.id, nt.notification_type, false, current_timestamp, current_timestamp from notification_type as nt);
+
+end ;;
+delimiter ;
+
+delimiter ;;
+create trigger de_delete_preference_notifications
+after delete on user
+    for each row
+    begin
+        delete from notification_preference where user_id = old.id;
+    end ;;
+delimiter ;
 
 
 
@@ -477,3 +558,12 @@ INSERT INTO `setting` VALUES
 ('70d41c5d-488f-4852-81c8-e6d58c206335','MAX_DAYS_TO_ASSIGNMENT_LOAN','15','Máximo de días permitido para asignaciones temporales','2024-09-05 00:00:00','2024-09-05 00:00:00'),
 ('895b40e8-2fbf-4312-bd2e-15aa3ae96c82','WS_EMPLOYEES','https://jsonplaceholder.typicode.com/users','Web service','2024-08-13 00:00:00','2024-08-13 00:00:00'),
 ('bb9b8b5c-e42e-4995-8c13-177ee0f363b1','SIGNATURES_FOR_ACCEPTANCE_FORM','{\"security_boss\":{\"name\":\"securityBoss\",\"employee_code\":\"57123456789\"},\"parking_manager\":{\"name\":\"parkingManager\",\"employee_code\":\"57123456789\"},\"human_resources_manager\":{\"name\":\"humanResourcesManager\",\"employee_code\":\"57123456789\"},\"human_resources_payroll\":{\"name\":\"humanResourcesPayroll\",\"employee_code\":\"57123456789\"}}','Personal que firma formularios de aceptación','2024-09-03 00:00:00','2024-09-03 00:00:00');
+
+
+INSERT INTO `notification_type` VALUES ('ACCEPTANCE_ASSIGNMENT','Notificación por asignación aceptada','2024-09-30 23:42:32','2024-09-30 23:42:32'),('ACCEPTANCE_FORM','Notificación por envío formulario de aceptación','2024-09-30 23:42:32','2024-09-30 23:42:32'),('ASSIGNMENT_LOAN','Notificación por asignación temporal realizada','2024-09-30 23:42:32','2024-09-30 23:42:32'),('AUTO_DE_ASSIGNMENT','Notificación por bajas automáticas','2024-09-30 23:42:32','2024-09-30 23:42:32'),('DE_ASSIGNMENT_LOAN','Notificación por bajas de préstamos temporal','2024-09-30 23:42:32','2024-09-30 23:42:32'),('DISCOUNT_NOTE','Notificación por envío nota aceptación de descuento','2024-09-30 23:42:32','2024-09-30 23:42:32'),('MANUAL_DE_ASSIGNMENT','Notificación por bajas manuales','2024-09-30 23:42:32','2024-09-30 23:42:32');
+
+
+INSERT INTO `template_email` VALUES ('f20ea783-7c49-11ef-b999-0242ac120002','ACCEPTANCE_FORM','CORREO FORMULARIO DE ACEPTACION','Formulario de aceptación','Estimado/a {{employee_guest_name}},\n\nNos complace darte la bienvenida a tu asignación. A continuación, encontrarás los detalles importantes:\n\nFecha de Asignación: {{assignment_date}}\nCódigo del Empleado Invitado: {{employee_guest_code}}\nNombre del Empleado Invitado: {{employee_guest_name}}\nCódigo del Empleado Propietario: {{employee_owner_code}}\nNombre del Empleado Propietario: {{employee_owner_name}}\nInicio del Préstamo: {{loan_start}}\nFin del Préstamo: {{loan_end}}\nNúmero de Plaza: {{slot_number}}\nUbicación:\n\nNombre de la Ubicación: {{location_name}}\nDirección de la Ubicación: {{location_address}}\nTeléfono de la Ubicación: {{location_phone}}\nCorreo Electrónico de la Ubicación: {{location_email}}\nEstamos aquí para ayudarte con cualquier pregunta o inquietud que puedas tener. No dudes en ponerte en contacto con nosotros.\n\n¡Te deseamos una excelente experiencia!\n\nAtentamente,\n\nEl Equipo de [Nombre de tu Organización]','2024-09-26 20:57:30','2024-09-26 20:57:30'),('f219470b-7c49-11ef-b999-0242ac120002','ACCEPTANCE_ASSIGNMENT','CORREO POR ACEPTACIÓN DE ASIGNACION','Asignación de parqueo','Estimado/a {{employee_guest_name}},\n\nNos complace darte la bienvenida a tu asignación. A continuación, encontrarás los detalles importantes:\n\nFecha de Asignación: {{assignment_date}}\nCódigo del Empleado Invitado: {{employee_guest_code}}\nNombre del Empleado Invitado: {{employee_guest_name}}\nCódigo del Empleado Propietario: {{employee_owner_code}}\nNombre del Empleado Propietario: {{employee_owner_name}}\nInicio del Préstamo: {{loan_start}}\nFin del Préstamo: {{loan_end}}\nNúmero de Plaza: {{slot_number}}\nUbicación:\n\nNombre de la Ubicación: {{location_name}}\nDirección de la Ubicación: {{location_address}}\nTeléfono de la Ubicación: {{location_phone}}\nCorreo Electrónico de la Ubicación: {{location_email}}\nEstamos aquí para ayudarte con cualquier pregunta o inquietud que puedas tener. No dudes en ponerte en contacto con nosotros.\n\n¡Te deseamos una excelente experiencia!\n\nAtentamente,\n\nEl Equipo de [Nombre de tu Organización]','2024-09-26 20:57:30','2024-09-26 20:57:30'),('f2242d1d-7c49-11ef-b999-0242ac120002','MANUAL_DE_ASSIGNMENT','CORREO POR BAJA MANUAL DE ASIGNACION','Baja manual de asignación','Estimado/a {{employee_guest_name}},\n\nNos complace darte la bienvenida a tu asignación. A continuación, encontrarás los detalles importantes:\n\nFecha de Asignación: {{assignment_date}}\nCódigo del Empleado Invitado: {{employee_guest_code}}\nNombre del Empleado Invitado: {{employee_guest_name}}\nCódigo del Empleado Propietario: {{employee_owner_code}}\nNombre del Empleado Propietario: {{employee_owner_name}}\nInicio del Préstamo: {{loan_start}}\nFin del Préstamo: {{loan_end}}\nNúmero de Plaza: {{slot_number}}\nUbicación:\n\nNombre de la Ubicación: {{location_name}}\nDirección de la Ubicación: {{location_address}}\nTeléfono de la Ubicación: {{location_phone}}\nCorreo Electrónico de la Ubicación: {{location_email}}\nEstamos aquí para ayudarte con cualquier pregunta o inquietud que puedas tener. No dudes en ponerte en contacto con nosotros.\n\n¡Te deseamos una excelente experiencia!\n\nAtentamente,\n\nEl Equipo de [Nombre de tu Organización]','2024-09-26 20:57:30','2024-09-26 20:57:30'),('f22eff50-7c49-11ef-b999-0242ac120002','AUTO_DE_ASSIGNMENT','CORREO POR BAJA AUTOMATICA DE ASIGNACION','Baja automática de asignación','Estimado/a {{employee_guest_name}},\n\nNos complace darte la bienvenida a tu asignación. A continuación, encontrarás los detalles importantes:\n\nFecha de Asignación: {{assignment_date}}\nCódigo del Empleado Invitado: {{employee_guest_code}}\nNombre del Empleado Invitado: {{employee_guest_name}}\nCódigo del Empleado Propietario: {{employee_owner_code}}\nNombre del Empleado Propietario: {{employee_owner_name}}\nInicio del Préstamo: {{loan_start}}\nFin del Préstamo: {{loan_end}}\nNúmero de Plaza: {{slot_number}}\nUbicación:\n\nNombre de la Ubicación: {{location_name}}\nDirección de la Ubicación: {{location_address}}\nTeléfono de la Ubicación: {{location_phone}}\nCorreo Electrónico de la Ubicación: {{location_email}}\nEstamos aquí para ayudarte con cualquier pregunta o inquietud que puedas tener. No dudes en ponerte en contacto con nosotros.\n\n¡Te deseamos una excelente experiencia!\n\nAtentamente,\n\nEl Equipo de [Nombre de tu Organización]','2024-09-26 20:57:30','2024-09-26 20:57:30'),('f23889c9-7c49-11ef-b999-0242ac120002','DISCOUNT_NOTE','CORREO POR NOTA ACEPTACIÓN DE DESCUENTO','Nota de aceptación de descuento','Estimado/a {{employee_guest_name}},\n\nNos complace darte la bienvenida a tu asignación. A continuación, encontrarás los detalles importantes:\n\nFecha de Asignación: {{assignment_date}}\nCódigo del Empleado Invitado: {{employee_guest_code}}\nNombre del Empleado Invitado: {{employee_guest_name}}\nCódigo del Empleado Propietario: {{employee_owner_code}}\nNombre del Empleado Propietario: {{employee_owner_name}}\nInicio del Préstamo: {{loan_start}}\nFin del Préstamo: {{loan_end}}\nNúmero de Plaza: {{slot_number}}\nUbicación:\n\nNombre de la Ubicación: {{location_name}}\nDirección de la Ubicación: {{location_address}}\nTeléfono de la Ubicación: {{location_phone}}\nCorreo Electrónico de la Ubicación: {{location_email}}\nEstamos aquí para ayudarte con cualquier pregunta o inquietud que puedas tener. No dudes en ponerte en contacto con nosotros.\n\n¡Te deseamos una excelente experiencia!\n\nAtentamente,\n\nEl Equipo de [Nombre de tu Organización]','2024-09-26 20:57:31','2024-09-26 20:57:31'),('f241f55e-7c49-11ef-b999-0242ac120002','ASSIGNMENT_LOAN','CORREO DE ASIGNACION TEMPORAL','Asignación temporal','Estimado/a {{employee_guest_name}},\n\nNos complace darte la bienvenida a tu asignación. A continuación, encontrarás los detalles importantes:\n\nFecha de Asignación: {{assignment_date}}\nCódigo del Empleado Invitado: {{employee_guest_code}}\nNombre del Empleado Invitado: {{employee_guest_name}}\nCódigo del Empleado Propietario: {{employee_owner_code}}\nNombre del Empleado Propietario: {{employee_owner_name}}\nInicio del Préstamo: {{loan_start}}\nFin del Préstamo: {{loan_end}}\nNúmero de Plaza: {{slot_number}}\nUbicación:\n\nNombre de la Ubicación: {{location_name}}\nDirección de la Ubicación: {{location_address}}\nTeléfono de la Ubicación: {{location_phone}}\nCorreo Electrónico de la Ubicación: {{location_email}}\nEstamos aquí para ayudarte con cualquier pregunta o inquietud que puedas tener. No dudes en ponerte en contacto con nosotros.\n\n¡Te deseamos una excelente experiencia!\n\nAtentamente,\n\nEl Equipo de [Nombre de tu Organización]','2024-09-26 20:57:31','2024-09-26 20:57:31'),('f24b4de7-7c49-11ef-b999-0242ac120002','DE_ASSIGNMENT_LOAN','CORREO BAJA DE ASIGNACIÓN TEMPORAL','Baja de asignación temporal','Estimado/a {{employee_guest_name}},\n\nNos complace darte la bienvenida a tu asignación. A continuación, encontrarás los detalles importantes:\n\nFecha de Asignación: {{assignment_date}}\nCódigo del Empleado Invitado: {{employee_guest_code}}\nNombre del Empleado Invitado: {{employee_guest_name}}\nCódigo del Empleado Propietario: {{employee_owner_code}}\nNombre del Empleado Propietario: {{employee_owner_name}}\nInicio del Préstamo: {{loan_start}}\nFin del Préstamo: {{loan_end}}\nNúmero de Plaza: {{slot_number}}\nUbicación:\n\nNombre de la Ubicación: {{location_name}}\nDirección de la Ubicación: {{location_address}}\nTeléfono de la Ubicación: {{location_phone}}\nCorreo Electrónico de la Ubicación: {{location_email}}\nEstamos aquí para ayudarte con cualquier pregunta o inquietud que puedas tener. No dudes en ponerte en contacto con nosotros.\n\n¡Te deseamos una excelente experiencia!\n\nAtentamente,\n\nEl Equipo de [Nombre de tu Organización]','2024-09-26 20:57:31','2024-09-26 20:57:31');
+
+
+INSERT INTO `template_parameter` VALUES ('f5f2909d-7c49-11ef-b999-0242ac120002','{{employee_owner_name}}','Nombre del propietario del parqueo','Bryan Solares','employeeOwner','name','2024-09-26 20:57:37','2024-09-26 20:57:37'),('f5ff7571-7c49-11ef-b999-0242ac120002','{{employee_owner_code}}','Código de empleado, propietario del parqueo','ABC12345','employeeOwner','employeeCode','2024-09-26 20:57:37','2024-09-26 20:57:37'),('f6090f18-7c49-11ef-b999-0242ac120002','{{employee_guest_name}}','Nombre del invitado del parqueo','Bryan Solares','employeeGuest','name','2024-09-26 20:57:37','2024-09-26 20:57:37'),('f61430e3-7c49-11ef-b999-0242ac120002','{{employee_guest_code}}','Código del empleado, invitado del parqueo','ABC12345','employeeGuest','employeeCode','2024-09-26 20:57:37','2024-09-26 20:57:37'),('f61dea8e-7c49-11ef-b999-0242ac120002','{{location_name}}','Nombre de la ubicación del parqueo','Parqueo buena paz','location','name','2024-09-26 20:57:37','2024-09-26 20:57:37'),('f6283858-7c49-11ef-b999-0242ac120002','{{location_address}}','Código de empleado, propietario del parqueo','Guatemala zona 1','location','address','2024-09-26 20:57:37','2024-09-26 20:57:37'),('f63103cb-7c49-11ef-b999-0242ac120002','{{location_email}}','Correo electrónico de la ubicación del parqueo','ubicacion@mail.com','location','email','2024-09-26 20:57:37','2024-09-26 20:57:37'),('f639e4e4-7c49-11ef-b999-0242ac120002','{{location_phone}}','Número de télefono de la ubicación del parqueo','+(502) 4545-4545','location','phone','2024-09-26 20:57:37','2024-09-26 20:57:37'),('f64590b0-7c49-11ef-b999-0242ac120002','{{slot_number}}','Número de identificación del espacio asignado','Sotano#100','slot','slotNumber','2024-09-26 20:57:37','2024-09-26 20:57:37'),('f64e6397-7c49-11ef-b999-0242ac120002','{{assignment_date}}','Fecha de asignación','24/09/2024','assignment','assignmentDate','2024-09-26 20:57:37','2024-09-26 20:57:37'),('f656b966-7c49-11ef-b999-0242ac120002','{{loan_start}}','Fecha de inicio para prestamo de parqueo','24/09/2024','assignmentLoan','startDateAssignment','2024-09-26 20:57:37','2024-09-26 20:57:37'),('f65fc1af-7c49-11ef-b999-0242ac120002','{{loan_end}}','Fecha de finalización para prestamo de parqueo','25/09/2024','assignmentLoan','endDateAssignment','2024-09-26 20:57:37','2024-09-26 20:57:37');

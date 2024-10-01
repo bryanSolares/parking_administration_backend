@@ -7,7 +7,8 @@ export class ResourceModel extends Model {}
 ResourceModel.init(
   {
     id: {
-      type: DataTypes.STRING,
+      type: DataTypes.UUID,
+      allowNull: false,
       primaryKey: true
     },
     slug: {

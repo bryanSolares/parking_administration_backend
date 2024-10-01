@@ -7,7 +7,8 @@ export class RoleModel extends Model {}
 RoleModel.init(
   {
     id: {
-      type: DataTypes.STRING,
+      type: DataTypes.UUID,
+      allowNull: false,
       primaryKey: true
     },
     name: {
