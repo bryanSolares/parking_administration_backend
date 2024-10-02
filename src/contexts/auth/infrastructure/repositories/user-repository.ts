@@ -16,7 +16,7 @@ export class MySQLSequelizeUserRepository implements UserRepository {
     role: string;
   }): Promise<void> {
     const userEntity = UserEntity.fromPrimitives({ ...user, id: uuid() });
-    await UserModel.create({ ...userEntity, role_id: userEntity.role });
+    await UserModel.create({ ...userEntity, roleId: userEntity.role });
   }
 
   async update(user: {

@@ -207,11 +207,12 @@ CREATE TABLE `resource` (
 
 CREATE TABLE `role` (
   `id` char(36) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL,
-  `name` varchar(255) NOT NULL,
+  `name` varchar(35) NOT NULL,
   `description` varchar(255) DEFAULT NULL,
   `status` enum('ACTIVO','INACTIVO') NOT NULL DEFAULT 'ACTIVO',
   `created_at` datetime NOT NULL,
   `updated_at` datetime NOT NULL,
+  `deleted_at` datetime DEFAULT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
@@ -222,11 +223,11 @@ CREATE TABLE `role_detail` (
   `can_access` tinyint(1) DEFAULT '0',
   `created_at` datetime NOT NULL,
   `updated_at` datetime NOT NULL,
+  `deleted_at` datetime DEFAULT NULL,
   PRIMARY KEY (`role_id`,`resource_id`),
-  UNIQUE KEY `role_detail_resource_id_role_id_unique` (`role_id`,`resource_id`),
   KEY `resource_id` (`resource_id`),
-  CONSTRAINT `role_detail_ibfk_1` FOREIGN KEY (`role_id`) REFERENCES `role` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
-  CONSTRAINT `role_detail_ibfk_2` FOREIGN KEY (`resource_id`) REFERENCES `resource` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+  CONSTRAINT `role_detail_ibfk_1` FOREIGN KEY (`role_id`) REFERENCES `role` (`id`),
+  CONSTRAINT `role_detail_ibfk_2` FOREIGN KEY (`resource_id`) REFERENCES `resource` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 
@@ -245,17 +246,19 @@ CREATE TABLE `setting` (
 
 CREATE TABLE `user` (
   `id` char(36) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL,
-  `username` varchar(255) NOT NULL,
-  `name` varchar(255) DEFAULT NULL,
-  `email` varchar(255) DEFAULT NULL,
-  `phone` varchar(255) DEFAULT NULL,
-  `password` varchar(255) DEFAULT NULL,
+  `username` varchar(35) NOT NULL,
+  `name` varchar(50) NOT NULL,
+  `email` varchar(50) NOT NULL,
+  `phone` varchar(15) NOT NULL,
+  `password` varchar(50) DEFAULT NULL,
   `role_id` char(36) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin DEFAULT NULL,
   `status` enum('ACTIVO','INACTIVO') NOT NULL DEFAULT 'ACTIVO',
   `created_at` datetime NOT NULL,
   `updated_at` datetime NOT NULL,
+  `deleted_at` datetime DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `id` (`id`),
+  UNIQUE KEY `username` (`username`),
   KEY `role_id` (`role_id`),
   CONSTRAINT `user_ibfk_1` FOREIGN KEY (`role_id`) REFERENCES `role` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;

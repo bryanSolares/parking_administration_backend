@@ -22,6 +22,7 @@ ResourceModel.init(
   },
   {
     sequelize,
+    underscored: true,
     modelName: 'resource',
     tableName: 'resource',
     updatedAt: 'updated_at',

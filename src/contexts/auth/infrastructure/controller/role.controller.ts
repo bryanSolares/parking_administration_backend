@@ -20,7 +20,7 @@ export class RoleController {
 
   async create(req: Request, res: Response, next: NextFunction) {
     const data = req.body;
-    const listOfAccess = data.list_of_access;
+    const listOfAccess = data.listOfAccess;
     try {
       await this.createRoleUseCase.run({
         ...data,
@@ -35,7 +35,7 @@ export class RoleController {
   async update(req: Request, res: Response, next: NextFunction) {
     const id = req.params.role_id;
     const data = req.body;
-    const listOfAccess = data.list_of_access;
+    const listOfAccess = data.listOfAccess;
     try {
       await this.updateRoleUseCase.run({ ...data, id, listOfAccess });
       res.status(200).json({ message: 'Role updated successfully' });

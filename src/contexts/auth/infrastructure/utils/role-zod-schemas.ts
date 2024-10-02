@@ -1,15 +1,17 @@
 import { z } from 'zod';
 
 export const roleSchema = z.object({
-  name: z.string(),
-  description: z.string().optional(),
+  name: z.string().min(1).max(35),
+  description: z.string().max(255).optional(),
   status: z.enum(['ACTIVO', 'INACTIVO']),
-  list_of_access: z.array(
-    z.object({
-      resource: z.string().uuid(),
-      can_access: z.boolean()
-    })
-  )
+  listOfAccess: z
+    .array(
+      z.object({
+        resource: z.string().uuid(),
+        canAccess: z.boolean()
+      })
+    )
+    .nonempty()
 });
 
 export const idRoleSchema = z.object({ role_id: z.string().uuid() });

@@ -2,7 +2,7 @@ import { ResourceEntity } from './resource-entity';
 
 export type RoleStatus = 'ACTIVO' | 'INACTIVO';
 export type Resource = Pick<ResourceEntity, 'id' | 'slug' | 'description'> & {
-  can_access: boolean;
+  canAccess: boolean;
 };
 
 export class RoleEntity {
@@ -32,7 +32,7 @@ export class RoleEntity {
         id: resource.id,
         slug: resource.slug,
         description: resource.description,
-        can_access: resource.can_access
+        canAccess: resource.canAccess
       };
     });
 

@@ -12,11 +12,11 @@ RoleModel.init(
       primaryKey: true
     },
     name: {
-      type: DataTypes.STRING,
+      type: DataTypes.STRING(35),
       allowNull: false
     },
     description: {
-      type: DataTypes.STRING
+      type: DataTypes.STRING(255)
     },
     status: {
       type: DataTypes.ENUM('ACTIVO', 'INACTIVO'),
@@ -26,6 +26,8 @@ RoleModel.init(
   },
   {
     sequelize,
+    underscored: true,
+    paranoid: true,
     modelName: 'role',
     tableName: 'role',
     updatedAt: 'updated_at',

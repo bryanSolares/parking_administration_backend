@@ -1,3 +1,4 @@
+import { ForeignKeyConstraintError } from 'sequelize';
 import { RoleRepository } from '@src/contexts/auth/core/repository/role-repository';
 import { AppError } from '@src/contexts/shared/infrastructure/exception/AppError';
 
@@ -11,6 +12,13 @@ export class DeleteRole {
       throw new AppError('ROLE_NOT_FOUND', 404, 'Role not found', true);
     }
 
-    await this.roleRepository.delete(id);
+    try {
+      await this.roleRepository.delete(id);
+    } catch (error) {
+      if (error instanceof ForeignKeyConstraintError)
+        throw new AppError('ROLE_HAS_RELATIONS', 400, 'You can not delete a role with active users', true);
+
+      throw error;
+    }
   }
 }

@@ -1,6 +1,6 @@
 import { v4 as uuid } from 'uuid';
+import { UniqueConstraintError, Op } from 'sequelize';
 import { sequelize } from '@src/server/config/database/sequelize';
-import { UniqueConstraintError } from 'sequelize';
 import { RoleEntity } from '@src/contexts/auth/core/entities/role-entity';
 import { RoleRepository } from '@src/contexts/auth/core/repository/role-repository';
 
@@ -66,14 +66,13 @@ export class MySQLSequelizeRoleRepository implements RoleRepository {
       );
 
       await Promise.all(
-        data.listOfAccess.map((resource: { resource: string; can_access: boolean }) => {
+        data.listOfAccess.map((resource: { resource: string; canAccess: boolean }) => {
           return RoleDetailModel.update(
             {
-              can_access: resource.can_access
+              canAccess: resource.canAccess
             },
             {
-              where: { role_id: data.id, resource_id: resource.resource },
-              fields: ['can_access'],
+              where: { [Op.and]: [{ role_id: data.id }, { resource_id: resource.resource }] },
               transaction
             }
           );
@@ -112,12 +111,12 @@ export class MySQLSequelizeRoleRepository implements RoleRepository {
     const rolesEntity = RoleEntity.fromPrimitives(plainRoles);
 
     rolesEntity.resources = plainRoles.resources.map(
-      (res: { id: string; slug: string; description: string; role_detail: { can_access: boolean } }) => {
+      (res: { id: string; slug: string; description: string; role_detail: { canAccess: boolean } }) => {
         return {
           id: res.id,
           slug: res.slug,
           description: res.description,
-          can_access: res.role_detail.can_access
+          canAccess: res.role_detail.canAccess
         };
       }
     );
@@ -148,12 +147,12 @@ export class MySQLSequelizeRoleRepository implements RoleRepository {
         ...role.get({ plain: true }),
         resources: role
           .get({ plain: true })
-          .resources.map((res: { id: string; slug: string; description: string; role_detail: { can_access: boolean } }) => {
+          .resources.map((res: { id: string; slug: string; description: string; role_detail: { canAccess: boolean } }) => {
             return {
               id: res.id,
               slug: res.slug,
               description: res.description,
-              can_access: res.role_detail.can_access
+              canAccess: res.role_detail.canAccess
             };
           })
       })

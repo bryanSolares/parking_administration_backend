@@ -13,22 +13,26 @@ UserModel.init(
       allowNull: false
     },
     username: {
-      type: DataTypes.STRING,
+      type: DataTypes.STRING(35),
+      unique: true,
       allowNull: false
     },
     name: {
-      type: DataTypes.STRING
+      type: DataTypes.STRING(50),
+      allowNull: false
     },
     email: {
-      type: DataTypes.STRING
+      type: DataTypes.STRING(50),
+      allowNull: false
     },
     phone: {
-      type: DataTypes.STRING
+      type: DataTypes.STRING(15),
+      allowNull: false
     },
     password: {
-      type: DataTypes.STRING
+      type: DataTypes.STRING(50)
     },
-    role_id: {
+    roleId: {
       type: DataTypes.UUID,
       references: {
         model: 'role',
@@ -43,6 +47,8 @@ UserModel.init(
   },
   {
     sequelize,
+    underscored: true,
+    paranoid: true,
     modelName: 'user',
     tableName: 'user',
     updatedAt: 'updated_at',

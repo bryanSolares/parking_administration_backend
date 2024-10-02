@@ -6,7 +6,7 @@ export class RoleDetailModel extends Model {}
 
 RoleDetailModel.init(
   {
-    role_id: {
+    roleId: {
       type: DataTypes.UUID,
       allowNull: false,
       primaryKey: true,
@@ -15,7 +15,7 @@ RoleDetailModel.init(
         key: 'id'
       }
     },
-    resource_id: {
+    resourceId: {
       type: DataTypes.UUID,
       allowNull: false,
       primaryKey: true,
@@ -24,13 +24,15 @@ RoleDetailModel.init(
         key: 'id'
       }
     },
-    can_access: {
+    canAccess: {
       type: DataTypes.BOOLEAN,
       defaultValue: false
     }
   },
   {
     sequelize,
+    underscored: true,
+    paranoid: true,
     modelName: 'role_detail',
     tableName: 'role_detail',
     updatedAt: 'updated_at',

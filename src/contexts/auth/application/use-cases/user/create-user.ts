@@ -1,3 +1,4 @@
+import { UniqueConstraintError } from 'sequelize';
 import { RoleEntity } from '@src/contexts/auth/core/entities/role-entity';
 import { RoleRepository } from '@src/contexts/auth/core/repository/role-repository';
 import { UserRepository } from '@src/contexts/auth/core/repository/user-repository';
@@ -24,6 +25,14 @@ export class CreateUser {
       throw new AppError('ROLE_NOT_FOUND', 404, 'Role not found', true);
     }
 
-    await this.userRepository.create(user);
+    if (roleDatabase.status === 'INACTIVO')
+      throw new AppError('ROLE_INACTIVE', 400, 'You can not create a user with an inactive role', true);
+
+    try {
+      await this.userRepository.create(user);
+    } catch (error) {
+      if (error instanceof UniqueConstraintError) throw new AppError('USER_ALREADY_EXISTS', 400, 'User already exists', true);
+      throw error;
+    }
   }
 }
