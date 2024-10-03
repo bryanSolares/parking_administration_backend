@@ -3,7 +3,7 @@ import { NotificationPreferencesEntity, NotificationTypePreference } from '../en
 import { UserEntity } from '@src/contexts/auth/core/entities/user-entity';
 
 export interface NotificationPreferenceRepository {
-  getNotificationPreferencesByUser(userId: string): Promise<Array<NotificationPreferencesEntity>>;
+  getNotificationPreferencesByUser(userId: string): Promise<NotificationPreferencesEntity>;
   saveNotificationPreferences(notificationPreferences: {
     userId: string;
     preferences: Array<NotificationTypePreference>;

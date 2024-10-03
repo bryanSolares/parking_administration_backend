@@ -44,7 +44,10 @@ const getByIdSettingUseCase = new GetByIdSettingUseCase(settingRepository);
 const getTemplatesUseCase = new GetTemplatesUseCase(templateRepository);
 const getTemplateVariablesUseCase = new GetVariablesUseCase(templateRepository);
 
-const getPreferenceNotificationByUserUseCase = new GetPreferenceNotificationByUserUseCase(notificationPreferenceRepository);
+const getPreferenceNotificationByUserUseCase = new GetPreferenceNotificationByUserUseCase(
+  notificationPreferenceRepository,
+  userRepository
+);
 const saveNotificationPreferenceUseCase = new SaveNotificationPreferenceUseCase(notificationPreferenceRepository, userRepository);
 
 const tagController = new TagController(

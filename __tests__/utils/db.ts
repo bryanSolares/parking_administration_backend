@@ -74,3 +74,16 @@ export const cleanDatabaseParameterTesting = async () => {
     console.log('Error cleaning database:', error);
   }
 };
+
+
+export const clearDatabaseAuth = async () => {
+  try {
+    await sequelize.query('DELETE FROM notification_preference');
+    await sequelize.query('DELETE FROM role_detail');
+    await sequelize.query('DELETE FROM user');
+    await sequelize.query('DELETE FROM role');
+    await sequelize.query('DELETE FROM resource');
+  } catch (error) {
+    console.log('Error cleaning database:', error);
+  }
+};

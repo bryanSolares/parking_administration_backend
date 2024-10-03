@@ -11,7 +11,7 @@ import { EventType } from '@src/contexts/shared/core/notification_queue';
 
 export class NotificationPreferenceMySQLRepository implements NotificationPreferenceRepository {
   /* eslint-disable @typescript-eslint/no-unsafe-call */
-  async getNotificationPreferencesByUser(userId: string): Promise<Array<NotificationPreferencesEntity>> {
+  async getNotificationPreferencesByUser(userId: string): Promise<NotificationPreferencesEntity> {
     const data = await UserModel.findAll({
       where: {
         id: userId
@@ -38,7 +38,7 @@ export class NotificationPreferenceMySQLRepository implements NotificationPrefer
           }
         )
       });
-    });
+    })[0];
   }
 
   async saveNotificationPreferences(notificationPreferences: {

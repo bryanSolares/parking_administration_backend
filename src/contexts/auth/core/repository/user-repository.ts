@@ -14,7 +14,6 @@ export interface UserRepository {
   update(user: {
     name: string;
     email: string;
-    username: string;
     password: string;
     status: 'ACTIVO' | 'INACTIVO';
     phone: string;

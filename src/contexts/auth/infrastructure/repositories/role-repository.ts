@@ -8,6 +8,8 @@ import { RoleModel } from '@src/contexts/shared/infrastructure/models/auth/role.
 import { ResourceEntity } from '@src/contexts/auth/core/entities/resource-entity';
 import { ResourceModel } from '@src/contexts/shared/infrastructure/models/auth/resource.model';
 import { RoleDetailModel } from '@src/contexts/shared/infrastructure/models/auth/role.detail.model';
+import { UserModel } from '@src/contexts/shared/infrastructure/models/auth/user.model';
+import { UserEntity } from '../../core/entities/user-entity';
 
 export class MySQLSequelizeRoleRepository implements RoleRepository {
   async create(data: { name: string; description: string; status: 'ACTIVO' | 'INACTIVO'; listOfAccess: [] }): Promise<void> {
@@ -168,5 +170,17 @@ export class MySQLSequelizeRoleRepository implements RoleRepository {
     const resourcesDatabase = await ResourceModel.findAll();
     const resources = resourcesDatabase.map(resource => ResourceEntity.fromPrimitives(resource.get({ plain: true })));
     return resources;
+  }
+
+  async getUsersActiveByRoleId(roleId: string): Promise<Array<UserEntity>> {
+    const users = await UserModel.findAll({
+      where: { status: 'ACTIVO' },
+      include: [{ model: RoleModel, where: { id: roleId } }]
+    });
+
+    return users.map(user => {
+      const plainUser = user.get({ plain: true });
+      return UserEntity.fromPrimitives(plainUser);
+    });
   }
 }

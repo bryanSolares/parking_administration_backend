@@ -23,18 +23,17 @@ export class MySQLSequelizeUserRepository implements UserRepository {
     id: string;
     name: string;
     email: string;
-    username: string;
     password: string;
     status: 'ACTIVO' | 'INACTIVO';
     phone: string;
     role: string;
   }): Promise<void> {
-    const userEntity = UserEntity.fromPrimitives(user);
+    const userEntity = UserEntity.fromPrimitives({ ...user, username: '' });
     await UserModel.update(
       { ...userEntity, role_id: userEntity.role },
       {
         where: { id: user.id },
-        fields: ['name', 'email', 'username', 'password', 'status', 'phone', 'role_id']
+        fields: ['name', 'email', 'status', 'phone', 'role_id']
       }
     );
   }
@@ -60,7 +59,8 @@ export class MySQLSequelizeUserRepository implements UserRepository {
 
     if (!userDatabase) return null;
 
-    return UserEntity.fromPrimitives(userDatabase.get({ plain: true }));
+    const plainData = userDatabase.get({ plain: true });
+    return UserEntity.fromPrimitives({ ...plainData, role: plainData.role });
   }
 
   async getAll(limit: number = 20, page: number = 1): Promise<{ data: UserEntity[]; pageCounter: number }> {

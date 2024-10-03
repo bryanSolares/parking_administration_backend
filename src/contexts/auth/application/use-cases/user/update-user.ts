@@ -13,7 +13,6 @@ export class UpdateUser {
     id: string;
     name: string;
     email: string;
-    username: string;
     password: string;
     status: 'ACTIVO' | 'INACTIVO';
     phone: string;
@@ -28,6 +27,10 @@ export class UpdateUser {
 
     if (!roleDatabase) {
       throw new AppError('ROLE_NOT_FOUND', 404, 'Role not found', true);
+    }
+
+    if (roleDatabase.status === 'INACTIVO' && user.status === 'ACTIVO') {
+      throw new AppError('YOU_CANT_UPDATE_ROLE', 400, 'You can not update a user with an inactive role', true);
     }
 
     await this.userRepository.update(user);

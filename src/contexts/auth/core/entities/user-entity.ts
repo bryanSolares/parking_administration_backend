@@ -50,7 +50,7 @@ export class UserEntity {
       plainData.password,
       plainData.status,
       plainData.phone,
-      plainData.role
+      plainData.role instanceof RoleEntity ? RoleEntity.fromPrimitives(plainData.role) : plainData.role
     );
   }
 

@@ -13,7 +13,7 @@ routes
   .put(
     '/:user_id',
     validateRequest(idUserSchema, 'params'),
-    validateRequest(userSchema, 'body'),
+    validateRequest(userSchema.omit({ username: true }), 'body'),
     userController.update.bind(userController)
   )
   .delete('/:user_id', validateRequest(idUserSchema, 'params'), userController.delete.bind(userController))

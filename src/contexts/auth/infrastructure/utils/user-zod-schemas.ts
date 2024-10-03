@@ -2,8 +2,8 @@ import { z } from 'zod';
 
 export const userSchema = z.object({
   name: z.string(),
-  username: z.string().min(1).max(35),
   status: z.enum(['ACTIVO', 'INACTIVO']),
+  username: z.string().min(1).max(35),
   email: z.string().email().min(1).max(50),
   password: z.string().optional(),
   phone: z

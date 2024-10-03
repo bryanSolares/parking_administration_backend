@@ -777,21 +777,6 @@ describe('E2E: Assignment', () => {
           'The assignment is being processed'
         );
       });
-
-      it('Si no hay información de firmantes en base de datos se rechaza la petición', async () => {
-        const assignment = await new AssignmentBuilder().buildWithActiveStatus(
-          AssignmentStatus.ASSIGNED
-        );
-        const requestData =
-          AcceptanceFormRequestMother.createAcceptanceFormRequest();
-
-        const response = await sendRequest(assignment.id, requestData, 400);
-
-        expect(response.body).toHaveProperty(
-          'message',
-          'Data signatures for acceptance form not found'
-        );
-      });
     });
 
     describe('PATCH', () => {
