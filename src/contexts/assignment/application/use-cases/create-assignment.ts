@@ -45,6 +45,7 @@ export class CreateAssignment {
         model: string;
         type: VehicleType;
       }[];
+      vehiclesForDelete: Array<string>;
     };
     parkingCardNumber: string;
     tags: string[];
@@ -54,7 +55,11 @@ export class CreateAssignment {
 
     await this.validations.validateIfCanCreate({
       slot,
-      employee: { ...data.employee },
+      employee: {
+        id: data.employee.id,
+        vehicles: data.employee.vehicles.map(vehicle => vehicle.id),
+        vehiclesForDelete: data.employee.vehiclesForDelete
+      },
       tags: {
         request: data.tags,
         database: tags
@@ -86,41 +91,6 @@ export class CreateAssignment {
       tags
     );
 
-    await this.assignmentRepository.createAssignment(assignment);
-
-    // //Generate token for owner
-    // const secret = crypto.randomBytes(32).toString('hex');
-    // //TODO: Insert token in database
-    // const guestInformation = guest
-    //   ? { name: guest.name, email: guest.email }
-    //   : null;
-    // const scheduleAssignmentData = scheduleAssignment
-    //   ? {
-    //       startTime: scheduleAssignment.start_time_assignment,
-    //       endTime: scheduleAssignment.end_time_assignment
-    //     }
-    //   : null;
-    // const scheduleLoan = assignment.assignment_loan
-    //   ? {
-    //       startDate: new Date(
-    //         assignment.assignment_loan.start_date_assignment
-    //       ).toString(),
-    //       endDate: new Date(
-    //         assignment.assignment_loan.end_date_assignment
-    //       ).toString()
-    //     }
-    //   : null;
-    // //FIXME: location info
-    // this.notificationService.createAssignmentNotification(
-    //   { name: owner.name, email: owner.email, token: secret },
-    //   guestInformation,
-    //   scheduleAssignmentData,
-    //   scheduleLoan,
-    //   {
-    //     name: "Parqueos 'El pumpim'",
-    //     address: 'Parqueos, Guateque, Guatemala',
-    //     slotNumber: '223-da5c2'
-    //   }
-    // );
+    await this.assignmentRepository.createAssignment(assignment, data.employee.vehiclesForDelete);
   }
 }

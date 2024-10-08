@@ -391,7 +391,7 @@ describe('E2E: Assignment', () => {
 
         expect(response.body).toHaveProperty(
           'message',
-          'You cannot add vehicles identified to a new employee.'
+          'You cannot add or deletes vehicles identified to a new employee.'
         );
         const assignments = await AssignmentHelper.getAllAssignments();
         const employees = await AssignmentHelper.getAllEmployees();

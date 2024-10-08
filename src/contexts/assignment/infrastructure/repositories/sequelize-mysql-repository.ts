@@ -39,7 +39,7 @@ import { LocationEntity } from '@src/contexts/location/core/entities/location-en
 import { format } from '@formkit/tempo';
 
 export class SequelizeAssignmentRepository implements AssignmentRepository {
-  async createAssignment(assignment: AssignmentEntity): Promise<void> {
+  async createAssignment(assignment: AssignmentEntity, vehiclesForDelete: Array<string>): Promise<void> {
     const ownerData = assignment.employee;
     const vehiclesOwnerData = assignment.employee.vehicles;
 
@@ -48,6 +48,7 @@ export class SequelizeAssignmentRepository implements AssignmentRepository {
     const ownerIdSaved = await this.upsertEmployee(ownerData, transaction);
     //Save vehicles
     await this.upsertVehicles(vehiclesOwnerData, ownerIdSaved, transaction);
+    await Promise.all(vehiclesForDelete.map(async id => await VehicleModel.destroy({ where: { id } })));
     //Save assignment
     const assignmentSaved = await AssignmentModel.create(
       {

@@ -24,9 +24,8 @@ export class Validations {
     slot: SlotEntity | null;
     employee: {
       id: string;
-      vehicles: {
-        id: string;
-      }[];
+      vehicles: Array<string>;
+      vehiclesForDelete: Array<string>;
     };
     tags: {
       request: string[];
@@ -37,15 +36,11 @@ export class Validations {
     this.validateIfTagsAreValid(data.tags);
     await this.validateIfCanCreateAssignmentInSlot(data.slot!);
     await this.validateIfVehiclesBelongToEmployee(data.employee.id, data.employee.vehicles);
+    await this.validateIfVehiclesBelongToEmployee(data.employee.id, data.employee.vehiclesForDelete);
     await this.validateIfEmployeeHasAnActiveAssignment(data.employee.id);
   }
 
-  public async validateIfCanCreateAssignmentLoan(employee: {
-    id: string;
-    vehicles: {
-      id: string;
-    }[];
-  }) {
+  public async validateIfCanCreateAssignmentLoan(employee: { id: string; vehicles: Array<string> }) {
     await this.validateIfEmployeeHasAnActiveAssignment(employee.id);
     await this.validateIfVehiclesBelongToEmployee(employee.id, employee.vehicles);
   }
@@ -99,9 +94,9 @@ export class Validations {
     }
   }
 
-  public async validateIfVehiclesBelongToEmployee(employeeId: string, vehiclesRequest: { id: string }[]) {
-    if (!employeeId && vehiclesRequest.some(vehicle => vehicle.id && /\w+/.test(vehicle.id))) {
-      throw new AppError('VEHICLE_NOT_VALID', 400, `You cannot add vehicles identified to a new employee.`, true);
+  public async validateIfVehiclesBelongToEmployee(employeeId: string, vehiclesRequest: Array<string>) {
+    if (!employeeId && vehiclesRequest.some(id => id && /\w+/.test(id))) {
+      throw new AppError('VEHICLE_NOT_VALID', 400, `You cannot add or deletes vehicles identified to a new employee.`, true);
     }
 
     if (employeeId) {
@@ -113,9 +108,9 @@ export class Validations {
 
       const vehicles = new Set(employeeDatabase.vehicles.map(vehicle => vehicle.id));
 
-      vehiclesRequest.forEach(vehicle => {
-        if (vehicle && vehicle.id && !vehicles.has(vehicle.id)) {
-          throw new AppError('VEHICLE_NOT_FOUND', 400, `The vehicle with id ${vehicle.id} does not belong to the employee`, true);
+      vehiclesRequest.forEach(id => {
+        if (id && id && !vehicles.has(id)) {
+          throw new AppError('VEHICLE_NOT_FOUND', 400, `The vehicle with id ${id} does not belong to the employee`, true);
         }
       });
     }

@@ -66,7 +66,10 @@ export class CreateAssignmentLoan {
       throw new AppError('ASSIGNMENT_LOAN_ALREADY_EXISTS', 400, 'The assignment already has an active loan', true);
     }
 
-    await this.validations.validateIfCanCreateAssignmentLoan(data.employee);
+    await this.validations.validateIfCanCreateAssignmentLoan({
+      id: data.employee.id,
+      vehicles: data.employee.vehicles.map(v => v.id)
+    });
 
     const assignmentLoan = new AssignmentLoadEntity(
       uuid(),

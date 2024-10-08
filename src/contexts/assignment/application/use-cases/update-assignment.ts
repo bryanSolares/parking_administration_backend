@@ -50,12 +50,12 @@ export class UpdateAssignmentUseCase {
       );
     }
 
-    await this.validations.validateIfVehiclesBelongToEmployee(assignmentDatabase.employee.id, data.employee.vehicles);
-
     await this.validations.validateIfVehiclesBelongToEmployee(
       assignmentDatabase.employee.id,
-      data.vehicleIdsForDelete.map(id => ({ id }))
+      data.employee.vehicles.map(vehicle => vehicle.id)
     );
+
+    await this.validations.validateIfVehiclesBelongToEmployee(assignmentDatabase.employee.id, data.vehicleIdsForDelete);
 
     //TODO: Refactor this
     const tagsDatabase = await this.tagRepository.getTagsByIds(data.tags.map(id => id));

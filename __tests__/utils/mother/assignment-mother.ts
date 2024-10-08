@@ -87,7 +87,8 @@ export class AssignmentRequestMother {
     address = faker.location.streetAddress(),
     email = faker.internet.email(),
     phone = '+(502) 45454545',
-    vehicles = [this.createVehicleRequest()]
+    vehicles = [this.createVehicleRequest()],
+    vehiclesForDelete = []
   }: {
     id?: string;
     employeeCode?: string;
@@ -111,6 +112,7 @@ export class AssignmentRequestMother {
       type?: VehicleType;
       color?: string;
     }[];
+    vehiclesForDelete?: Array<string>
   } = {}): {
     id?: string;
     employeeCode?: string;
@@ -134,6 +136,7 @@ export class AssignmentRequestMother {
       type?: VehicleType;
       color?: string;
     }[];
+    vehiclesForDelete?: Array<string>
   } {
     return {
       id,
@@ -150,17 +153,18 @@ export class AssignmentRequestMother {
       address,
       email,
       phone,
-      vehicles
+      vehicles,
+      vehiclesForDelete
     };
   }
 
   static createVehicleRequest({
     id,
-    vehicleBadge = faker.commerce.productName(),
-    brand = faker.commerce.productName(),
-    model = faker.commerce.productName(),
+    vehicleBadge = faker.lorem.word({length: 10}),
+    brand = faker.lorem.word({length: 20}),
+    model = faker.lorem.word({length: 45}),
     type = VehicleType.CAR,
-    color = faker.commerce.productMaterial()
+    color = faker.lorem.word({length: 20})
   }: {
     id?: string;
     vehicleBadge?: string;

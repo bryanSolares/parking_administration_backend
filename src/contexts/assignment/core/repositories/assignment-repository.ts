@@ -42,7 +42,7 @@ export enum ListOfFunctions {
 }
 
 export interface AssignmentRepository {
-  createAssignment(assignment: AssignmentEntity): Promise<void>;
+  createAssignment(assignment: AssignmentEntity, vehiclesForDelete: Array<string>): Promise<void>;
   getAssignmentById(id: string): Promise<FinderResultById | null>;
   getAssignments(limit: number, page: number): Promise<AssignmentFinderResult>;
   createDeAssignment(deAssignment: DeAssignmentEntity): Promise<void>;

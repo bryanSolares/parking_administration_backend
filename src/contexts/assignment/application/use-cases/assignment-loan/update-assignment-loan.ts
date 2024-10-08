@@ -37,11 +37,14 @@ export class UpdateAssignmentLoanUseCase {
       throw new AppError('ASSIGNMENT_LOAN_NOT_FOUND', 404, 'Assignment loan not found', true);
     }
 
-    await this.validations.validateIfVehiclesBelongToEmployee(assignmentLoanDataBase.employee.id, data.employee.vehicles);
+    await this.validations.validateIfVehiclesBelongToEmployee(
+      assignmentLoanDataBase.employee.id,
+      data.employee.vehicles.map(v => v.id)
+    );
 
     await this.validations.validateIfVehiclesBelongToEmployee(
       assignmentLoanDataBase.employee.id,
-      data.vehiclesForDelete.map(id => ({ id }))
+      data.vehiclesForDelete.map(id => id)
     );
 
     const vehicles = data.employee.vehicles.map(vehicle => VehicleEntity.fromPrimitive({ ...vehicle, id: vehicle.id ?? uuid() }));
