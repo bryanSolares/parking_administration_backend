@@ -19,17 +19,17 @@ VehicleModel.init(
       }
     },
     vehicleBadge: {
-      type: DataTypes.STRING,
+      type: DataTypes.STRING(10),
       allowNull: false
     },
     color: {
-      type: DataTypes.STRING
+      type: DataTypes.STRING(20)
     },
     brand: {
-      type: DataTypes.STRING
+      type: DataTypes.STRING(20)
     },
     model: {
-      type: DataTypes.STRING
+      type: DataTypes.STRING(50)
     },
     type: {
       type: DataTypes.ENUM,
